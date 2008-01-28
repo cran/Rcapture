@@ -3,11 +3,11 @@
 
     #####################################################################################################################################
     # Validation de l'argument fourni en entrée
-    if (any((t %% 1)!=0)) stop("'t' must be an integer")
+    if (length(t)!=1||any((t %% 1)!=0)) stop("'t' must be an integer of length 1")
     #####################################################################################################################################
 
         X0 <- cbind(c(1, 1, 0), c(1, 0, 1))
-        if (isTRUE(all.equal(t,2)))  # il y n'y a que 2 occasions de capture
+        if (t==2)  # il y n'y a que 2 occasions de capture
         { 
             X0 
         } else    # il y a plus de 2 occasions de capture

@@ -10,7 +10,7 @@
         I<-length(vt)
         vec <- (vt[I] - 1):0
         mat<-cbind(rep(((vt[I-1]-1):0),rep(length(vec),vt[I-1])),rep(vec,vt[I-1]))
-        if (isTRUE(I>2))
+        if (I>2)
         {
             for (i in (2:(I-1)))
             {

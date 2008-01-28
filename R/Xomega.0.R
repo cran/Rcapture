@@ -22,29 +22,29 @@ function(vt,vm,vh,va,rd.call)
             histposp<-histpos[,i]
 
             # creation de matrice selon le modele choisi
-            if ( identical(vm[i],"none") ) # no modele
+            if (vm[i]=="none") # no modele
             {
                     mXp <- as.matrix(ifelse(histposp>0,1,0))
                     colnames(mXp) <- beta
                     models[i] <- "none"
-            } else if ( identical(vm[i],"M0") ) # modele M0
+            } else if (vm[i]=="M0") # modele M0
                     {
                         mXp <- as.matrix(histposp)     # la matrice reste la meme
                         colnames(mXp) <- beta
                         models[i] <- "M0"
-                    } else  if ( identical(vm[i],"Mh") ) # modele Mh
+                    } else  if (vm[i]=="Mh") # modele Mh
                             {
-                                if ( identical(vh[[i]],"Chao") )
+                                if (vh[[i]]=="Chao")
                                 {
                                     mXp2 <- matrix(0,nrows,vt[i]-2)
                                     for (j in (3:vt[i])) { mXp2[,j-2]<-pmax(histposp-j+1,0) }
                                 } else
-                                if (identical(vh[[i]],"Poisson")) mXp2 <- va[i]^histposp - 1 else
-                                if (identical(vh[[i]],"Darroch")) mXp2 <- (histposp^2)/2 else
+                                if (vh[[i]]=="Poisson") mXp2 <- va[i]^histposp - 1 else
+                                if (vh[[i]]=="Darroch") mXp2 <- (histposp^2)/2 else
                                 if(is.function(vh[[i]])) mXp2 <- vh[[i]](histposp)
                                 mXp <- cbind(histposp,mXp2)
-                                colnames(mXp) <- if (identical(vh[[i]],"Chao")) c(beta,etanames) else c(beta,paste("tau",i,".",1,sep=""))
-                                models[i] <- if (is.function(vh[[i]])) paste("Mh",rd.call$vh[i+1]) else if(identical(vh[[i]],"Poisson")) paste("Mh",paste(vh[[i]],va[i],sep="")) else paste("Mh",vh[[i]])
+                                colnames(mXp) <- if (vh[[i]]=="Chao") c(beta,etanames) else c(beta,paste("tau",i,".",1,sep=""))
+                                models[i] <- if (is.function(vh[[i]])) paste("Mh",rd.call$vh[i+1]) else if(vh[[i]]=="Poisson") paste("Mh",paste(vh[[i]],va[i],sep="")) else paste("Mh",vh[[i]])
                             }
             M <- cbind(M,mXp)
             nbparam[i] <- dim(mXp)[2]

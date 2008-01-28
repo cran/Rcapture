@@ -21,7 +21,7 @@ closedp.h(X, dfreq=FALSE, m="Mh", h="Poisson", a=2)
   \item{dfreq}{ This argument specifies the format of the data matrix \code{X}. By default, it is set to FALSE, which means that \code{X} has one row per unit. If it is set to TRUE, then the matrix \code{X} contains frequencies in its last column.}
   \item{mX}{ The design matrix of the loglinear model. In this matrix, the order of the capture histories is as defined in the \code{histpos.t} function.}
   \item{mname}{ A character string specifying the name of the customized model.}
-  \item{m}{ A character string indicating the model to fit, either "Mh"=Mh model or "Mth"=Mth model}
+  \item{m}{ A character string indicating the model to fit, either "Mh"= Mh model or "Mth"= Mth model}
   \item{h}{ The character string "Poisson" or a numerical \code{R} function specifying the form of the column for heterogeneity in the design matrix. "Poisson" represents the function \eqn{f(k)=a^k-1}, where \eqn{k} is the number of captures. If an \code{R} function is given, it is the implemantation of any mathematical function \eqn{f(k)}. It has only one argument.}
   \item{a}{ The value of the exponent's base for a Poisson model. }
   \item{x}{ An object, produced by the \code{closedp.mX} or the \code{closedp.h} function, to print or to plot.}
@@ -42,11 +42,12 @@ closedp.h(X, dfreq=FALSE, m="Mh", h="Poisson", a=2)
 \item{glm}{ The 'glm' object obtained from fitting the model.} 
 }
 \references{ 
-Baillargeon, S. and Rivest, L.P. (2007). The Rcapture package: Loglinear models for capture-recapture in R. \emph{Journal of Statistical Software}, to appear (available online at \url{http://www.jstatsoft.org/}).
+Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
 
-Rivest, L.P. and Baillargeon, S. (2007). Applications and extensions of Chao moment estimator for the size of a closed population. \emph{Biometrics}, to appear.
+Rivest, L.P. and Baillargeon, S. (2007). Applications and extensions of Chao's moment estimator for the size of a closed population. \emph{Biometrics}, \bold{63}(4), 999--1006.
 }
-\author{Sophie Baillargeon \email{sbaillar@mat.ulaval.ca} and Louis-Paul Rivest \email{lpr@mat.ulaval.ca} }
+\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
+Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
 \note{ These functions use the \code{glm} function of the \code{stats} package. }
 \seealso{\code{\link{closedp}}, \code{\link{closedp.Mtb}} }
 \examples{

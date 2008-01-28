@@ -55,11 +55,12 @@ Standard errors are calculated by linearization.
   \item{neg}{ The position of the gamma and eta parameters set to zero in the loglinear parameter vector.}
 }
 \references{ 
-Baillargeon, S. and Rivest, L.P. (2007). The Rcapture package: Loglinear models for capture-recapture in R. \emph{Journal of Statistical Software}, to appear (available online at \url{http://www.jstatsoft.org/}).
+Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
 
 Rivest, L.P. and Daigle, G. (2004) Loglinear models for the robust design in mark-recapture experiments. \emph{Biometrics}, \bold{60}, 100--107.
 }
-\author{Sophie Baillargeon \email{sbaillar@mat.ulaval.ca} and Louis-Paul Rivest \email{lpr@mat.ulaval.ca} }
+\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
+Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
 \note{ 
 This function uses the \code{glm} function of the \code{stats} package. 
 }

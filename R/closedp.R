@@ -1,14 +1,14 @@
 "closedp" <- function(X,dfreq=FALSE,neg=TRUE)
 {
 
-        X<-as.matrix(X)
-        t <- ifelse(dfreq,dim(X)[2]-1,dim(X)[2])
-
     #####################################################################################################################################
     # Validation des arguments fournis en entrée
-
+    
     # Argument dfreq
-    if(!is.logical(dfreq)||!isTRUE(all.equal(length(dfreq),1))) stop("'dfreq' must be a logical object of length 1")
+    if(!is.logical(dfreq)||length(dfreq)!=1) stop("'dfreq' must be a logical object of length 1")
+
+        X <- as.matrix(X)
+        t <- if(dfreq) dim(X)[2]-1 else dim(X)[2]
     
     # Argument X
     if (dfreq)
@@ -20,7 +20,7 @@
     }
     
     # Argument neg
-    if(!is.logical(neg)||!isTRUE(all.equal(length(neg),1))) stop("'neg' must be a logical object of length 1")
+    if(!is.logical(neg)||length(neg)!=1) stop("'neg' must be a logical object of length 1")
     
     #####################################################################################################################################
 
@@ -62,7 +62,7 @@
         mXM0. <- matrix(nbcap,ncol=1)
         colnames(mXM0.) <- "beta"
         anaM0 <- glm(Y~mXM0.,family=poisson)
-        NM0 <- sum(Y)+exp(anaM0$coef[1]) # calcul de la taille de la population N
+        NM0 <- sum(na.rm=TRUE,Y)+exp(anaM0$coef[1]) # calcul de la taille de la population N
         varcovM0 <- summary(anaM0)$cov.unscaled
         erreurtypeM0 <- sqrt(exp(anaM0$coef[1])+(exp(2*anaM0$coef[1]))*varcovM0[1,1])
         M0 <- c(NM0,erreurtypeM0,anaM0$dev,anaM0$df.residual,anaM0$aic)
@@ -75,7 +75,7 @@
         mXMt. <- histpos
         colnames(mXMt.) <- betanames
         anaMt <- glm(Y~mXMt.,family=poisson)
-        NMt <- sum(Y)+exp(anaMt$coef[1]) # calcul de la taille de la population N
+        NMt <- sum(na.rm=TRUE,Y)+exp(anaMt$coef[1]) # calcul de la taille de la population N
         varcovMt <- summary(anaMt)$cov.unscaled
         erreurtypeMt <- sqrt(exp(anaMt$coef[1])+(exp(2*anaMt$coef[1]))*varcovMt[1,1])
         Mt <- c(NMt,erreurtypeMt,anaMt$dev,anaMt$df.residual,anaMt$aic)
@@ -96,23 +96,23 @@
             {
                 param <- anaMhC$coef
                 indic <- as.vector(c(0,0,ifelse(param[-(1:2)]<0,1,0)))
-                while(isTRUE(sum(indic)>0)) # Répéter la boucle jusqu'à ce qu'aucun eta ne soit négatif
+                while(sum(na.rm=TRUE,indic)>0) # Répéter la boucle jusqu'à ce qu'aucun eta ne soit négatif
                 {
                     # Détermination de la position du premier eta négatif
                     pos <- 1
-                    while(isTRUE(all.equal(indic[pos],0))) pos <- pos + 1
+                    while(indic[pos]==0) pos <- pos + 1
                     ppositions <- c(ppositions,pos)
                     # Retrait de la bonne colonne de mX et réajustement du modèle
-                    mXMhC. <- mXMhC.[,-(pos-sum(ppositions<pos))]
+                    mXMhC. <- mXMhC.[,-(pos-sum(na.rm=TRUE,ppositions<pos))]
                     anaMhC <- glm(Y~mXMhC.,family=poisson)
                     # Ajout de zéros dans le vecteur des paramètres loglinéaires
                     positions <- sort(ppositions[-1])                
                     param <- c(anaMhC$coef[1:(positions[1]-1)],0)
-                    if(isTRUE(length(positions)>1))
+                    if(length(positions)>1)
                     {
                         for ( i in 2:length(positions))
                         {
-                            if(isTRUE(all.equal(positions[i],positions[i-1]+1))) {
+                            if(positions[i]==positions[i-1]+1) {
                                 param <- c(param,0)
                             } else {
                                 param <- c(param,anaMhC$coef[(positions[i-1]-i+2):(positions[i]-i)],0)
@@ -125,12 +125,12 @@
             }
             posMhC <- sort(ppositions[-1])
             # Estimation de l'abondance
-            NMhC <- sum(Y)+exp(anaMhC$coef[1]) # calcul de la taille de la population N
+            NMhC <- sum(na.rm=TRUE,Y)+exp(anaMhC$coef[1]) # calcul de la taille de la population N
             varcovMhC <- summary(anaMhC)$cov.unscaled
             erreurtypeMhC <- sqrt(exp(anaMhC$coef[1])+(exp(2*anaMhC$coef[1]))*varcovMhC[1,1])
             MhC <- c(NMhC,erreurtypeMhC,anaMhC$dev,anaMhC$df.residual,anaMhC$aic)
             # Autres paramètres
-            pMhC <- sum(anaMhC$fitted.values[ifirstcap==1])/NMhC
+            pMhC <- sum(na.rm=TRUE,anaMhC$fitted.values[ifirstcap==1])/NMhC
             parMhC<-matrix(c(NMhC,pMhC),nrow=1)
             colnames(parMhC) <- c("N","p")
         } else {
@@ -145,12 +145,12 @@
         mXMhP. <- cbind(nbcap,mXP)
         colnames(mXMhP.) <- c("beta","tau")
         anaMhP <- glm(Y~mXMhP.,family=poisson)
-        NMhP <- sum(Y)+exp(anaMhP$coef[1]) # calcul de la taille de la population N
+        NMhP <- sum(na.rm=TRUE,Y)+exp(anaMhP$coef[1]) # calcul de la taille de la population N
         varcovMhP <- summary(anaMhP)$cov.unscaled
         erreurtypeMhP <- sqrt(exp(anaMhP$coef[1])+(exp(2*anaMhP$coef[1]))*varcovMhP[1,1])
         MhP <- c(NMhP,erreurtypeMhP,anaMhP$dev,anaMhP$df.residual,anaMhP$aic)
         # Autres paramètres
-        pMhP <- sum(anaMhP$fitted.values[ifirstcap==1])/NMhP
+        pMhP <- sum(na.rm=TRUE,anaMhP$fitted.values[ifirstcap==1])/NMhP
         parMhP<-matrix(c(NMhP,pMhP),nrow=1)
         colnames(parMhP) <- c("N","p")
 
@@ -159,12 +159,12 @@
         mXMhD. <- cbind(nbcap,mXD)
         colnames(mXMhD.) <- c("beta","tau")
         anaMhD <- glm(Y~mXMhD.,family=poisson)
-        NMhD <- sum(Y)+exp(anaMhD$coef[1]) # calcul de la taille de la population N
+        NMhD <- sum(na.rm=TRUE,Y)+exp(anaMhD$coef[1]) # calcul de la taille de la population N
         varcovMhD <- summary(anaMhD)$cov.unscaled
         erreurtypeMhD <- sqrt(exp(anaMhD$coef[1])+(exp(2*anaMhD$coef[1]))*varcovMhD[1,1])
         MhD <- c(NMhD,erreurtypeMhD,anaMhD$dev,anaMhD$df.residual,anaMhD$aic)
         # Autres paramètres
-        pMhD <- sum(anaMhD$fitted.values[ifirstcap==1])/NMhD
+        pMhD <- sum(na.rm=TRUE,anaMhD$fitted.values[ifirstcap==1])/NMhD
         parMhD<-matrix(c(NMhD,pMhD),nrow=1)
         colnames(parMhD) <- c("N","p")
 
@@ -181,23 +181,23 @@
             {
                 param <- anaMthC$coef
                 indic <- as.vector(c(rep(0,t+1),ifelse(param[-(1:(t+1))]<0,1,0)))
-                while(isTRUE(sum(indic)>0)) # Répéter la boucle jusqu'à ce qu'aucun eta ne soit négatif
+                while(sum(na.rm=TRUE,indic)>0) # Répéter la boucle jusqu'à ce qu'aucun eta ne soit négatif
                 {
                     # Détermination de la position du premier eta négatif
                     pos <- 1
-                    while(isTRUE(all.equal(indic[pos],0))) pos <- pos + 1
+                    while(indic[pos]==0) pos <- pos + 1
                     ppositions <- c(ppositions,pos)
                     # Retrait de la bonne colonne de mX et réajustement du modèle
-                    mXMthC. <- mXMthC.[,-(pos-sum(ppositions<pos))]
+                    mXMthC. <- mXMthC.[,-(pos-sum(na.rm=TRUE,ppositions<pos))]
                     anaMthC <- glm(Y~mXMthC.,family=poisson)
                     # Ajout de zéros dans le vecteur des paramètres loglinéaires
                     positions <- sort(ppositions[-1])                
                     param <- c(anaMthC$coef[1:(positions[1]-1)],0)
-                    if(isTRUE(length(positions)>1))
+                    if(length(positions)>1)
                     {
                         for ( i in 2:length(positions))
                         {
-                            if(isTRUE(all.equal(positions[i],positions[i-1]+1))) {
+                            if(positions[i]==positions[i-1]+1) {
                                 param <- c(param,0)
                             } else {
                                 param <- c(param,anaMthC$coef[(positions[i-1]-i+2):(positions[i]-i)],0)
@@ -210,15 +210,15 @@
             } 
             posMthC <- sort(ppositions[-1])
             # Estimation de l'abondance
-            NMthC <- sum(Y)+exp(anaMthC$coef[1])
+            NMthC <- sum(na.rm=TRUE,Y)+exp(anaMthC$coef[1])
             varcovMthC <- summary(anaMthC)$cov.unscaled
             erreurtypeMthC <- sqrt(exp(anaMthC$coef[1])+(exp(2*anaMthC$coef[1]))*varcovMthC[1,1])
             MthC <- c(NMthC,erreurtypeMthC,anaMthC$dev,anaMthC$df.residual,anaMthC$aic)
             # Autres paramètres
             upredMthC <- rep(0,t)
-            for ( i in 1:t ) { upredMthC[i] <- sum(anaMhC$fitted.values[ifirstcap==i]) }
+            for ( i in 1:t ) { upredMthC[i] <- sum(na.rm=TRUE,anaMhC$fitted.values[ifirstcap==i]) }
             denoPMthC <- NMthC
-            for ( i in 2:t ) { denoPMthC <- c(denoPMthC,NMthC-sum(upredMthC[1:(i-1)])) }          
+            for ( i in 2:t ) { denoPMthC <- c(denoPMthC,NMthC-sum(na.rm=TRUE,upredMthC[1:(i-1)])) }          
             parMthC<-matrix(c(NMthC,upredMthC/denoPMthC),nrow=1)
             colnames(parMthC) <- c("N",pnames)
         } else {
@@ -233,15 +233,15 @@
         mXMthP. <- cbind(histpos,mXP)
         colnames(mXMthP.) <- c(betanames,"tau")
         anaMthP <- glm(Y~mXMthP.,family=poisson)
-        NMthP <- sum(Y)+exp(anaMthP$coef[1]) # calcul de la taille de la population N
+        NMthP <- sum(na.rm=TRUE,Y)+exp(anaMthP$coef[1]) # calcul de la taille de la population N
         varcovMthP <- summary(anaMthP)$cov.unscaled
         erreurtypeMthP <- sqrt(exp(anaMthP$coef[1])+(exp(2*anaMthP$coef[1]))*varcovMthP[1,1])
         MthP <- c(NMthP,erreurtypeMthP,anaMthP$dev,anaMthP$df.residual,anaMthP$aic)
         # Autres paramètres
         upredMthP <- rep(0,t)
-        for ( i in 1:t ) { upredMthP[i] <- sum(anaMhP$fitted.values[ifirstcap==i]) }
+        for ( i in 1:t ) { upredMthP[i] <- sum(na.rm=TRUE,anaMhP$fitted.values[ifirstcap==i]) }
         denoPMthP <- NMthP
-        for ( i in 2:t ) { denoPMthP <- c(denoPMthP,NMthP-sum(upredMthP[1:(i-1)])) }          
+        for ( i in 2:t ) { denoPMthP <- c(denoPMthP,NMthP-sum(na.rm=TRUE,upredMthP[1:(i-1)])) }          
         parMthP<-matrix(c(NMthP,upredMthP/denoPMthP),nrow=1)
         colnames(parMthP) <- c("N",pnames)
 
@@ -250,15 +250,15 @@
         mXMthD. <- cbind(histpos,mXD)
         colnames(mXMthD.) <- c(betanames,"tau")
         anaMthD <- glm(Y~mXMthD.,family=poisson)
-        NMthD <- sum(Y)+exp(anaMthD$coef[1]) # calcul de la taille de la population N
+        NMthD <- sum(na.rm=TRUE,Y)+exp(anaMthD$coef[1]) # calcul de la taille de la population N
         varcovMthD <- summary(anaMthD)$cov.unscaled
         erreurtypeMthD <- sqrt(exp(anaMthD$coef[1])+(exp(2*anaMthD$coef[1]))*varcovMthD[1,1])
         MthD <- c(NMthD,erreurtypeMthD,anaMthD$dev,anaMthD$df.residual,anaMthD$aic)
         # Autres paramètres
         upredMthD <- rep(0,t)
-        for ( i in 1:t ) { upredMthD[i] <- sum(anaMhD$fitted.values[ifirstcap==i]) }
+        for ( i in 1:t ) { upredMthD[i] <- sum(na.rm=TRUE,anaMhD$fitted.values[ifirstcap==i]) }
         denoPMthD <- NMthD
-        for ( i in 2:t ) { denoPMthD <- c(denoPMthD,NMthD-sum(upredMthD[1:(i-1)])) }          
+        for ( i in 2:t ) { denoPMthD <- c(denoPMthD,NMthD-sum(na.rm=TRUE,upredMthD[1:(i-1)])) }          
         parMthD<-matrix(c(NMthD,upredMthD/denoPMthD),nrow=1)
         colnames(parMthD) <- c("N",pnames)
 
@@ -296,7 +296,7 @@
             erreurtypeMbh <- sqrt((t(v)%*%varcovMbh%*%v) - NMbh)  # calcul de l erreur type
             Mbh <- c(NMbh,erreurtypeMbh,anaMbh$dev,anaMbh$df.residual,anaMbh$aic)
             # Autres paramètres
-            pMbh <- sum(anaMbh$fitted.values[ifirstcap==1])/NMbh
+            pMbh <- sum(na.rm=TRUE,anaMbh$fitted.values[ifirstcap==1])/NMbh
             cMbh <- (anaMbh$fitted.values[1]/(NMbh*pMbh))^(1/(t-1))
             parMbh<-matrix(c(NMbh,pMbh,cMbh),nrow=1)
             colnames(parMbh) <- c("N","p","c")
@@ -310,8 +310,13 @@
         # Préparation des sorties
         tableau <- rbind(M0,Mt,MhC,MhP,MhD,MthC,MthP,MthD,Mb,Mbh)
         dimnames(tableau) <- list(c("M0","Mt","Mh Chao","Mh Poisson2","Mh Darroch","Mth Chao","Mth Poisson2","Mth Darroch","Mb","Mbh"),c("abundance","stderr","deviance","df","AIC"))
-        ans <- list(n=sum(Y),t=t,results=tableau,glmM0=anaM0,glmMt=anaMt,glmMhC=anaMhC,glmMhP=anaMhP,glmMhD=anaMhD,glmMthC=anaMthC,glmMthP=anaMthP,glmMthD=anaMthD,glmMb=anaMb,glmMbh=anaMbh,
-                                                 parM0=parM0,parMt=parMt,parMhC=parMhC,parMhP=parMhP,parMhD=parMhD,parMthC=parMthC,parMthP=parMthP,parMthD=parMthD,parMb=parMb,parMbh=parMbh,negMhC=posMhC,negMthC=posMthC)
+        converge <- c(anaM0$converge,anaMt$converge,anaMhC$converge,anaMhP$converge,anaMhD$converge,
+                      anaMthC$converge,anaMthP$converge,anaMthD$converge,anaMb$converge,anaMbh$converge)
+        names(converge) <- c("M0","Mt","Mh Chao","Mh Poisson2","Mh Darroch","Mth Chao","Mth Poisson2","Mth Darroch","Mb","Mbh")
+        ans <- list(n=sum(na.rm=TRUE,Y),t=t,results=tableau,converge=converge,
+                    glmM0=anaM0,glmMt=anaMt,glmMhC=anaMhC,glmMhP=anaMhP,glmMhD=anaMhD,glmMthC=anaMthC,glmMthP=anaMthP,glmMthD=anaMthD,glmMb=anaMb,glmMbh=anaMbh,
+                    parM0=parM0,parMt=parMt,parMhC=parMhC,parMhP=parMhP,parMhD=parMhD,parMthC=parMthC,parMthP=parMthP,parMthD=parMthD,parMb=parMb,parMbh=parMbh,
+                    negMhC=posMhC,negMthC=posMthC)
         class(ans) <- "closedp"
         ans
 
@@ -326,10 +331,22 @@ print.closedp <- function(x, ...) {
         tableau[,4] <- round(tableau[,4],0)
         tableau[,c(3,5)] <- round(tableau[,c(3,5)],3)       
         print.default(tableau, print.gap = 2, quote = FALSE, right=TRUE)
-        if (isTRUE(all.equal(length(x$negMhC),1))) cat("\nNote:",length(x$negMhC),"eta parameter has been set to zero in the Mh Chao model")
-        if (isTRUE(length(x$negMhC)>1)) cat("\nNote:",length(x$negMhC),"eta parameters has been set to zero in the Mh Chao model")
-        if (isTRUE(all.equal(length(x$negMthC),1))) cat("\nNote:",length(x$negMthC),"eta parameter has been set to zero in the Mth Chao model")
-        if (isTRUE(length(x$negMthC)>1)) cat("\nNote:",length(x$negMthC),"eta parameters has been set to zero in the Mth Chao model")
+        
+        if (!x$converge[1]) cat("\nThe M0 model did not converge")
+        if (!x$converge[2]) cat("\nThe Mt model did not converge")
+        if (!x$converge[3]) cat("\nThe Mh Chao model did not converge")
+        if (!x$converge[4]) cat("\nThe Mh Poisson2 model did not converge")
+        if (!x$converge[5]) cat("\nThe Mh Darroch model did not converge")
+        if (!x$converge[6]) cat("\nThe Mth Chao model did not converge")
+        if (!x$converge[7]) cat("\nThe Mth Poisson2 model did not converge")
+        if (!x$converge[8]) cat("\nThe Mth Darroch model did not converge")
+        if (!x$converge[9]) cat("\nThe Mb model did not converge")
+        if (!x$converge[10]) cat("\nThe Mbh model did not converge")
+        
+        if (length(x$negMhC)==1) cat("\nNote:",length(x$negMhC),"eta parameter has been set to zero in the Mh Chao model")
+        if (length(x$negMhC)>1) cat("\nNote:",length(x$negMhC),"eta parameters has been set to zero in the Mh Chao model")
+        if (length(x$negMthC)==1) cat("\nNote:",length(x$negMthC),"eta parameter has been set to zero in the Mth Chao model")
+        if (length(x$negMthC)>1) cat("\nNote:",length(x$negMthC),"eta parameters has been set to zero in the Mth Chao model")
         cat("\n\n")
         invisible(x)
 }
@@ -340,5 +357,5 @@ boxplot.closedp <- function(x, ...){
                 (x$glmMhP$y-fitted(x$glmMhP))/sqrt(fitted(x$glmMhP)),(x$glmMhD$y-fitted(x$glmMhD))/sqrt(fitted(x$glmMhD)),(x$glmMthC$y-fitted(x$glmMthC))/sqrt(fitted(x$glmMthC)),
                 (x$glmMthP$y-fitted(x$glmMthP))/sqrt(fitted(x$glmMthP)),(x$glmMthD$y-fitted(x$glmMthD))/sqrt(fitted(x$glmMthD)),(x$glmMb$y-fitted(x$glmMb))/sqrt(fitted(x$glmMb)),
                 (x$glmMbh$y-fitted(x$glmMbh))/sqrt(fitted(x$glmMbh)),names=c("M0","Mt","MhC","MhP","MhD","MthC","MthP","MthD","Mb","Mbh"),main="Boxplots of Pearson Residuals")
-				abline(h=0,lty=3)
+                abline(h=0,lty=3)
 }

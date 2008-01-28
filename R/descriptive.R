@@ -1,14 +1,14 @@
 "descriptive" <- function(X,dfreq=FALSE)
 {
 
-        X<-as.matrix(X)
-        t <- ifelse(dfreq,dim(X)[2]-1,dim(X)[2])
-
     #####################################################################################################################################
     # Validation des arguments fournis en entrée
     
     # Argument dfreq
-    if(!is.logical(dfreq)||!isTRUE(all.equal(length(dfreq),1))) stop("'dfreq' must be a logical object of length 1")
+    if(!is.logical(dfreq)||length(dfreq)!=1) stop("'dfreq' must be a logical object of length 1")
+
+        X <- as.matrix(X)
+        t <- if(dfreq) dim(X)[2]-1 else dim(X)[2]
     
     # Argument X
     if (dfreq)
@@ -16,7 +16,7 @@
         if (any(X[,1:t]!=1&X[,1:t]!=0)) stop("Every columns of 'X' but the last one must contain only zeros and ones")
         if (any((X[,t+1]%%1)!=0)) stop("The last column of 'X' must contain capture histories frequencies, therefore integers")
     } else {
-        if(any(X!=1&X!=0)) stop("'X' must contain only zeros and ones")
+        if (any(X!=1&X!=0)) stop("'X' must contain only zeros and ones")
     }
     
     #####################################################################################################################################
@@ -28,8 +28,8 @@
         nbrecapt <- rep(0,t)
         for (i in (1: dim(X[,1:t])[1]))
         {
-                v <- sum(X[i,1:t])
-                nbrecapt[v] <- nbrecapt[v] + ifelse(dfreq,X[i,t+1],1)
+                v <- sum(na.rm=TRUE,X[i,1:t])
+                nbrecapt[v] <- nbrecapt[v] + if(dfreq) X[i,t+1] else 1
         }
 
         # Nombre d'individus capturés pour la première fois à l'occasion i
@@ -38,12 +38,12 @@
         {
                 k <- 0
                 j <- 1
-                while(isTRUE(all.equal(k,0))&&isTRUE(j<=t))
+                while(k==0&&j<=t)
                 {
-                        if (isTRUE(all.equal(X[i,j],1)))
+                        if (X[i,j]==1)
                         {
                                 k<-1
-                                premcapt[j]<- premcapt[j]+ifelse(dfreq,X[i,t+1],1)
+                                premcapt[j]<- premcapt[j] + if(dfreq) X[i,t+1] else 1
                         } else
                         {
                                 j<-j+1
@@ -58,12 +58,12 @@
         {
                 k <- 0
                 j <- t
-                while(isTRUE(all.equal(k,0))&&isTRUE(j>=1))
+                while(k==0&&j>=1)
                 {
-                        if (isTRUE(all.equal(X[i,j],1)))
+                        if (X[i,j]==1)
                         {
                                 k<-1
-                                derncapt[j]<- derncapt[j]+ifelse(dfreq,X[i,t+1],1)
+                                derncapt[j]<- derncapt[j] + if(dfreq) X[i,t+1] else 1
                         } else
                         {
                                 j<-j-1
@@ -76,7 +76,7 @@
         if (dfreq)
         {
             captoccas <- rep(0,t)
-            for (i in 1:t) { captoccas[i] <- sum(X[X[,i]==1,t+1]) }
+            for (i in 1:t) { captoccas[i] <- sum(na.rm=TRUE,X[X[,i]==1,t+1]) }
         } else captoccas <- apply(X,2,sum)
         
         tableau<-cbind(nbrecapt,premcapt,derncapt,captoccas)
@@ -86,7 +86,7 @@
 
 
         # le nombre d unites etudiees dans cette matrice
-        nbre <- sum(tableau[,1])
+        nbre <- sum(na.rm=TRUE,tableau[,1])
 
 
 # Matrice de recapture générée mais pas dans le print
@@ -97,10 +97,10 @@
                 Xsous<-matrix(X[X[,i]==1,],ncol=dim(X)[2])
                 for(j in (i+1):t)
                 {
-                        recap[i,j-1]<-ifelse(dfreq,sum(Xsous[Xsous[,j]==1,t+1]),sum(Xsous[,j]))
+                        recap[i,j-1] <- if(dfreq) sum(na.rm=TRUE,Xsous[Xsous[,j]==1,t+1]) else sum(na.rm=TRUE,Xsous[,j])
                         Xsous<-matrix(Xsous[Xsous[,j]!=1,],ncol=dim(X)[2])
                 }
-                recap[i,t]<-ifelse(dfreq,sum(Xsous[,t+1]),dim(Xsous)[1])
+                recap[i,t] <- if(dfreq) sum(na.rm=TRUE,Xsous[,t+1]) else dim(Xsous)[1]
         }
         recap[t,t]<-captoccas[t]
 

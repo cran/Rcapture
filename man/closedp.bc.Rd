@@ -24,11 +24,12 @@ The bias correction is done through frequency modifications as described in Rive
 \item{results}{ A table containing, for each model, the corrected population size estimation and its standard error.}
 }
 \references{ 
-Baillargeon, S. and Rivest, L.P. (2007). The Rcapture package: Loglinear models for capture-recapture in R. \emph{Journal of Statistical Software}, to appear (available online at \url{http://www.jstatsoft.org/}).
+Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
 
 Rivest, L.P. and Levesque, T. (2001). Improved log-linear model estimators of abundance in capture-recapture experiments. \emph{Canadian Journal of Statistics}, \bold{29}, 555--572.
 }
-\author{Sophie Baillargeon \email{sbaillar@mat.ulaval.ca} and Louis-Paul Rivest \email{lpr@mat.ulaval.ca} }
+\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
+Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
 \note{ This function uses the \code{glm} function of the \code{stats} package. }
 \seealso{\code{\link{closedp}} }
 \examples{

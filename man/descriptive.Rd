@@ -39,13 +39,14 @@ descriptive(X, dfreq=FALSE)
     }
 }
 \references{ 
-Baillargeon, S. and Rivest, L.P. (2007). The Rcapture package: Loglinear models for capture-recapture in R. \emph{Journal of Statistical Software}, to appear (available online at \url{http://www.jstatsoft.org/}).
+Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
 
 Lindsay, B. G. (1986) Exponential family mixture models (with least-squares estimators).  \emph{ Annals of Statistics}, 14, 124-137.
 
-Rivest, L.P. (2007). Why a time effect has a limited impact on capture-recapture estimates in closed populations. \emph{The Canadian Journal of Statistics}, under revision.
+Rivest, L.P. (2008). Why a time effect often has a limited impact on capture-recapture estimates in closed populations. \emph{Canadian Journal of Statistics}, \bold{36}(1), to be published. 
 }
-\author{Sophie Baillargeon \email{sbaillar@mat.ulaval.ca} and Louis-Paul Rivest \email{lpr@mat.ulaval.ca} }
+\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
+Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
 \examples{
 data(hare)
 desc<-descriptive(hare)

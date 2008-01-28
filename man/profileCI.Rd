@@ -35,11 +35,12 @@ It also produces the following objects :
 \item{alpha}{ 1-the confidence level of the interval.}
 }
 \references{ 
-Baillargeon, S. and Rivest, L.P. (2007). The Rcapture package: Loglinear models for capture-recapture in R. \emph{Journal of Statistical Software}, to appear (available online at \url{http://www.jstatsoft.org/}).
+Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
 
 Cormack, R. M. 1992. Interval estimation for mark-recapture studies of closed populations. \emph{Biometrics}, \bold{48}, 567--576.
 }
-\author{Sophie Baillargeon \email{sbaillar@mat.ulaval.ca} and Louis-Paul Rivest \email{lpr@mat.ulaval.ca} }
+\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
+Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
 \seealso{\code{\link{closedp}}, \code{\link{closedp.mX}}, \code{\link{closedp.h}} }
 \examples{
 data(hare)

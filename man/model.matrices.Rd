@@ -48,7 +48,8 @@ within each primary period.}
 \references{ 
 Rivest, L.P. and Daigle, G. (2004) Loglinear models for the robust design in mark-recapture experiments. \emph{Biometrics}, \bold{60}, 100-107.
 }
-\author{Sophie Baillargeon \email{sbaillar@mat.ulaval.ca} and Louis-Paul Rivest \email{lpr@mat.ulaval.ca} }
+\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
+Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
 \note{
 The \code{Zdelta} function is called by \code{\link{openp}}, \code{\link{robustd.t}}, \code{\link{robustd.0}}.
 

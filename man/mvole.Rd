@@ -8,12 +8,12 @@
 \usage{data(mvole)}
 \format{
   \describe{
-    \item{\code{c11}, \code{c12}, \code{c13}, \code{c14}, \code{c15}}{Capture histories for the five capture occasions within primary period 1}
-    \item{\code{c21}, \code{c22}, \code{c23}, \code{c24}, \code{c25}}{Capture histories for the five capture occasions within primary period 2}
-    \item{\code{c31}, \code{c32}, \code{c33}, \code{c34}, \code{c35}}{Capture histories for the five capture occasions within primary period 3}
-    \item{\code{c41}, \code{c42}, \code{c43}, \code{c44}, \code{c45}}{Capture histories for the five capture occasions within primary period 4}
-    \item{\code{c51}, \code{c52}, \code{c53}, \code{c54}, \code{c55}}{Capture histories for the five capture occasions within primary period 5}
-    \item{\code{c61}, \code{c62}, \code{c63}, \code{c64}, \code{c65}}{Capture histories for the five capture occasions within primary period 6}
+    \item{\code{c11}, \code{c12}, \code{c13}, \code{c14}, \code{c15}}{Capture histories for the 5 capture occasions within primary period 1}
+    \item{\code{c21}, \code{c22}, \code{c23}, \code{c24}, \code{c25}}{Capture histories for the 5 capture occasions within primary period 2}
+    \item{\code{c31}, \code{c32}, \code{c33}, \code{c34}, \code{c35}}{Capture histories for the 5 capture occasions within primary period 3}
+    \item{\code{c41}, \code{c42}, \code{c43}, \code{c44}, \code{c45}}{Capture histories for the 5 capture occasions within primary period 4}
+    \item{\code{c51}, \code{c52}, \code{c53}, \code{c54}, \code{c55}}{Capture histories for the 5 capture occasions within primary period 5}
+    \item{\code{c61}, \code{c62}, \code{c63}, \code{c64}, \code{c65}}{Capture histories for the 5 capture occasions within primary period 6}
   }
 }
 \details{
@@ -28,7 +28,7 @@
 Williams, B.K., Nichols, J.D., and Conroy, M.J. (2002) \emph{Analysis and Management of Animal Populations}, Academic Press: San Diego.
 }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007). The Rcapture package: Loglinear models for capture-recapture in R. \emph{Journal of Statistical Software}, to appear (available online at \url{http://www.jstatsoft.org/}).
+Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
 }
 \examples{
   # First, a between primary period Jolly-Seber analysis is obtained.
@@ -50,6 +50,7 @@ op.m2$model.fit
   # In a robust design, we use Mh models for all primary periods bearing in
   # mind the questionable fit in the second one. Since there is no time effect 
   # within primary periods, we use the function robustd.0 to fit the model.
+  ### The following command might take a few minutes to run.
 rd.m1<-robustd.0(mvole[,-10], vt=c(5,4,rep(5,4)),vm="Mh",vh="Chao")
 rd.m1$model.fit
 rd.m1$emig.fit
@@ -64,6 +65,7 @@ rd.m1$emig.param
 
   # The following command allows to fit a robust design that does not specify 
   # any model for the second period.
+  ### The following command might take a few minutes to run.
 rd.m3<-robustd.0(mvole[,-10], vt=c(5,4,rep(5,4)),vm=c("Mh","none","Mh","Mh",
                  "Mh","Mh"),vh="Chao")
 

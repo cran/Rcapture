@@ -21,7 +21,7 @@
 Abeni, D.A., Brancato, G. and Perucci, C. A. (1994) Capture-recapture to estimate the size of the population with human immunodeficiency virus type 1 infection.  \emph{Epidemiology}, 5, 410--414
 }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007). The Rcapture package: Loglinear models for capture-recapture in R. \emph{Journal of Statistical Software}, to appear (available online at \url{http://www.jstatsoft.org/}).
+Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
 }
 \examples{
 data(HIV)

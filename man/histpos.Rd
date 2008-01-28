@@ -21,9 +21,10 @@ histpos.0(vt)
 \code{histpos.0} gives a \eqn{(t_1+1)\times(t_2+1)\times \ldots \times(t_I+1)-1}{(t1+1)*(t2+1)* \ldots *(tI+1)-1} by  \eqn{I} matrix with rows representing possible capture histories in terms of number of captures. This matrix elements are integers between 0 and \eqn{t_i}{ti} inclusively. 
 }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007). The Rcapture package: Loglinear models for capture-recapture in R. \emph{Journal of Statistical Software}, to appear (available online at \url{http://www.jstatsoft.org/}).
+Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
 }
-\author{Sophie Baillargeon \email{sbaillar@mat.ulaval.ca} and Louis-Paul Rivest \email{lpr@mat.ulaval.ca} }
+\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
+Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
 \note{ 
 The \code{histpos.t} function is called by \code{\link{descriptive}}, \code{\link{closedp}}, \code{\link{closedp.bc}}, \code{\link{closedp.Mtb}}, \code{\link{closedp.h}}, \code{\link{openp}}, \code{\link{Xomega.t}}, \code{\link{Xclosedp}}.
 

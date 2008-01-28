@@ -58,7 +58,7 @@ For Darroch's models, the column for heterogeneity in the design matrix is defin
 \references{ 
 Agresti, A. (1994). Simple capture-recapture models permitting unequal catchability and variable sampling effort. \emph{Biometrics}, 50, 494--500.
 
-Baillargeon, S. and Rivest, L.P. (2007). The Rcapture package: Loglinear models for capture-recapture in R. \emph{Journal of Statistical Software}, to appear (available online at \url{http://www.jstatsoft.org/}).
+Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
 
 Chao, A. (1987). Estimating the population size for capture-recapture data with unequal catchabililty.  \emph{ Biometrics}, 45, 427--438
 
@@ -66,9 +66,10 @@ Darroch, S.E.,  Fienberg, G.,  Glonek, B. and Junker, B. (1993). A three sample 
 
 Rivest, L.P. and Levesque, T. (2001) Improved log-linear model estimators of abundance in capture-recapture experiments. \emph{Canadian Journal of Statistics}, 29, 555--572.
 
-Rivest, L.P. and Baillargeon, S. (2007). Applications and extensions of Chao moment estimator for the size of a closed population. \emph{Biometrics}, to appear.
+Rivest, L.P. and Baillargeon, S. (2007). Applications and extensions of Chao's moment estimator for the size of a closed population. \emph{Biometrics}, \bold{63}(4), 999--1006.
 }
-\author{Sophie Baillargeon \email{sbaillar@mat.ulaval.ca} and Louis-Paul Rivest \email{lpr@mat.ulaval.ca} }
+\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
+Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
 \note{ This function uses the \code{glm} function of the \code{stats} package. }
 \seealso{\code{\link{uifit}}, \code{\link{closedp.bc}}, \code{\link{closedp.Mtb}}, \code{\link{closedp.mX}}, \code{\link{closedp.h}}}
 \examples{

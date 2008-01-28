@@ -1,16 +1,16 @@
 "openp" <- function(X,dfreq=FALSE,m="up",neg=TRUE,keep=rep(TRUE,2^I-1))
 {
 
-        X <- as.matrix(X)
-        I <- ifelse(dfreq,dim(X)[2]-1,dim(X)[2])  # calcul du nombre de periodes
-
 ############################################################################################################################################
 # Validation des arguments fournis en entrée
 ############################################################################################################################################
 
         # Argument dfreq
-        if(!is.logical(dfreq)||!isTRUE(all.equal(length(dfreq),1))) stop("'dfreq' must be a logical object of length 1")
+        if(!is.logical(dfreq)||length(dfreq)!=1) stop("'dfreq' must be a logical object of length 1")
     
+            X <- as.matrix(X)
+            I <- if(dfreq) dim(X)[2]-1 else dim(X)[2]  # calcul du nombre de periodes
+
         # Argument X
         if (dfreq)
         {
@@ -21,14 +21,14 @@
         }
         
         # Argument m
-        if(!isTRUE(all.equal(length(m),1))) stop("'m' must be a character string of length 1")
-        if(!identical(m,"up")&&!identical(m,"ep")) stop("'m' can only take the values 'up' and 'ep'")
+        if(length(m)!=1) stop("'m' must be a character string of length 1")
+        if(m!="up"&&m!="ep") stop("'m' can only take the values 'up' and 'ep'")
     
         # Argument neg
-        if(!is.logical(neg)||!isTRUE(all.equal(length(neg),1))) stop("'neg' must be a logical object of length 1")
+        if(!is.logical(neg)||length(neg)!=1) stop("'neg' must be a logical object of length 1")
     
         # Argument keep
-        if(!isTRUE(all.equal(2^I-1,length(keep)))||!is.logical(keep)) stop("'keep' must be a logical vector of length 2^I-1")
+        if(length(keep)!=2^I-1||!is.logical(keep)) stop("'keep' must be a logical vector of length 2^I-1")
 
 
 ############################################################################################################################################
@@ -41,11 +41,11 @@
 
         Ycomplete <- histfreq.t(X,dfreq=dfreq)   # construction du vecteur nu delta des frequences de captures par periodes
         Y <- Ycomplete
-        Y[!keep] <- rep(NA,sum(!keep))
+        Y[!keep] <- rep(NA,sum(na.rm=TRUE,!keep))
 
         gammanames <- rep(0,2*I-2)
         for (i in 1:(2*I-2)){gammanames[i]<-paste("gamma",i,sep="")}
-        if (identical(m,"up")) {
+        if (m=="up") {
             betanames <- rep(0,I-2)
             for (i in 2:(I-1)){betanames[i-1]<-paste("beta",i,sep="")}
         } else betanames <- "beta"
@@ -53,7 +53,7 @@
         histpos <- histpos.t(I)
         Zd <- Zdelta(histpos)      # construction de la matrice Zdelta, premiere composante du modele
         colnames(Zd) <- gammanames
-        Xd <- if (identical(m,"up")) matrix(histpos[,-c(1,I)],nrow=length(Y)) else matrix(rowSums(histpos),ncol=1)    # on supprime la premiere et dernier colonne de histpos pour des raisons d estimation des parametres
+        Xd <- if (m=="up") matrix(histpos[,-c(1,I)],nrow=length(Y)) else matrix(rowSums(histpos),ncol=1)    # on supprime la premiere et dernier colonne de histpos pour des raisons d estimation des parametres
         colnames(Xd) <- betanames
         mX. <- cbind(Zd,Xd)      # on fusionne ces 2 composantes explicatives
 
@@ -77,30 +77,30 @@
 
         param<-anaMpo$coef
         ppositions <- 0
-        test <- if(identical(m,"up")) neg&&isTRUE(I>2) else neg  
+        test <- if(m=="up") neg&&I>2 else neg  
         if (test)
         {
             # Vecteur d'indicatrices pour les paramètres d'intérêt négatifs
-            if (identical(m,"up")) {
-                indic <- if(isTRUE(all.equal(I,3))) as.vector(c(rep(0,4),ifelse(param[5]<0,1,0),rep(0,I-2))) else as.vector(c(0,0,ifelse(param[3:(I-1)]<0,1,0),0,0,ifelse(param[(I+2):(2*I-1)]<0,1,0),rep(0,I-2)))
+            if (m=="up") {
+                indic <- if(I==3) as.vector(c(rep(0,4),ifelse(param[5]<0,1,0),rep(0,I-2))) else as.vector(c(0,0,ifelse(param[3:(I-1)]<0,1,0),0,0,ifelse(param[(I+2):(2*I-1)]<0,1,0),rep(0,I-2)))
             } else indic <- as.vector(c(0,ifelse(param[2:(2*I-1)]<0,1,0),0))
-            while(isTRUE(sum(indic)>0)) # Répéter la boucle jusqu'à ce qu'aucun gamma approprié ne soit négatif
+            while(sum(na.rm=TRUE,indic)>0) # Répéter la boucle jusqu'à ce qu'aucun gamma approprié ne soit négatif
             {
                 # Détermination de la position du premier gamma approprié négatif
                 pos <- 1
-                while(isTRUE(all.equal(indic[pos],0))) pos <- pos + 1
+                while(indic[pos]==0) pos <- pos + 1
                 ppositions <- c(ppositions,pos)
                 # Retrait de la bonne colonne de mX. et réajustement du modèle
-                mX. <- mX.[,-(pos-sum(ppositions<pos))]
+                mX. <- mX.[,-(pos-sum(na.rm=TRUE,ppositions<pos))]
                 anaMpo <- glm(Y~mX.,family=poisson,na.action=na.omit)        
                 # Ajout de zéros dans le vecteur des paramètres loglinéaires
                 positions <- sort(ppositions[-1])                
                 param <- c(anaMpo$coef[1:(positions[1]-1)],0)
-                if(isTRUE(length(positions)>1))
+                if(length(positions)>1)
                 {
                     for ( i in 2:length(positions))
                     {
-                        if(isTRUE(all.equal(positions[i],positions[i-1]+1))) {
+                        if(positions[i]==positions[i-1]+1) {
                             param <- c(param,0)
                         } else {
                             param <- c(param,anaMpo$coef[(positions[i-1]-i+2):(positions[i]-i)],0)
@@ -109,8 +109,8 @@
                 }
                 param <- c(param,anaMpo$coef[(positions[length(positions)]-length(positions)+1):length(anaMpo$coef)])
                 # Vecteur d'indicatrices pour les paramètres d'intérêt négatifs
-                if (identical(m,"up")) {
-                    indic <- if(isTRUE(all.equal(I,3))) as.vector(c(rep(0,4),ifelse(param[5]<0,1,0),rep(0,I-2))) else as.vector(c(0,0,ifelse(param[3:(I-1)]<0,1,0),0,0,ifelse(param[(I+2):(2*I-1)]<0,1,0),rep(0,I-2)))
+                if (m=="up") {
+                    indic <- if(I==3) as.vector(c(rep(0,4),ifelse(param[5]<0,1,0),rep(0,I-2))) else as.vector(c(0,0,ifelse(param[3:(I-1)]<0,1,0),0,0,ifelse(param[(I+2):(2*I-1)]<0,1,0),rep(0,I-2)))
                 } else indic <- as.vector(c(0,ifelse(param[2:(2*I-1)]<0,1,0),0))
             }
         }
@@ -122,7 +122,7 @@
 #------------------------------------------------------#
 
         # Effet de trappe homogène
-        if(isTRUE(all.equal(I,2)))
+        if(I==2)
         {
             anaMpo2 <- NULL
             parap2 <- NULL
@@ -131,7 +131,7 @@
             mX2. <- cbind(mX.,trap)
             anaMpo2 <- glm(Y~mX2.,family=poisson,na.action=na.omit)
             parap2<-summary(anaMpo2)$coef[substr(rownames(summary(anaMpo2)$coef),5,8)=="trap",1:2]
-            if (isTRUE(all.equal(length(parap2),0)))
+            if (length(parap2)==0)
             {
                 anaMpo2 <- NULL
                 parap2 <- NULL
@@ -140,9 +140,9 @@
 
 
         # Effet de trappe hétérogène
-        if (identical(m,"up"))
+        if (m=="up")
         {
-            if(isTRUE(all.equal(I,2))||isTRUE(all.equal(I,3))||isTRUE(all.equal(I,4)))
+            if(I==2||I==3||I==4)
             {   
                 anaMpo3 <- NULL
                 parap3 <- NULL
@@ -154,7 +154,7 @@
                 mX3.<- cbind(mX.,trap[,-c(1,I-1)])
                 anaMpo3 <- glm(Y~mX3.,family=poisson,na.action=na.omit)
                 parap3<-summary(anaMpo3)$coef[substr(rownames(summary(anaMpo3)$coef),5,8)=="trap",1:2]
-                if (isTRUE(all.equal(length(parap3),0)))
+                if (length(parap3)==0)
                 {
                     anaMpo3 <- NULL
                     parap3 <- NULL
@@ -183,7 +183,7 @@
         }
 
 
-        if (identical(m,"up"))
+        if (m=="up")
         {
             Beta <- rep(0,I-2)
             for (i in 1:(I-2))
@@ -196,13 +196,13 @@
         # Vérification de la présence de paramètres gamma négatifs si l'option "neg"=FALSE
         if(!neg)
         {
-            if (identical(m,"ep")&&any(Alpha<0)) warning(paste("One or more gamma parameters are negative.","\n",
+            if (m=="ep"&&any(Alpha<0)) warning(paste("One or more gamma parameters are negative.","\n",
                         "You can set them to zero with the 'neg' option.","\n",sep=""))
 
-            if (identical(m,"up")&&isTRUE(I>3)&&any(param[c(3:(I-1),(I+2):(2*I-1))]<0)) warning(paste("One or more relevant gamma parameters are negative.","\n",
+            if (m=="up"&&I>3&&any(param[c(3:(I-1),(I+2):(2*I-1))]<0)) warning(paste("One or more relevant gamma parameters are negative.","\n",
                                             "You can set them to zero with the 'neg' option.","\n",sep=""))
 
-            if (identical(m,"up")&&isTRUE(all.equal(I,3))&&isTRUE(param[5]<0)) warning(paste("One relevant gamma parameter is negative.","\n",
+            if (m=="up"&&I==3&&param[5]<0) warning(paste("One relevant gamma parameter is negative.","\n",
                                             "You can set it to zero with the 'neg' option.","\n",sep=""))
         }
 
@@ -215,10 +215,10 @@
         NAindic <- as.vector(is.na(param))
         NApos <- 0
         pos <- 1
-        while(isTRUE(pos<=length(param)))
+        while(pos<=length(param))
         {
-            while(!NAindic[pos]&&isTRUE(pos<=length(param))) pos <- pos + 1
-            if(isTRUE(pos<=length(param))) NApos <- c(NApos,pos)
+            while(!NAindic[pos]&&pos<=length(param)) pos <- pos + 1
+            if(pos<=length(param)) NApos <- c(NApos,pos)
             pos <- pos + 1
         }
         NApos <- NApos[-1]       
@@ -226,36 +226,36 @@
         
         # Pour insérer des lignes et colonnes de zéros pour les paramètres fixés à zéro et pour les paramètres non estimables
         covpos <- sort(c(positions,NApos))
-        if(isTRUE(length(covpos)>0))
+        if(length(covpos)>0)
         {
             # Insertion de colonnes de zéros
-            varcovc <-  if(isTRUE(all.equal(covpos[1],1))) rep(0,dim(summary(anaMpo)$cov.unscaled)[1]) else cbind(summary(anaMpo)$cov.unscaled[,1:(covpos[1]-1)],rep(0,dim(summary(anaMpo)$cov.unscaled)[1]))
-            if(isTRUE(length(covpos)>1))
+            varcovc <-  if(covpos[1]==1) rep(0,dim(summary(anaMpo)$cov.unscaled)[1]) else cbind(summary(anaMpo)$cov.unscaled[,1:(covpos[1]-1)],rep(0,dim(summary(anaMpo)$cov.unscaled)[1]))
+            if(length(covpos)>1)
             {
                 for ( i in 2:length(covpos))
                 {
-                    if(isTRUE(all.equal(covpos[i],covpos[i-1]+1))) {
+                    if(covpos[i]==covpos[i-1]+1) {
                         varcovc <- cbind(varcovc,rep(0,dim(summary(anaMpo)$cov.unscaled)[1]))
                     } else {
                         varcovc <- cbind(varcovc,summary(anaMpo)$cov.unscaled[,(covpos[i-1]-i+2):(covpos[i]-i)],rep(0,dim(summary(anaMpo)$cov.unscaled)[1]))
                     }
                 }
             }
-            if(isTRUE(covpos[length(covpos)]<length(param))) varcovc <- cbind(varcovc,summary(anaMpo)$cov.unscaled[,(covpos[length(covpos)]-length(covpos)+1):dim(summary(anaMpo)$cov.unscaled)[2]])
+            if(covpos[length(covpos)]<length(param)) varcovc <- cbind(varcovc,summary(anaMpo)$cov.unscaled[,(covpos[length(covpos)]-length(covpos)+1):dim(summary(anaMpo)$cov.unscaled)[2]])
             # Insertion de lignes de zéros
-            varcov <- if(isTRUE(all.equal(covpos[1],1))) rep(0,dim(varcovc)[2]) else rbind(varcovc[1:(covpos[1]-1),],rep(0,dim(varcovc)[2]))
-            if(isTRUE(length(covpos)>1))
+            varcov <- if(covpos[1]==1) rep(0,dim(varcovc)[2]) else rbind(varcovc[1:(covpos[1]-1),],rep(0,dim(varcovc)[2]))
+            if(length(covpos)>1)
             {
                 for ( i in 2:length(covpos))
                 {
-                    if(isTRUE(all.equal(covpos[i],covpos[i-1]+1))) {
+                    if(covpos[i]==covpos[i-1]+1) {
                         varcov <- rbind(varcov,rep(0,dim(varcovc)[2]))
                     } else {
                         varcov <- rbind(varcov,varcovc[(covpos[i-1]-i+2):(covpos[i]-i),],rep(0,dim(varcovc)[2]))
                     }
                 }
             }
-            if(isTRUE(covpos[length(covpos)]<length(param))) varcov <- rbind(varcov,varcovc[(covpos[length(covpos)]-length(covpos)+1):dim(varcovc)[1],]) 
+            if(covpos[length(covpos)]<length(param)) varcov <- rbind(varcov,varcovc[(covpos[length(covpos)]-length(covpos)+1):dim(varcovc)[1],]) 
         } else { varcov <- summary(anaMpo)$cov.unscaled }
         
 
@@ -268,13 +268,13 @@
 # calcul des probabilites de capture (pstar) #
 #--------------------------------------------#
 
-        if (identical(m,"up"))
+        if (m=="up")
         {
             pstar <- rep(0,I)
             dpstar<-matrix(rep(0,I*length(param)),ncol=I)
             pstar[1] <- 0.5
             pstar[I] <- 0.5  
-            if(isTRUE(I>2))
+            if(I>2)
             {
                 for (i in (2:(I-1)))
                 {
@@ -343,17 +343,17 @@
 #--------------------------------------------------------------#
 
         phi <- rep(0,(I-1))
-        dphi<-matrix(rep(0,(I-1)*length(param)),ncol=(I-1))
+        dphi <- matrix(rep(0,(I-1)*length(param)),ncol=(I-1))
         
         phi[(I-1):1] <-1/(1+uv[2:I]/cumsum(uv[1:(I-1)]))   
         
         for ( i in 1:(I-1))
         {
-            if(isTRUE(all.equal(i,I-1)))
+            if(i==I-1)
             {
                 dphi[,i] <- -(phi[i]^2)*duv[,I-i+1]
             } else {
-                dphi[,i] <- -(phi[i]^2)*(duv[,I-i+1]*sum(uv[1:(I-i)])-uv[I-i+1]*rowSums(duv[,1:(I-i)]))/sum(uv[1:(I-i)])^2
+                dphi[,i] <- -(phi[i]^2)*(duv[,I-i+1]*sum(na.rm=TRUE,uv[1:(I-i)])-uv[I-i+1]*rowSums(duv[,1:(I-i)]))/sum(na.rm=TRUE,uv[1:(I-i)])^2
             }
         }
         varcovphi <- t(dphi)%*%varcov%*%dphi
@@ -383,10 +383,10 @@
         Npop[2:I]<-Npop[1]*cumprod((vv[2:I]/cumsum(vv[1:(I-1)])+1)*phi)
         for (i in 2:I)
         {
-            if(isTRUE(all.equal(i,2))) {
+            if(i==2) {
                 dNpop[,i] <- phi[i-1]*(vv[i]+1)*dNpop[,i-1] + Npop[i-1]*(vv[i]+1)*dphi[,i-1] + Npop[i-1]*phi[i-1]*dvv[,i]          
             } else {
-                dNpop[,i] <- phi[i-1]*(vv[i]/sum(vv[1:(i-1)])+1)*dNpop[,i-1] + Npop[i-1]*(vv[i]/sum(vv[1:(i-1)])+1)*dphi[,i-1] + Npop[i-1]*phi[i-1]*(sum(vv[1:(i-1)])*dvv[,i]-vv[i]*rowSums(dvv[,1:(i-1)]))/sum(vv[1:(i-1)])^2
+                dNpop[,i] <- phi[i-1]*(vv[i]/sum(na.rm=TRUE,vv[1:(i-1)])+1)*dNpop[,i-1] + Npop[i-1]*(vv[i]/sum(na.rm=TRUE,vv[1:(i-1)])+1)*dphi[,i-1] + Npop[i-1]*phi[i-1]*(sum(na.rm=TRUE,vv[1:(i-1)])*dvv[,i]-vv[i]*rowSums(dvv[,1:(i-1)]))/sum(na.rm=TRUE,vv[1:(i-1)])^2
             }
         }
         varcovtpop <- t(dNpop)%*%varcov%*%dNpop
@@ -395,7 +395,7 @@
 
         # Correction si certains historiques ont été enlevés (avec l'option keep)
         options(warn=-1)
-        corrkeep <- sum(Ycomplete[!keep]-predict(anaMpo,newdata=data.frame(mX.),type="response")[!keep])
+        corrkeep <- sum(na.rm=TRUE,Ycomplete[!keep]-predict(anaMpo,newdata=data.frame(mX.),type="response")[!keep])
         options(warn=0)
         Npop <- Npop + corrkeep
 
@@ -414,19 +414,19 @@
 # Calcul du nombre total d'individus qui ont passé sur le territoire #
 #--------------------------------------------------------------------#
 
-        if (identical(m,"up"))
+        if (m=="up")
         {
             #Programme pour former la matrice X avec des colonnes de zéros pour les paramètres fixés à zéro
             Xtemp<-cbind(rep(1,dim(mX.)[1]),mX.)        
-            if(isTRUE(length(positions)>0))
+            if(length(positions)>0)
             {
                 # Insertion de colonnes de zéros
                 X <- cbind(Xtemp[,1:(positions[1]-1)],rep(0,dim(Xtemp)[1]))
-                if(isTRUE(length(positions)>1))
+                if(length(positions)>1)
                 {
                     for ( i in 2:length(positions))
                     {
-                        if(isTRUE(all.equal(positions[i],positions[i-1]+1)))
+                        if(positions[i]==positions[i-1]+1)
                         {
                             X <- cbind(X,rep(0,dim(Xtemp)[1]))
                         } else {
@@ -439,37 +439,37 @@
     
     
             # Calcul du nombre total d'individus qui ont passé sur le territoire
-            if (isTRUE(all.equal(I,2)))
+            if (I==2)
             {
-                Ntot <- sum(Ycomplete)
+                Ntot <- sum(na.rm=TRUE,Ycomplete)
                 dNtot <- t(X)%*%exp(X%*%param)
-            } else if (isTRUE(all.equal(I,3)))
+            } else if (I==3)
                 {
-                    Ntot <- sum(Ycomplete) + exp(interc+Alpha[1]+Alpha[3])-exp(interc+Alpha[1])
+                    Ntot <- sum(na.rm=TRUE,Ycomplete) + exp(interc+Alpha[1]+Alpha[3])-exp(interc+Alpha[1])
                     dNtot <- t(X)%*%exp(X%*%param) + exp(interc+Alpha[1]+Alpha[3])*c(1,1,0,1,rep(0,2)) - exp(interc+Alpha[1])*c(1,1,rep(0,4))
-                } else if (isTRUE(all.equal(I,4)))
+                } else if (I==4)
                     {
-                        Ntot <- sum(Ycomplete) + exp(interc+Alpha[1]+Alpha[4]+Alpha[5]) + exp(interc+Alpha[1]+Alpha[4])*(exp(Alpha[2])-1)
+                        Ntot <- sum(na.rm=TRUE,Ycomplete) + exp(interc+Alpha[1]+Alpha[4]+Alpha[5]) + exp(interc+Alpha[1]+Alpha[4])*(exp(Alpha[2])-1)
                         dNtot <- ( t(X)%*%exp(X%*%param) + exp(interc+Alpha[1]+Alpha[4]+Alpha[5])*c(1,1,0,0,1,1,rep(0,3)) 
                         + exp(interc+Alpha[1]+Alpha[2]+Alpha[4])*c(1,1,1,0,1,rep(0,4)) - exp(interc+Alpha[1]+Alpha[4])*c(1,1,0,0,1,rep(0,4)) )
                     } else {
-                        Ntot <- sum(Ycomplete) + exp(interc+Alpha[1]+sum(Alpha[I:(2*I-3)]))*(1+exp(sum(Alpha[2:(I-2)])-sum(Alpha[(I+1):(2*I-3)]))) - exp(interc+Alpha[1]+sum(Alpha[I:(2*I-4)]))
+                        Ntot <- sum(na.rm=TRUE,Ycomplete) + exp(interc+Alpha[1]+sum(na.rm=TRUE,Alpha[I:(2*I-3)]))*(1+exp(sum(na.rm=TRUE,Alpha[2:(I-2)])-sum(na.rm=TRUE,Alpha[(I+1):(2*I-3)]))) - exp(interc+Alpha[1]+sum(na.rm=TRUE,Alpha[I:(2*I-4)]))
                         dNtot <- ( t(X)%*%exp(X%*%param) 
-                        + exp(interc+Alpha[1]+sum(Alpha[I:(2*I-3)]))*exp(sum(Alpha[2:(I-2)])-sum(Alpha[(I+1):(2*I-3)]))*c(0,0,rep(1,I-3),0,0,rep(-1,I-3),rep(0,length(param)-2*I+2)) 
-                        + exp(interc+Alpha[1]+sum(Alpha[I:(2*I-3)]))*(1+exp(sum(Alpha[2:(I-2)])-sum(Alpha[(I+1):(2*I-3)])))*c(1,1,rep(0,I-2),rep(1,I-2),rep(0,length(param)-2*I+2)) 
-                        - exp(interc+Alpha[1]+sum(Alpha[I:(2*I-4)]))*c(1,1,rep(0,I-2),rep(1,I-3),rep(0,length(param)-2*I+3)) )
+                        + exp(interc+Alpha[1]+sum(na.rm=TRUE,Alpha[I:(2*I-3)]))*exp(sum(na.rm=TRUE,Alpha[2:(I-2)])-sum(na.rm=TRUE,Alpha[(I+1):(2*I-3)]))*c(0,0,rep(1,I-3),0,0,rep(-1,I-3),rep(0,length(param)-2*I+2)) 
+                        + exp(interc+Alpha[1]+sum(na.rm=TRUE,Alpha[I:(2*I-3)]))*(1+exp(sum(na.rm=TRUE,Alpha[2:(I-2)])-sum(na.rm=TRUE,Alpha[(I+1):(2*I-3)])))*c(1,1,rep(0,I-2),rep(1,I-2),rep(0,length(param)-2*I+2)) 
+                        - exp(interc+Alpha[1]+sum(na.rm=TRUE,Alpha[I:(2*I-4)]))*c(1,1,rep(0,I-2),rep(1,I-3),rep(0,length(param)-2*I+3)) )
                         for (i in 2:(I-3))
                         {
-                            Ntot <- Ntot + exp(interc+Alpha[1]+sum(Alpha[I:(2*I-3)]))*exp(sum(Alpha[2:i])-sum(Alpha[(2*I-1-i):(2*I-3)])) - exp(interc+Alpha[1]+sum(Alpha[I:(2*I-4)]))*exp(sum(Alpha[2:i])-sum(Alpha[(2*I-2-i):(2*I-4)]))
-                            dNtot <- ( dNtot + exp(interc+Alpha[1]+sum(Alpha[I:(2*I-3)]))*exp(sum(Alpha[2:i])-sum(Alpha[(2*I-1-i):(2*I-3)]))*
+                            Ntot <- Ntot + exp(interc+Alpha[1]+sum(na.rm=TRUE,Alpha[I:(2*I-3)]))*exp(sum(na.rm=TRUE,Alpha[2:i])-sum(na.rm=TRUE,Alpha[(2*I-1-i):(2*I-3)])) - exp(interc+Alpha[1]+sum(na.rm=TRUE,Alpha[I:(2*I-4)]))*exp(sum(na.rm=TRUE,Alpha[2:i])-sum(na.rm=TRUE,Alpha[(2*I-2-i):(2*I-4)]))
+                            dNtot <- ( dNtot + exp(interc+Alpha[1]+sum(na.rm=TRUE,Alpha[I:(2*I-3)]))*exp(sum(na.rm=TRUE,Alpha[2:i])-sum(na.rm=TRUE,Alpha[(2*I-1-i):(2*I-3)]))*
                             (c(1,1,rep(0,I-2),rep(1,I-2),rep(0,length(param)-2*I+2)) + c(0,0,rep(1,i-1),rep(0,2*I-2*i-2),rep(-1,i-1),rep(0,length(param)-2*I+2)))
-                            - exp(interc+Alpha[1]+sum(Alpha[I:(2*I-4)]))*exp(sum(Alpha[2:i])-sum(Alpha[(2*I-2-i):(2*I-4)]))*
+                            - exp(interc+Alpha[1]+sum(na.rm=TRUE,Alpha[I:(2*I-4)]))*exp(sum(na.rm=TRUE,Alpha[2:i])-sum(na.rm=TRUE,Alpha[(2*I-2-i):(2*I-4)]))*
                             (c(1,1,rep(0,I-2),rep(1,I-3),rep(0,length(param)-2*I+3)) + c(0,0,rep(1,i-1),rep(0,2*I-2*i-3),rep(-1,i-1),rep(0,length(param)-2*I+3))) )
                         }
                     }
             NtotStderr <- sqrt(max(t(dNtot)%*%varcov%*%dNtot-Ntot,0))
         } else {
-            Ntot <- Npop[1]+sum(B)
+            Ntot <- Npop[1]+sum(na.rm=TRUE,B)
             dNtot <- dNpop[,1] + rowSums(dB)    
             NtotStderr <- sqrt(max(t(dNtot)%*%varcov%*%dNtot-Ntot,0))
         }    
@@ -483,8 +483,8 @@
         dimnames(modelfit) <- list("fitted model",c("deviance","    df","      AIC"))
         
         trapfit <- cbind(c(anaMpo2$deviance,anaMpo3$deviance),c(anaMpo2$df.residual,anaMpo3$df.residual),c(anaMpo2$aic,anaMpo3$aic))
-        if (isTRUE(all.equal(dim(trapfit)[1],1))) { dimnames(trapfit) <- list(c("model with homogenous trap effect"),c("deviance","    df","      AIC"))
-        } else if (isTRUE(all.equal(dim(trapfit)[1],2))) { dimnames(trapfit) <- list(c("model with homogenous trap effect","model with trap effect"),c("deviance","    df","      AIC"))}    
+        if (dim(trapfit)[1]==1) { dimnames(trapfit) <- list(c("model with homogenous trap effect"),c("deviance","    df","      AIC"))
+        } else if (dim(trapfit)[1]==2) { dimnames(trapfit) <- list(c("model with homogenous trap effect","model with trap effect"),c("deviance","    df","      AIC"))}    
                  
         titre.periode<-rep(0,I)
         for (i in 1:I){titre.periode[i]<-paste("period",i)}
@@ -503,8 +503,8 @@
         uv <- cbind(uv,uvStderr)
         vv <- cbind(vv,vvStderr)
         
-        if (isTRUE(all.equal(length(parap),2))) { dimnames(parap) <- list("homogenous trap effect",c("estimate","stderr")) 
-        } else if (isTRUE(length(parap)>2)) { dimnames(parap) <- list(c(paste("period",substr(rownames(parap3),9,11)),"homogenous trap effect"),c("estimate","stderr")) }
+        if (length(parap)==2) { dimnames(parap) <- list("homogenous trap effect",c("estimate","stderr")) 
+        } else if (length(parap)>2) { dimnames(parap) <- list(c(paste("period",substr(rownames(parap3),9,11)),"homogenous trap effect"),c("estimate","stderr")) }
         dimnames(pstar)<-list(titre.periode,c("estimate","stderr"))
         dimnames(phi)<-list(titre.inter.periode,c("estimate","stderr"))
         dimnames(Npop)<-list(titre.periode,c("estimate","stderr"))
@@ -515,7 +515,7 @@
         dimnames(vv) <- list(titre.i,c("estimate","stderr"))
 
         #Paramètres non estimables
-        if (identical(m,"up"))
+        if (m=="up")
         {
             pstar[1,] <- rep(NA,2)
             pstar[I,] <- rep(NA,2)
@@ -540,10 +540,10 @@
             titre.P[3*I-1+i] <- paste("B",i)
         }
         dimnames(covP)<-list(titre.P,titre.P)
-        if (identical(m,"up")) covP <- covP[-c(1,I,2*I-1,2*I,3*I-1,3*I,4*I-2),-c(1,I,2*I-1,2*I,3*I-1,3*I,4*I-2)]
+        if (m=="up") covP <- covP[-c(1,I,2*I-1,2*I,3*I-1,3*I,4*I-2),-c(1,I,2*I-1,2*I,3*I-1,3*I,4*I-2)]
       
         
-        ans<-list(n=sum(Ycomplete),model.fit=modelfit,trap.fit=trapfit,trap.param=parap,capture.prob=pstar,survivals=phi,N=Npop,birth=B,Ntot=Ntot,
+        ans<-list(n=sum(na.rm=TRUE,Ycomplete),model.fit=modelfit,trap.fit=trapfit,trap.param=parap,capture.prob=pstar,survivals=phi,N=Npop,birth=B,Ntot=Ntot,
                   glm=anaMpo,loglin.param=loglinearpara,u.vector=uv,v.vector=vv,cov=covP, neg=positions)
         class(ans) <- "openp"
         ans
@@ -575,15 +575,15 @@ print.openp <- function(x, ...){
         x$Ntot <- round(x$Ntot,1)
         print.default(x$Ntot, print.gap = 2, quote = FALSE, right=TRUE, na.print="--")
         cat("\nTotal number of captured units:",x$n,"\n")
-        if (isTRUE(all.equal(length(x$neg[x$neg<2*dim(x$N)[1]]),1))) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameter has been set to zero")
-        if (isTRUE(length(x$neg[x$neg<2*dim(x$N)[1]])>1)) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameters has been set to zero")
+        if (length(x$neg[x$neg<2*dim(x$N)[1]])==1) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameter has been set to zero")
+        if (length(x$neg[x$neg<2*dim(x$N)[1]])>1) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameters has been set to zero")
         cat("\n\n")
         invisible(x)
 }
 
 plot.openp <- function(x, ...){
     res <- (x$glm$model[,1]- fitted.values(x$glm))/sqrt(fitted.values(x$glm))
-    if (isTRUE(all.equal(length(x$glm$na.action),0))) 
+    if (length(x$glm$na.action)==0) 
     {
         plot(apply(histpos.t(dim(x$N)[1]),1,sum),res,xlab="Frequency of capture",ylab="Pearson residuals",main="Scatterplot of Pearson Residuals")
     } else {

@@ -27,9 +27,10 @@ closedp.Mtb(X, dfreq=FALSE)
 \item{parMtb}{ Capture-recapture parameters estimates for model Mtb : the abundance N, \eqn{p_1}{p1} to \eqn{p_t}{pt}, the probabilities of first capture for each capture occasion, and \eqn{c_2}{c2} to \eqn{c_t}{ct}, the recapture probabilities for each capture occasion.} 
 }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007). The Rcapture package: Loglinear models for capture-recapture in R. \emph{Journal of Statistical Software}, to appear (available online at \url{http://www.jstatsoft.org/}).
+Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
 }
-\author{Sophie Baillargeon \email{sbaillar@mat.ulaval.ca} and Louis-Paul Rivest \email{lpr@mat.ulaval.ca} }
+\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
+Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
 \seealso{ \code{\link{closedp}}, \code{\link{closedp.mX}}, \code{\link{closedp.h}} }
 \examples{
 data(hare)

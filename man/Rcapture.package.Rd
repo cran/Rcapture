@@ -10,14 +10,15 @@
 \tabular{ll}{
 Package: \tab Rcapture\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2007-05-02\cr
+Version: \tab 1.1\cr
+Date: \tab 2008-01-28\cr
 License: \tab GPL\cr
 }
 }
-\author{Sophie Baillargeon \email{sbaillar@mat.ulaval.ca} and Louis-Paul Rivest \email{lpr@mat.ulaval.ca} }
+\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
+Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007). The Rcapture package: Loglinear models for capture-recapture in R. \emph{Journal of Statistical Software}, to appear (available online at \url{http://www.jstatsoft.org/}).
+Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
 
 Chao, A. (1987). Estimating the population size for capture-recapture data with unequal catchability. \emph{Biometrics}, \bold{43}(4), 783--791.
 
@@ -35,8 +36,8 @@ Rivest, L.P. and Levesque, T. (2001). Improved log-linear model estimators of ab
 
 Rivest, L.P. and Daigle, G. (2004). Loglinear models for the robust design in mark-recapture experiments. \emph{Biometrics}, \bold{60}, 100--107.
 
-Rivest, L.P. and Baillargeon, S. (2007). Applications and extensions of Chao moment estimator for the size of a closed population. \emph{Biometrics}, to appear.
+Rivest, L.P. and Baillargeon, S. (2007). Applications and extensions of Chao's moment estimator for the size of a closed population. \emph{Biometrics}, \bold{63}(4), 999--1006.
 
-Rivest, L.P. (2007). Why a time effect has a limited impact on capture-recapture estimates in closed populations. \emph{The Canadian Journal of Statistics}, under revision.
+Rivest, L.P. (2008). Why a time effect often has a limited impact on capture-recapture estimates in closed populations. \emph{Canadian Journal of Statistics}, \bold{36}(1), to be published. 
 }
 \keyword{ package }

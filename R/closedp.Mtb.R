@@ -1,14 +1,14 @@
 "closedp.Mtb" <- function(X,dfreq=FALSE)
 {
 
-        X<-as.matrix(X)
-        t <- ifelse(dfreq,dim(X)[2]-1,dim(X)[2])
-
     #####################################################################################################################################
     # Validation des arguments fournis en entrée
     
     # Argument dfreq
-    if(!is.logical(dfreq)||!isTRUE(all.equal(length(dfreq),1))) stop("'dfreq' must be a logical object of length 1")
+    if(!is.logical(dfreq)||length(dfreq)!=1) stop("'dfreq' must be a logical object of length 1")
+
+        X <- as.matrix(X)
+        t <- if(dfreq) dim(X)[2]-1 else dim(X)[2]
     
     # Argument X
     if (dfreq)
@@ -43,12 +43,12 @@
         I4 <- 1-histpos.t(t)[,-1]  # matrice d'indicatrices de non-capture (wi=0) après la première capture
         for(i in (2^(t-1)+1):(2^t-1)) I4[i,1:(poscapt1[i]-1)]<-rep(0,length(I4[i,1:(poscapt1[i]-1)]))
         # valeurs initiales des paramètres (N->n, tous les p -> 0.5 et ci=pi)
-        init_loglinparam.Mtb <- as.vector(c(log(sum(Y)),rep(0,t+1)))
+        init_loglinparam.Mtb <- as.vector(c(log(sum(na.rm=TRUE,Y)),rep(0,t+1)))
         # Fonction de log-vraisemblance
         ll_loglinparam.Mtb <- function(par,Y,I1,I2,I3,I4)
         {
                 logmu <- par[1] + I1%*%log(1/(1+exp(par[2:t]))) + I2%*%log(exp(par[2:(t+1)])/(1+exp(par[2:(t+1)]))) + I3%*%log(exp(par[3:(t+1)]+par[t+2])/(1+exp(par[3:(t+1)]+par[t+2]))) + I4%*%log(1/(1+exp(par[3:(t+1)]+par[t+2])))
-                loglikelihood <- t(Y)%*%logmu - sum(exp(logmu)) - sum(log(factorial(Y))) 
+                loglikelihood <- t(Y)%*%logmu - sum(na.rm=TRUE,exp(logmu)) - sum(na.rm=TRUE,log(factorial(Y))) 
                 loglikelihood
         }        
         # Optimisation de la fonction de log-vraisemblance en fonction des paramètres loglinéaires
@@ -56,7 +56,7 @@
         # Statistiques d'ajustement du modèle
         logmu <- maxim$par[1] + I1%*%log(1/(1+exp(maxim$par[2:t]))) + I2%*%log(exp(maxim$par[2:(t+1)])/(1+exp(maxim$par[2:(t+1)]))) + I3%*%log(exp(maxim$par[3:(t+1)]+maxim$par[t+2])/(1+exp(maxim$par[3:(t+1)]+maxim$par[t+2]))) + I4%*%log(1/(1+exp(maxim$par[3:(t+1)]+maxim$par[t+2])))
         se <- sqrt(exp(2*maxim$par[1])*solve(-maxim$hessian)[1,1]-exp(maxim$par[1]))
-        dev <- 2*sum(Y*(pmax(log(Y),0)-logmu))
+        dev <- 2*sum(na.rm=TRUE,Y*(pmax(log(Y),0)-logmu))
         df <- 2^t-1-(t+2)
         AIC <- -2*maxim$value+2*(t+2)   
         # Préparation des sorties
@@ -69,7 +69,7 @@
         # Préparation des sorties
         tableau <- matrix(Mtb,nrow=1)
         dimnames(tableau) <- list("Mtb",c("abundance","stderr","deviance","df","AIC"))
-        ans <- list(n=sum(Y),results=tableau,parMtb=parMtb)
+        ans <- list(n=sum(na.rm=TRUE,Y),results=tableau,parMtb=parMtb)
         class(ans) <- "closedp.Mtb"
         ans
 

@@ -1,14 +1,14 @@
 "closedp.bc" <- function(X,dfreq=FALSE)
 {
 
-        X<-as.matrix(X)
-        t <- ifelse(dfreq,dim(X)[2]-1,dim(X)[2])
-
     #####################################################################################################################################
     # Validation des arguments fournis en entrée
     
     # Argument dfreq
-    if(!is.logical(dfreq)||!isTRUE(all.equal(length(dfreq),1))) stop("'dfreq' must be a logical object of length 1")
+    if(!is.logical(dfreq)||length(dfreq)!=1) stop("'dfreq' must be a logical object of length 1")
+
+        X <- as.matrix(X)
+        t <- if(dfreq) dim(X)[2]-1 else dim(X)[2]
     
     # Argument X
     if (dfreq)
@@ -40,7 +40,7 @@
         mX0 <- 1:t
         cons <- log(choose(t, 1:t))
         anaM0 <- glm(Yd~ offset(cons) + mX0,family=poisson)
-        NM0 <- sum(Y.0)+exp(anaM0$coef[1]) # calcul de la taille de la population N
+        NM0 <- sum(na.rm=TRUE,Y.0)+exp(anaM0$coef[1]) # calcul de la taille de la population N
         varcovM0 <- summary(anaM0)$cov.unscaled
         erreurtypeM0 <- sqrt(exp(anaM0$coef[1])+(exp(2*anaM0$coef[1]))*varcovM0[1,1])
         M0 <- c(NM0,erreurtypeM0)
@@ -52,7 +52,7 @@
         delta[nbcap==2] <- 2/(t*(t-1))
         Yd <- pmax(0,Y.t + delta)
         anaMt <- glm(Yd~mX,family=poisson)
-        NMt <- sum(Y.t)+exp(anaMt$coef[1]) # calcul de la taille de la population N
+        NMt <- sum(na.rm=TRUE,Y.t)+exp(anaMt$coef[1]) # calcul de la taille de la population N
         varcovMt <- summary(anaMt)$cov.unscaled
         erreurtypeMt <- sqrt(exp(anaMt$coef[1])+(exp(2*anaMt$coef[1]))*varcovMt[1,1])
         Mt <- c(NMt,erreurtypeMt)
@@ -60,14 +60,14 @@
 
         # modele Mh Chao
         # Calcul exact :
-        NMhC <- sum(Y.0) + ((t - 1) * Y.0[1] * (Y.0[1] - 1))/(2 * t * (Y.0[2] + 1))
+        NMhC <- sum(na.rm=TRUE,Y.0) + ((t - 1) * Y.0[1] * (Y.0[1] - 1))/(2 * t * (Y.0[2] + 1))
         erreurtypeMhC <- sqrt(((t - 1) * Y.0[1] * (Y.0[1] - 1))/(2 * t * (Y.0[2] + 1)) +
         ((t - 1)^2 * Y.0[1] * (Y.0[1] - 1) * (Y.0[1]^2 + 4 * Y.0[1] * Y.0[2] + 3 * Y.0[1] - 6 * Y.0[2] - 6))/(4 * t^2 * (Y.0[2] +1)^2 * (Y.0[2] + 2)))
         MhC <- c(NMhC,erreurtypeMhC)
 
 
         # modele Mh Poisson
-        if(isTRUE(t>2))
+        if(t>2)
         {
                 delta<-rep(0,length(Y.0))
                 delta[1] <- -3/4
@@ -76,7 +76,7 @@
                 Yd <- pmax(0,Y.0 + delta)
                 mXh <- cbind(1:t,2^(1:t)-1)
                 anaMhP <- glm(Yd~ offset(cons) + mXh,family=poisson)
-                NMhP <- sum(Y.0)+exp(anaMhP$coef[1]) # calcul de la taille de la population N
+                NMhP <- sum(na.rm=TRUE,Y.0)+exp(anaMhP$coef[1]) # calcul de la taille de la population N
                 varcovMhP <- summary(anaMhP)$cov.unscaled
                 erreurtypeMhP <- sqrt(exp(anaMhP$coef[1])+(exp(2*anaMhP$coef[1]))*varcovMhP[1,1])
                 MhP <- c(NMhP,erreurtypeMhP)
@@ -92,14 +92,14 @@
         Yd <- pmax(0,Y.0 + delta)
         mXh <- cbind(1:t,((1:t)^2)/2)
         anaMhD <- glm(Yd~ offset(cons) + mXh,family=poisson)
-        NMhD <- sum(Y.0)+exp(anaMhD$coef[1]) # calcul de la taille de la population N
+        NMhD <- sum(na.rm=TRUE,Y.0)+exp(anaMhD$coef[1]) # calcul de la taille de la population N
         varcovMhD <- summary(anaMhD)$cov.unscaled
         erreurtypeMhD <- sqrt(exp(anaMhD$coef[1])+(exp(2*anaMhD$coef[1]))*varcovMhD[1,1])
         MhD <- c(NMhD,erreurtypeMhD)
 
 
         # modele Mth Chao
-        if(isTRUE(t>2))
+        if(t>2)
         {
             delta<-rep(0,length(Y.t))
             delta[nbcap==1] <- (t-2)/(2*t)
@@ -108,7 +108,7 @@
             mX4 <- matrix(0, 2^t - 1, t - 2)
             for(i in (3:t)) { mX4[(nbcap == i), (i - 2)] <- 1 }
             anaMthC <- glm(Yd ~ cbind(mX, mX4), family = poisson)
-            NMthC <- sum(Y.t)+exp(anaMthC$coef[1]) # calcul de la taille de la population N
+            NMthC <- sum(na.rm=TRUE,Y.t)+exp(anaMthC$coef[1]) # calcul de la taille de la population N
             varcovMthC <- summary(anaMthC)$cov.unscaled
             erreurtypeMthC <- sqrt(exp(anaMthC$coef[1])+(exp(2*anaMthC$coef[1]))*varcovMthC[1,1])
             MthC <- c(NMthC,erreurtypeMthC)
@@ -118,7 +118,7 @@
 
 
         # modele Mth Poisson
-        if(isTRUE(t>2))
+        if(t>2)
         {
                 delta<-rep(0,length(Y.t))
                 delta[nbcap==1] <- (2*t-5)/(4*t)
@@ -128,7 +128,7 @@
                 mX1 <- 2^nbcap - 1  # variable d interaction
                 mX3 <- cbind(mX,mX1) # fusion de ces matrices
                 anaMthP <- glm(Yd~mX3,family=poisson)
-                NMthP <- sum(Y.t)+exp(anaMthP$coef[1]) # calcul de la taille de la population N
+                NMthP <- sum(na.rm=TRUE,Y.t)+exp(anaMthP$coef[1]) # calcul de la taille de la population N
                 varcovMthP <- summary(anaMthP)$cov.unscaled
                 erreurtypeMthP <- sqrt(exp(anaMthP$coef[1])+(exp(2*anaMthP$coef[1]))*varcovMthP[1,1])
                 MthP <- c(NMthP,erreurtypeMthP)
@@ -145,14 +145,14 @@
         mX1 <- (nbcap^2)/2  # variable d interaction
         mX3 <- cbind(mX,mX1) # fusion de ces matrices
         anaMthD <- glm(Yd~mX3,family=poisson)
-        NMthD <- sum(Y.t)+exp(anaMthD$coef[1]) # calcul de la taille de la population N
+        NMthD <- sum(na.rm=TRUE,Y.t)+exp(anaMthD$coef[1]) # calcul de la taille de la population N
         varcovMthD <- summary(anaMthD)$cov.unscaled
         erreurtypeMthD <- sqrt(exp(anaMthD$coef[1])+(exp(2*anaMthD$coef[1]))*varcovMthD[1,1])
         MthD <- c(NMthD,erreurtypeMthD)
 
 
         # modele Mb
-        if(isTRUE(t>2))
+        if(t>2)
         {
             delta<-rep(0,length(Y.b))
             delta[1] <- +2
@@ -173,7 +173,7 @@
 
 
         # modele Mbh
-        if(isTRUE(t>3))
+        if(t>3)
         {
             nX<- X[X[,1]==0,-1]    # matrice des historiques observes avec les suppressions des individus non representatifs
             YMbh <- Y.b[-1] # vecteur du nombre d unites captures pour la premiere fois a l occasion j
@@ -201,7 +201,10 @@
     # Préparation des sorties
     tableau <- rbind(M0,Mt,MhC,MhP,MhD,MthC,MthP,MthD,Mb,Mbh)
     dimnames(tableau) <- list(c("M0","Mt","Mh Chao","Mh Poisson2","Mh Darroch","Mth Chao","Mth Poisson2","Mth Darroch","Mb","Mbh"),c("abundance","stderr"))
-    ans <- list(n=sum(Y.t),results=tableau)
+    converge <- c(anaM0$converge,anaMt$converge,anaMhP$converge,anaMhD$converge,
+                  anaMthC$converge,anaMthP$converge,anaMthD$converge,anaMb$converge,anaMbh$converge)
+    names(converge) <- c("M0","Mt","Mh Poisson2","Mh Darroch","Mth Chao","Mth Poisson2","Mth Darroch","Mb","Mbh")
+    ans <- list(n=sum(na.rm=TRUE,Y.t),results=tableau,converge=converge)
     class(ans) <- "closedp.bc"
     ans
 }
@@ -212,6 +215,17 @@ print.closedp.bc <- function(x, ...) {
         cat("Abundance estimations with bias correction:\n")
         tableau <- round(x$results,1)
         print.default(tableau, print.gap = 2, quote = FALSE, right=TRUE)
+
+        if (!x$converge[1]) cat("\nThe M0 model did not converge")
+        if (!x$converge[2]) cat("\nThe Mt model did not converge")
+        if (!x$converge[3]) cat("\nThe Mh Poisson2 model did not converge")
+        if (!x$converge[4]) cat("\nThe Mh Darroch model did not converge")
+        if (!x$converge[5]) cat("\nThe Mth Chao model did not converge")
+        if (!x$converge[6]) cat("\nThe Mth Poisson2 model did not converge")
+        if (!x$converge[7]) cat("\nThe Mth Darroch model did not converge")
+        if (!x$converge[8]) cat("\nThe Mb model did not converge")
+        if (!x$converge[9]) cat("\nThe Mbh model did not converge")
+
         cat("\n")
         invisible(x)
 }

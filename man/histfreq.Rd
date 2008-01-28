@@ -22,9 +22,10 @@ histfreq.0(X, dfreq=FALSE, vt)
 \code{histfreq.0} returns a vector of frequencies for the \eqn{(t_1+1)\times(t_2+1)\times \cdots \times(t_I+1)-1}{(t1+1)*(t2+1)* \cdots *(tI+1)-1} capture histories ordered as in \code{histpos.0} .
 }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007). The Rcapture package: Loglinear models for capture-recapture in R. \emph{Journal of Statistical Software}, to appear (available online at \url{http://www.jstatsoft.org/}).
+Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
 }
-\author{Sophie Baillargeon \email{sbaillar@mat.ulaval.ca} and Louis-Paul Rivest \email{lpr@mat.ulaval.ca} }
+\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
+Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
 \note{ 
 The \code{histfreq.t} function is called by \code{\link{descriptive}}, \code{\link{closedp}}, \code{\link{closedp.bc}}, \code{\link{closedp.Mtb}}, \code{\link{closedp.mX}}, \code{\link{closedp.h}}, \code{\link{periodhist}}, \code{\link{openp}}, \code{\link{robustd.t}}, \code{\link{robustd.0}}.
 
