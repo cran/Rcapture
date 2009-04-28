@@ -1,11 +1,12 @@
 \name{histpos}
+\alias{histpos}
 \alias{histpos.t}
 \alias{histpos.0}
 \title{ Possible Capture Histories  }
 \description{ 
 \code{histpos.t} builds the matrix of observable capture histories in terms of captures and misses for a capture-recapture experiment with \code{t} capture occasions.
 
-\code{histpos.0} builds the matrix of observable capture histories in terms of number of captures for each primary period of a robust design  with \code{vt} capture occasions.
+\code{histpos.0} builds the matrix of observable capture histories in terms of number of captures for each primary period of a robust design with \code{vt} capture occasions. For closedp populations, \code{vt=t} and \code{histpos.0} simply returns \code{t:1}.
 }
 \usage{
 histpos.t(t)
@@ -21,18 +22,19 @@ histpos.0(vt)
 \code{histpos.0} gives a \eqn{(t_1+1)\times(t_2+1)\times \ldots \times(t_I+1)-1}{(t1+1)*(t2+1)* \ldots *(tI+1)-1} by  \eqn{I} matrix with rows representing possible capture histories in terms of number of captures. This matrix elements are integers between 0 and \eqn{t_i}{ti} inclusively. 
 }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
 }
 \author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
 Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
 \note{ 
-The \code{histpos.t} function is called by \code{\link{descriptive}}, \code{\link{closedp}}, \code{\link{closedp.bc}}, \code{\link{closedp.Mtb}}, \code{\link{closedp.h}}, \code{\link{openp}}, \code{\link{Xomega.t}}, \code{\link{Xclosedp}}.
+The \code{histpos.t} function is called by \code{\link{descriptive}}, \code{\link{closedp}}, \code{\link{closedp.bc}}, \code{\link{closedp.Mtb}}, \code{\link{openp}}, \code{\link{robustd.t}}.
 
-The \code{histpos.0} function is called by \code{\link{Xomega.0}} and \code{\link{robustd.0}}.
+The \code{histpos.0} function is called by \code{\link{robustd.0}}.
 }
-\seealso{ \code{\link{histfreq.t}}, \code{\link{histfreq.0}}, \code{\link{descriptive}} }
+\seealso{ \code{\link{periodhist}}, \code{\link{descriptive}} }
 \examples{
 histpos.t(5)
+histpos.0(5)
 
 histpos.0(rep(5,3))
 }

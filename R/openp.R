@@ -1,33 +1,15 @@
-"openp" <- function(X,dfreq=FALSE,m="up",neg=TRUE,keep=rep(TRUE,2^I-1))
+"openp" <- function(X,dfreq=FALSE,m=c("up","ep"),neg=TRUE,keep=rep(TRUE,2^I-1))
 {
-
 ############################################################################################################################################
 # Validation des arguments fournis en entrée
 ############################################################################################################################################
 
-        # Argument dfreq
-        if(!is.logical(dfreq)||length(dfreq)!=1) stop("'dfreq' must be a logical object of length 1")
-    
-            X <- as.matrix(X)
-            I <- if(dfreq) dim(X)[2]-1 else dim(X)[2]  # calcul du nombre de periodes
-
-        # Argument X
-        if (dfreq)
-        {
-            if (any(X[,1:I]!=1&X[,1:I]!=0)) stop("Every columns of 'X' but the last one must contain only zeros and ones")
-            if (any((X[,I+1]%%1)!=0)) stop("The last column of 'X' must contain capture histories frequencies, therefore integers")
-        } else {
-            if(any(X!=1&X!=0)) stop("'X' must contain only zeros and ones")
-        }
-        
-        # Argument m
-        if(length(m)!=1) stop("'m' must be a character string of length 1")
-        if(m!="up"&&m!="ep") stop("'m' can only take the values 'up' and 'ep'")
-    
-        # Argument neg
-        if(!is.logical(neg)||length(neg)!=1) stop("'neg' must be a logical object of length 1")
-    
-        # Argument keep
+        valid.one(dfreq,"logical")
+        Xvalid<-valid.X(X,dfreq)
+            X <- Xvalid$X
+            I <- Xvalid$t
+        m<-valid.vm(m,c("up","ep"),I)
+        valid.one(neg,"logical")
         if(length(keep)!=2^I-1||!is.logical(keep)) stop("'keep' must be a logical vector of length 2^I-1")
 
 
@@ -43,11 +25,9 @@
         Y <- Ycomplete
         Y[!keep] <- rep(NA,sum(na.rm=TRUE,!keep))
 
-        gammanames <- rep(0,2*I-2)
-        for (i in 1:(2*I-2)){gammanames[i]<-paste("gamma",i,sep="")}
+        gammanames <- paste("gamma",1:(2*I-2),sep="")
         if (m=="up") {
-            betanames <- rep(0,I-2)
-            for (i in 2:(I-1)){betanames[i-1]<-paste("beta",i,sep="")}
+            betanames <- paste("beta",2:(I-1),sep="")
         } else betanames <- "beta"
 
         histpos <- histpos.t(I)
@@ -59,12 +39,12 @@
 
 
         # Ajustement du modèle
-        anaMpo <- glm(Y~mX.,family=poisson,na.action=na.omit)
+        anaMpo <- suppressWarnings(glm(Y~mX.,family=poisson,na.action=na.omit))
 
 
         #Vérification du bon ajustement du modèle loglinéaire
-        if(!anaMpo$converged) stop("Algorithm did not converged")
-        if(any(is.na(anaMpo$coef))) warning("The design matrix is not of full rank; some loglinear parameter estimations cannot be evaluated")
+        if(!anaMpo$converged) stop("algorithm did not converged")
+        if(any(is.na(anaMpo$coef))) warning("the design matrix is not of full rank; some loglinear parameter estimations cannot be evaluated")
 
 
 #-------------------------------------------------------#
@@ -92,7 +72,7 @@
                 ppositions <- c(ppositions,pos)
                 # Retrait de la bonne colonne de mX. et réajustement du modèle
                 mX. <- mX.[,-(pos-sum(na.rm=TRUE,ppositions<pos))]
-                anaMpo <- glm(Y~mX.,family=poisson,na.action=na.omit)        
+                anaMpo <- suppressWarnings(glm(Y~mX.,family=poisson,na.action=na.omit))        
                 # Ajout de zéros dans le vecteur des paramètres loglinéaires
                 positions <- sort(ppositions[-1])                
                 param <- c(anaMpo$coef[1:(positions[1]-1)],0)
@@ -129,7 +109,7 @@
         } else {
             trap <- rowSums(histpos[,-1]*histpos[,-I])
             mX2. <- cbind(mX.,trap)
-            anaMpo2 <- glm(Y~mX2.,family=poisson,na.action=na.omit)
+            anaMpo2 <- suppressWarnings(glm(Y~mX2.,family=poisson,na.action=na.omit))
             parap2<-summary(anaMpo2)$coef[substr(rownames(summary(anaMpo2)$coef),5,8)=="trap",1:2]
             if (length(parap2)==0)
             {
@@ -152,7 +132,7 @@
                 for (i in 1:(I-1)){trapnames[i]<-paste("trap",i,"_",i+1,sep="")}
                 colnames(trap) <- trapnames
                 mX3.<- cbind(mX.,trap[,-c(1,I-1)])
-                anaMpo3 <- glm(Y~mX3.,family=poisson,na.action=na.omit)
+                anaMpo3 <- suppressWarnings(glm(Y~mX3.,family=poisson,na.action=na.omit))
                 parap3<-summary(anaMpo3)$coef[substr(rownames(summary(anaMpo3)$coef),5,8)=="trap",1:2]
                 if (length(parap3)==0)
                 {
@@ -177,19 +157,12 @@
 
         # creation des vecteurs de parametres alpha et beta
         Alpha <-rep(0,2*I-2)
-        for (i in (1:(2*I-2)))
-        {
-                Alpha[i] <- param[i+1]
-        }
-
+        for (i in (1:(2*I-2)))   Alpha[i] <- param[i+1]
 
         if (m=="up")
         {
             Beta <- rep(0,I-2)
-            for (i in 1:(I-2))
-            {
-                    Beta[i] <- param[2*I-1+i]
-            }
+            for (i in 1:(I-2))   Beta[i] <- param[2*I-1+i]
         } else Beta <- param[2*I]
 
 
@@ -394,9 +367,7 @@
         NpopStderr <- sqrt(pmax(NpopStderr^2-Npop,0))
 
         # Correction si certains historiques ont été enlevés (avec l'option keep)
-        options(warn=-1)
-        corrkeep <- sum(na.rm=TRUE,Ycomplete[!keep]-predict(anaMpo,newdata=data.frame(mX.),type="response")[!keep])
-        options(warn=0)
+        corrkeep <- suppressWarnings(sum(na.rm=TRUE,Ycomplete[!keep]-predict(anaMpo,newdata=data.frame(mX.),type="response")[!keep]))
         Npop <- Npop + corrkeep
 
 
@@ -486,12 +457,9 @@
         if (dim(trapfit)[1]==1) { dimnames(trapfit) <- list(c("model with homogenous trap effect"),c("deviance","    df","      AIC"))
         } else if (dim(trapfit)[1]==2) { dimnames(trapfit) <- list(c("model with homogenous trap effect","model with trap effect"),c("deviance","    df","      AIC"))}    
                  
-        titre.periode<-rep(0,I)
-        for (i in 1:I){titre.periode[i]<-paste("period",i)}
-        titre.inter.periode<-rep(0,I-1)
-        for (i in 1:(I-1)){titre.inter.periode[i]<-paste("period",i,"->",i+1)}
-        titre.i<-rep(0,i)
-        for (i in 1:I){titre.i[i]<-paste("i =",i-1)}
+        titre.periode<-paste("period",1:I)
+        titre.inter.periode<-paste("period",1:(I-1),"->",1:(I-1)+1)
+        titre.i<-paste("i =",1:I-1)
             
         parap <- rbind(parap3,parap2)     
         pstar <- cbind(pstar,pstarStderr)
@@ -526,7 +494,6 @@
             B[I-1,] <- rep(NA,2)
         }
 
-        #Matrice de variances-covariances de phi et Npop
         # Matrice de variances-covariances des paramèters pstar, phi, Npop, B et Ntot
         dP <- cbind(dpstar,dphi,dNpop,dB,dNtot)
         covP <- t(dP)%*%varcov%*%dP
@@ -556,24 +523,24 @@ print.openp <- function(x, ...){
         cat("\nModel fit:\n")
         x$model.fit[,c(1,3)] <- round(x$model.fit[,c(1,3)],3)
         x$model.fit[,2] <- as.integer(x$model.fit[,2])
-        print.default(x$model.fit, print.gap = 2, quote = FALSE, right=TRUE, na.print="--")
+        print.default(x$model.fit, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         cat("\nTest for trap effect:\n")
         x$trap.fit[,c(1,3)] <- round(x$trap.fit[,c(1,3)],3)
         x$trap.fit[,2] <- round(x$trap.fit[,2],0)
-        print.default(x$trap.fit, print.gap = 2, quote = FALSE, right=TRUE, na.print="--")
+        print.default(x$trap.fit, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         cat("\nCapture probabilities:\n")
-        print.default(round(x$capture.prob,4), print.gap = 2, quote = FALSE, right=TRUE, na.print="--")
+        print.default(round(x$capture.prob,4), print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         cat("\nSurvival probabilities:\n")
-        print.default(round(x$survivals,4), print.gap = 2, quote = FALSE, right=TRUE, na.print="--")
+        print.default(round(x$survivals,4), print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         cat("\nAbundances:\n")
         x$N <- round(x$N,1)
-        print.default(x$N, print.gap = 2, quote = FALSE, right=TRUE, na.print="--")
+        print.default(x$N, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         cat("\nNumber of new arrivals:\n")
         x$birth <- round(x$birth,1)
-        print.default(x$birth, print.gap = 2, quote = FALSE, right=TRUE, na.print="--")
+        print.default(x$birth, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         cat("\nTotal number of units who ever inhabited the survey area:\n")
         x$Ntot <- round(x$Ntot,1)
-        print.default(x$Ntot, print.gap = 2, quote = FALSE, right=TRUE, na.print="--")
+        print.default(x$Ntot, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         cat("\nTotal number of captured units:",x$n,"\n")
         if (length(x$neg[x$neg<2*dim(x$N)[1]])==1) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameter has been set to zero")
         if (length(x$neg[x$neg<2*dim(x$N)[1]])>1) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameters has been set to zero")
@@ -581,12 +548,12 @@ print.openp <- function(x, ...){
         invisible(x)
 }
 
-plot.openp <- function(x, ...){
+plot.openp <- function(x,main="Scatterplot of Pearson Residuals", ...){
     res <- (x$glm$model[,1]- fitted.values(x$glm))/sqrt(fitted.values(x$glm))
     if (length(x$glm$na.action)==0) 
     {
-        plot(apply(histpos.t(dim(x$N)[1]),1,sum),res,xlab="Frequency of capture",ylab="Pearson residuals",main="Scatterplot of Pearson Residuals")
+        plot(apply(histpos.t(dim(x$N)[1]),1,sum),res,xlab="Frequency of capture",ylab="Pearson residuals",main=main, ...)
     } else {
-        plot(apply(histpos.t(dim(x$N)[1]),1,sum)[-x$glm$na.action],res,xlab="Frequency of capture",ylab="Pearson residuals",main="Scatterplot of Pearson Residuals")
+        plot(apply(histpos.t(dim(x$N)[1]),1,sum)[-x$glm$na.action],res,xlab="Frequency of capture",ylab="Pearson residuals",main=main, ...)
     }
 }

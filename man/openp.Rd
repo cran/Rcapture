@@ -7,20 +7,21 @@
   This function computes various demographic parameters using a loglinear model for open populations in capture-recapture experiments.
 }
 \usage{
-openp(X, dfreq=FALSE, m="up" , neg=TRUE, keep=rep(TRUE,2^I-1))
+openp(X, dfreq=FALSE, m=c("up","ep"), neg=TRUE, keep=rep(TRUE,2^I-1))
 
 \method{print}{openp}(x, \dots)
 
-\method{plot}{openp}(x, \dots)
+\method{plot}{openp}(x, main="Scatterplot of Pearson Residuals", \dots)
 }
 \arguments{
-  \item{X}{ The table of the observed capture histories in one of the two accepted formats. In the default format, it has one row per unit captured in the experiment. In this case, the number of columns in the table represents the number of capture occasions in the experiment (noted \eqn{I}). In the alternative format, it contains one row per capture history followed by its frequency. In that case, \code{X} has \eqn{I}+1 columns. The first \eqn{I} columns of \code{X}, identifying the capture histories, must contain only zeros and ones. The number one indicates a capture. }
-  \item{dfreq}{ This argument specifies the format of the data matrix \code{X}. By default, it is set to FALSE, which means that \code{X} has one row per unit. If it is set to TRUE, then the matrix \code{X} contains frequencies in its last column.}
+  \item{X}{ The matrix of the observed capture histories (see \code{\link{Rcapture-package}} for a description of the accepted formats).  }
+  \item{dfreq}{ A logical. By default FALSE, which means that \code{X} has one row per unit. If TRUE, it indicates that the matrix \code{X} contains frequencies in its last column.}
   \item{m}{ This argument is a character string taking the value "up" (up = unconstrained probabilities) or "ep" (ep = equal probabilities). If \code{m} is set to "up" (the default), no constraint is fixed on the loglinear parameters. Therefore some loglinear and demographic parameters are not estimable. On the other hand, when \code{m} takes the value "ep", the capture probabilities are set to a common value; this enables the estimation of all the parameters.}
   \item{keep}{ This option is useful to fit the model on a subset of the possible capture histories. \code{keep} is a logical vector of length \eqn{2^I-1} taking the value TRUE for a history kept and FALSE for a history put aside. In this vector, the order of the capture histories is as defined in the \code{histpos.t} function. By default, every capture history is kept. }
   \item{neg}{ If this option is set to TRUE, relevant negative gamma parameters are set to zero. This insures that the estimated survival probabilities belong to [0, 1] and that the births are positive.}
   \item{x}{ An object, produced by the \code{openp} function, to print or to plot.}
-  \item{\dots}{ Further arguments passed to or from other methods.}
+  \item{main}{ A main title for the plot}
+  \item{\dots}{ Further arguments to be passed to methods (see \code{print.default} and \code{plot.default}).}
 }
 \details{
 The function \code{openp} generates statistics to test the presence of a trap effect.
@@ -49,7 +50,7 @@ Standard errors are calculated by linearization.
   \item{neg}{ The position of the gamma parameters set to zero in the loglinear parameter vector.}
 }
 \references{ 
-Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
 
 Rivest, L.P. and Daigle, G. (2004) Loglinear models for the robust design in mark-recapture experiments. \emph{Biometrics}, \bold{60}, 100--107.
 }
@@ -60,7 +61,7 @@ If your data contains more than one capture occasion within primary periods, use
 
 This function uses the \code{glm} function of the \code{stats} package. 
 }
-\seealso{\code{\link{closedp}}, \code{\link{periodhist}}, \code{\link{robustd.t}}, \code{\link{robustd.0}}}
+\seealso{\code{\link{closedp}}, \code{\link{periodhist}}, \code{\link{robustd}}}
 \examples{
 data(duck)
 op.m1 <- openp(duck, dfreq=TRUE)

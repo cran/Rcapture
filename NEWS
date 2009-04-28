@@ -1,0 +1,150 @@
+Changes in Version 1.2-0
+
+  o The functions closedp.mX(), closedp.h() and profile.CI() are now 
+    deprecated.  They are replaced by the new function closedpCI.t() which 
+    simultaneously fits a loglinear model specified by the user and 
+    computes the multinomial profile likelihood confidence interval for 
+    the abundance estimation.
+	
+  o closedpCI() uses the R functions optimize() and uniroot() to obtain the 
+    profile likelihood confidence interval.  The deprecated function 
+    profile.CI() used its own homemade algorithm. 	
+	
+  o The new method plotCI(), defined for the class 'closedpCI', allows to plot 
+    a profile likelihood confidence interval.  This plot used to be generated
+    automatically by profileCI().
+
+  o The plot() method for class 'closedpCI' traces the scatterplot of the 
+    Pearson residuals in terms of fi (number of units captured i times) for 
+    the customized model. 		
+
+	
+  o closedp() is now named closedp.t()
+
+  o closedp.t() now identifies the non-convergent model in the print.  Also, its
+    returned list contains an element named converged.  This is a logical vector
+    indicating for each model whether it converged or not.
+	
+  o The new argument 'trace' of closedp.t() allows to print a note for each  
+    model while the function runs.  It is useful to identify which model is  
+    associated to a warning.
+	
+  o In closedp.t(), some bugs were fixed in the correction for negative eta 
+    parameters in Chao's models when 'neg=TRUE' 	
+
+  o In closedp.t(), the estimation of capture probabilities for Mth models   
+    was incorrect, it has been corrected.
+
+  o In closedp.t(), the returned list has changed.  It now has only one glm 
+    element, this element is a list of the glm objects for each model.  Also 
+    the output now features an element named 'parameters' which is a list of  
+    the parameter estimates for each model.	
+
+  o The new plot() method for class 'closedp' produces scatterplots of the 
+    Pearson residuals in terms of fi (number of units captured i times) for 
+    the heterogeneous models Mh Poisson2, Mh Darroch and Mh Gamma3.5 
+    if they converged
+	
+  o The boxplot() method for class 'closedp' does not trace boxplots for the 
+    non-convergent models anymore.
+	
+	
+  o A new heterogeneity model has been added to the package : the gamma model. 
+    This means that closedp() has two more models in its output table, 
+    Mh Gamma3.5 and Mth Gamma3.5.  Also the 'h' argument of closed population 
+    functions and the 'vh' argument of robust design functions accept the 
+    value "Gamma".
+	
+  o The 'a' argument of closed population functions and the 'va' argument of 
+    robust design functions are renamed 'theta' and 'vtheta' because the 
+    gamma model was added to the package and 'a' was referring to the Poisson 
+    heterogeneity model.  'theta' is a more general notation. 	
+
+	
+  o Functions for closed populations now work with only 2 capture occasions
+    (non-helpful errors were previously produced).  In that case, only models 
+    M0, Mt and Mb can be fitted.
+
+	
+  o The new functions closedp.0() and closedpCI.0() are equivalent to 
+    closedp.t() and closedpCI.t() but they fit model using the number of
+    units capture i times instead of the frequencies of the observable
+    capture histories.  Consequently, they fit fewer models than the .t
+    functions, but they work with much larger data set.
+	
+  o closedp.0() has the same methods as closedp.t() (print(), plot() and
+    boxplot()), closedpCI.0() has the same methods as closedpCI.t()
+    (print(), plotCI(), plot() and boxplot()).
+
+  o The new .0 functions accept a new data format. The argument 'dtype', if 
+    set to "nbcap", allows the user to give the numbers of captures instead
+    of the full capture histories.
+
+  o In the new .0 functions, the argument 't' is required if 'dtype' takes
+    the value 'nbcap'.  It represents the number of capture occasions in the
+    experiment.	
+
+
+  o closedp.bc() now computes bias corrected estimates for a model specified
+    using the arguments 'm', 'h' and 'theta' as with the closedpCI functions.
+	
+  o Bias correction is now possible for any customized Mh model.	
+
+  o For models 'M0' and 'Mh', closedp.bc() accepts a data matrix 'X' in the
+    format 'dtype' equals to "nbcap".
+
+  o In closedp.bc(), the computations for model Mt have changed.  The  
+    abundance estimate for the Mt model when t=2 has Chapman bias correction 
+    and a standard error derived from Seber and  Wittes variance estimate.  
+    For t>2, closedp.bc() implements the bias correction of Rivest and 
+    Levesque (2001).  The estimate for N and its variance are calculated by 
+    solving an estimating equation as proposed in Seber (1982), not by 
+    fitting a Poisson regression.  This approach works for large values of t.    	
+
+	
+  o The 't0' argument of closedp.0(), closedpCI.0() and closedp.bc() allows to
+    fit models considering only the frequencies of units captured 1 to t0 
+    times. The frequencies of units caught more than t0 times are given their
+    own parameters in the loglinear model.	
+
+	
+  o descriptive() now accepts the new data formats, therefore it has two new
+    arguments: 'dtype' and 't'.
+	
+  o The plot method	for class 'descriptive' now traces only the fi plot if 
+    'dtype' took the value "nbcap" in the call to descriptive().
+	
+	
+  o The documentation for periodhist() is now more general, it talks about 
+    merging capture occasions.
+	
+  o The new argument 'drop' of perdiohist() allows to omit from the output 
+    data set the unobserved capture histories having a frequency of 0.	
+
+	
+  o histpos.0() now works when 'vt' is a scalar.	
+  
+  o histfreq.t() and histfreq.0() are now internal functions.
+  
+  o Some bugs were fixed in the robustd.t and robustd.0 functions : they now 
+    work when vh contains R functions and when the data set contains only 
+    two primary periods.
+  
+  o A NAMESPACE has been added to the package, therefore internal functions
+    are now hidden (e.g. Xclosedp(), Xomega() and Zdelta())
+  
+  o The documentation has been updated.
+  
+  o The paper in inst/doc is now a vignette.
+
+ 
+ 
+Changes in Version 1.1
+  
+  o Bug fixes for R 2.7.0.
+
+
+  
+Changes in Version 1.0
+
+  o First CRAN release of the Rcapture package.

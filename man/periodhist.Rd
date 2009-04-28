@@ -1,25 +1,32 @@
 \name{periodhist}
 \alias{periodhist}
-\title{  Capture Histories Between Primary Sampling Periods }
+\title{  Merge capture occasions }
 \description{
- This function produces the matrix of capture histories between primary sampling periods from a complete matrix of capture histories for a robust design.
+This function produces a reduced matrix of capture histories from a complete one by merging together some capture occasions.
+
+It can also be used to change the format of a capture-recapture data set with complete capture histories: it transforms a data set with one row per captured unit to a data set with one row per capture history followed by its frequency.
 }
 \usage{
-periodhist(X, dfreq=FALSE, vt)
+periodhist(X, dfreq=FALSE, vt, drop=TRUE)
 }
 \arguments{
-  \item{X}{ The table of the observed capture histories in one of the two accepted formats. In the default format, it has one row per unit captured in the experiment and sum(vt) columns. In the alternative format, it contains one row per capture history followed by its frequency. In that case, \code{X} has sum(vt)+1 columns. The first sum(vt) columns of \code{X}, identifying the capture histories, must contain only zeros and ones. The number one indicates a capture. }
-  \item{dfreq}{ This argument specifies the format of the data matrix \code{X}. By default, it is set to FALSE, which means that \code{X} has one row per unit. If it is set to TRUE, then the matrix \code{X} contains frequencies in its last column.}
-  \item{vt}{ A vector containing the numbers of capture occasions for each primary sampling period of a robust design. The length of this vector equals the number of primary sampling periods (noted \eqn{I}). }
+  \item{X}{ The matrix of the observed capture histories (see \code{\link{Rcapture-package}} for a description of the accepted formats).  }
+  \item{dfreq}{ A logical. By default FALSE, which means that \code{X} has one row per unit. If TRUE, it indicates that the matrix \code{X} contains frequencies in its last column.}
+  \item{vt}{ A vector containing the numbers of capture occasions for each pooled capture occasions. The length of this vector equals the number of capture occasions in the reduced matrix (noted \eqn{I}). }
+  \item{drop}{ A logical, by default TRUE, meanning that in the output matrix the unobserved capture histories having a frequency of 0 are omitted. To keep them, \code{drop} must be set to FALSE.}
 }
 \details{
-  This function is useful when using an open population model to analyse a robust design data set. It reduces the data set to one observation per primary period. The observation is one for a unit caught at least once during the period and zero for a unit never caught. If a data matrix produced by the \code{periodhist} function is given in argument to an \code{openp} function, the \code{dfreq} argument must be set to TRUE.
+  This function is useful when using an open population model to analyse a robust design data set. It can be used to reduce the data set to one observation per primary period. The observation is one for a unit caught at least once during the period and zero for a unit never caught.
+  
+  It is also useful for experiments with a large number of capture occasions but a limited number of catches,  especially when there is no capture on some occasions. In such cases, one can pool together some capture occasions with the \code{periodhist} function.  
+  
+  If a data matrix produced by the \code{periodhist} function is given in argument to an model fiting function, the \code{dfreq} argument must be set to TRUE.
 }
 \value{
- A \eqn{2^I-1} by \eqn{I+1} matrix of all the possible between periods capture histories, with their observed frequencies. This data matrix has the alternative format.
+ A \eqn{2^I-1} by \eqn{I+1} matrix of all the pooled capture histories, with their observed frequencies.
  }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
 }
 \author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
 Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }

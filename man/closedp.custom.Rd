@@ -1,11 +1,14 @@
 \name{closedp.custom}
+\alias{closedp.custom}
 \alias{closedp.mX}
 \alias{closedp.h}
 \alias{print.closedp.custom}
 \alias{boxplot.closedp.custom}
-\title{ Customization of a Loglinear Model for Closed Population Capture-Recapture Experiments }
+\title{ Customization of a Loglinear Model for Closed Populations Capture-Recapture Experiments }
 \description{
-  The \code{closedp.mX} function fits a loglinear model given a design matrix \code{mX}. The \code{closedp.h} function fits Mh or Mth models for which the form of the column for heterogeneity in the design matrix is determined by the user. 
+This function is deprecated, please use \code{closedpCI.t} instead. 
+
+The \code{closedp.mX} function fits a loglinear model given a design matrix \code{mX}. The \code{closedp.h} function fits Mh or Mth models for which the form of the column for heterogeneity in the design matrix is determined by the user. 
 }
 \usage{
 closedp.mX(X, dfreq=FALSE, mX, mname="Customized model")
@@ -17,12 +20,12 @@ closedp.h(X, dfreq=FALSE, m="Mh", h="Poisson", a=2)
 \method{boxplot}{closedp.custom}(x, \dots)
 }
 \arguments{
-  \item{X}{ The table of the observed capture histories in one of the two accepted formats. In the default format, it has one row per unit captured in the experiment. In this case, the number of columns in the table represents the number of capture occasions in the experiment (noted \eqn{t}). In the alternative format, it contains one row per capture history followed by its frequency. In that case, \code{X} has \eqn{t}+1 columns. The first \eqn{t} columns of \code{X}, identifying the capture histories, must contain only zeros and ones. The number one indicates a capture. }
-  \item{dfreq}{ This argument specifies the format of the data matrix \code{X}. By default, it is set to FALSE, which means that \code{X} has one row per unit. If it is set to TRUE, then the matrix \code{X} contains frequencies in its last column.}
+  \item{X}{ The matrix of the observed capture histories (see \code{\link{Rcapture-package}} for a description of the accepted formats).  }
+  \item{dfreq}{ A logical. By default FALSE, which means that \code{X} has one row per unit. If TRUE, it indicates that the matrix \code{X} contains frequencies in its last column.}
   \item{mX}{ The design matrix of the loglinear model. In this matrix, the order of the capture histories is as defined in the \code{histpos.t} function.}
   \item{mname}{ A character string specifying the name of the customized model.}
-  \item{m}{ A character string indicating the model to fit, either "Mh"= Mh model or "Mth"= Mth model}
-  \item{h}{ The character string "Poisson" or a numerical \code{R} function specifying the form of the column for heterogeneity in the design matrix. "Poisson" represents the function \eqn{f(k)=a^k-1}, where \eqn{k} is the number of captures. If an \code{R} function is given, it is the implemantation of any mathematical function \eqn{f(k)}. It has only one argument.}
+  \item{m}{ A character string indicating the model to fit, either "Mh"=Mh model or "Mth"=Mth model}
+  \item{h}{ The character string "Poisson" (\eqn{2^k-1}) or a numerical function taking only one argument specifying the form of the column for heterogeneity in the design matrix.}
   \item{a}{ The value of the exponent's base for a Poisson model. }
   \item{x}{ An object, produced by the \code{closedp.mX} or the \code{closedp.h} function, to print or to plot.}
   \item{\dots}{ Further arguments passed to or from other methods.}
@@ -32,9 +35,9 @@ closedp.h(X, dfreq=FALSE, m="Mh", h="Poisson", a=2)
   
   The abundance estimation is calculated as the number of captured units plus the exponential of the intercept. Therefore, these functions are not suited for models with a behavioral effect.
 
-  In \code{closedp.h}, the argument \code{h} cannot take the value "Chao" or "Darroch". These models are already fitted by the \code{closedp} function.
+  In \code{closedp.h}, the argument \code{h} cannot take the value "Chao" or "Darroch" because these models are already fitted by the \code{closedp} function.
 
-  The \code{boxplot.closedp.custom} function produces a boxplot of the Pearson residuals of the customized model.
+  The \code{boxplot.closedp.custom} function produces a boxplot of the pearson residuals of the customized model.
 }
 \value{
 \item{n}{ The number of captured units}
@@ -42,12 +45,9 @@ closedp.h(X, dfreq=FALSE, m="Mh", h="Poisson", a=2)
 \item{glm}{ The 'glm' object obtained from fitting the model.} 
 }
 \references{ 
-Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
-
-Rivest, L.P. and Baillargeon, S. (2007). Applications and extensions of Chao's moment estimator for the size of a closed population. \emph{Biometrics}, \bold{63}(4), 999--1006.
+Rivest, L.P. and Baillargeon, S. (2007) Applications and extensions of Chao's moment estimator for the size of a closed population. \emph{Biometrics}, \bold{63}(4), 999--1006.
 }
-\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
-Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
+\author{Sophie Baillargeon \email{sbaillar@mat.ulaval.ca} and Louis-Paul Rivest \email{lpr@mat.ulaval.ca} }
 \note{ These functions use the \code{glm} function of the \code{stats} package. }
 \seealso{\code{\link{closedp}}, \code{\link{closedp.Mtb}} }
 \examples{

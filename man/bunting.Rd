@@ -1,28 +1,29 @@
 \name{bunting}
 \alias{bunting}
 \docType{data}
-\title{  Open Population Data for Lazuli Buntings }
+\title{  Lazuli Bunting Data }
 \description{
-  This data set contains open population capture history data for lazuli buntings. 
+  This data set contains frequencies of capture histories for 8 years of observation of lazuli buntings. 
 }
 \usage{data(bunting)}
 \format{
+255 by 9 numeric matrix, with the following columns:
   \describe{
     \item{\code{p1}, \code{p2}, \code{p3}, \code{p4}, \code{p5}, \code{p6}, \code{p7}, \code{p8}}{ Capture histories for eight periods}
     \item{freq}{ Observed frequencies for each capture history}
     }
 }
 \details{
-  The data come from an eight-year (1973 to 1980) study by Allen W Stokes of lazuli buntings wintering in Logan, Utah. This data set is analysed in Burnham and al. (1987) and in Cormack (1993).
+  The data come from an eight-year (1973 to 1980) study by Allen W. Stokes of lazuli buntings wintering in Logan, Utah. This data set is analysed in Burnham and al. (1987) and in Cormack (1993).
 
-  This data set's format is the alternative one, i.e. each row represents an observed capture history followed by its frequency. 
+  Each row of this data set represents an observed capture history followed by its frequency. 
 }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
 
-Burnham, K.P., Anderson, D.R., White, G.C., Brownie, C. and Pollock, K.H. (1987). Design and analysis methods for fish survival experiments based on release-recapture. \emph{American Fisheries Society Monographs 5}. Bethesda, Maryland.
+Burnham, K.P., Anderson, D.R., White, G.C., Brownie, C. and Pollock, K.H. (1987) Design and analysis methods for fish survival experiments based on release-recapture. \emph{American Fisheries Society Monographs 5}. Bethesda, Maryland.
 
-Cormack, R. M. (1993). The flexibility of GLIM analyses of multiple recapture or resighting data. In J.D. Lebreton and P. North editors: \emph{Marked Individuals in the Study of Bird Population}. Basel, Switzerland: Birkhauser Verlag, 39--49. 
+Cormack, R. M. (1993) The flexibility of GLIM analyses of multiple recapture or resighting data. In J.D. Lebreton and P. North editors: \emph{Marked Individuals in the Study of Bird Population}. Basel, Switzerland: Birkhauser Verlag, 39--49. 
 }
 \examples{
 data(bunting)

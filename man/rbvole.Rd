@@ -7,6 +7,7 @@
 }
 \usage{data(rbvole)}
 \format{
+66 by 19 numeric matrix, with the following columns:
   \describe{
     \item{\code{c11}, \code{c12}, \code{c13}}{ Capture histories for the three capture occasions within primary period 1}
     \item{\code{c21}, \code{c22}, \code{c23}}{ Capture histories for the three capture occasions within primary period 2}
@@ -20,7 +21,7 @@
 \details{
   Data collection was carried out by Etcheverry and al.. The capture occasions represent three consecutive days of trapping in May 1999, July 1999, August 1999, May 2000, July 2000 and August 2000 in the Duchenier conservation area in southeastern Quebec. This data set is analysed in Rivest and Daigle (2004).
 
-  This data set's format is the alternative one, i.e. each row represents an observed capture history followed by its frequency. 
+  Each row of this data set represents an observed capture history followed by its frequency. 
 }
 \references{
    Rivest, L.P. and Daigle, G. (2004) Loglinear models for the robust design in mark-recapture experiments. \emph{Biometrics}, \bold{60}, 100--107.
@@ -34,7 +35,7 @@
 ### memory.limit(size=2000)
 ### rd<-robustd.t(rbvole,dfreq=TRUE,vt=rep(3,6),vm="Mth",vh="Chao")
 
-  # WARNING : Because the data has 18 capture occasions, the fitting
-  # of this model is very memory consuming; it is long to run!
+  # WARNING : Because the data has 18 capture occasions, fitting this
+  # model uses a lot of memory. Its runtime is several minutes long.
 }
 \keyword{datasets}

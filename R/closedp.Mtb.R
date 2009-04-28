@@ -1,34 +1,20 @@
 "closedp.Mtb" <- function(X,dfreq=FALSE)
 {
 
-    #####################################################################################################################################
+    ############################################
     # Validation des arguments fournis en entrée
-    
-    # Argument dfreq
-    if(!is.logical(dfreq)||length(dfreq)!=1) stop("'dfreq' must be a logical object of length 1")
-
-        X <- as.matrix(X)
-        t <- if(dfreq) dim(X)[2]-1 else dim(X)[2]
-    
-    # Argument X
-    if (dfreq)
-    {
-        if (any(X[,1:t]!=1&X[,1:t]!=0)) stop("Every columns of 'X' but the last one must contain only zeros and ones")
-        if (any((X[,t+1]%%1)!=0)) stop("The last column of 'X' must contain capture histories frequencies, therefore integers")
-    } else {
-        if(any(X!=1&X!=0)) stop("'X' must contain only zeros and ones")
-    }
-    
-    #####################################################################################################################################
+    valid.one(dfreq,"logical")
+    Xvalid<-valid.X(X,dfreq)
+        X <- Xvalid$X
+        t <- Xvalid$t
+    ############################################
 
         Y <- histfreq.t(X,dfreq=dfreq)
         histpos <- histpos.t(t)
-        nbcap <- apply(histpos, 1, sum)
+        nbcap <- rowSums(histpos)
               
-        pnames <- vector("character",t)
-        for (i in 1:t) { pnames[i]<-paste("p",i,sep="") }
-        cnames <- vector("character",t-1)
-        for (i in 2:t) { cnames[i-1]<-paste("c",i,sep="") }
+        pnames <- paste("p",1:t,sep="")
+        cnames <- paste("c",2:t,sep="")
 
 
         # modele Mtb
@@ -83,7 +69,7 @@ print.closedp.Mtb <- function(x, ...) {
         tableau[,c(1,2)] <- round(tableau[,c(1,2)],1)
         tableau[,4] <- round(tableau[,4],0)
         tableau[,c(3,5)] <- round(tableau[,c(3,5)],3)       
-        print.default(tableau, print.gap = 2, quote = FALSE, right=TRUE)
+        print.default(tableau, print.gap = 2, quote = FALSE, right=TRUE, ...)
         cat("\nWarning: Model Mtb is not log-linear.\nThe abundance estimation for this model can be unstable.")
         cat("\n\n")
         invisible(x)

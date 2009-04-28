@@ -1,14 +1,14 @@
 "closedp.mX" <- function(X,dfreq=FALSE,mX,mname="Customized model")
 {
 
+        X<-as.matrix(X)
+        t <- ifelse(dfreq,dim(X)[2]-1,dim(X)[2])
+
     #####################################################################################################################################
     # Validation des arguments fournis en entrée
-    
-    # Argument dfreq
-    if(!is.logical(dfreq)||length(dfreq)!=1) stop("'dfreq' must be a logical object of length 1")
 
-        X <- as.matrix(X)
-        t <- if(dfreq) dim(X)[2]-1 else dim(X)[2]
+    # Argument dfreq
+    if(!is.logical(dfreq)||!isTRUE(all.equal(length(dfreq),1))) stop("'dfreq' must be a logical object of length 1")
     
     # Argument X
     if (dfreq)
@@ -21,7 +21,7 @@
     
     # Argument mX
     mX<-as.matrix(mX)
-    if (dim(mX)[1]!=(2^t-1)) stop("'mX' must have 2^t-1 rows")
+    if (!isTRUE(all.equal(2^t-1,dim(mX)[1]))) stop("'mX' must have 2^t-1 rows")
     
     # Argument mname
     if(!is.character(mname)) stop("'mname' nust be a character string specifying the model's name")
@@ -31,7 +31,7 @@
         Y <- histfreq.t(X,dfreq=dfreq)
 
         anaM <- glm(Y~mX,family=poisson)
-        NM <- sum(na.rm=TRUE,Y)+exp(anaM$coef[1])
+        NM <- sum(Y)+exp(anaM$coef[1])
         varcovM <- summary(anaM)$cov.unscaled
         erreurtypeM <- sqrt(exp(anaM$coef[1])+(exp(2*anaM$coef[1]))*varcovM[1,1])
         M <- matrix(c(NM,erreurtypeM,anaM$dev,anaM$df.residual,anaM$aic),nrow=1)
@@ -39,7 +39,7 @@
          
         # Préparation des sorties
         dimnames(M) <- list(mname,c("abundance","stderr","deviance","df","AIC"))
-        ans <- list(n=sum(na.rm=TRUE,Y),results=M,glm=anaM)
+        ans <- list(n=sum(Y),results=M,glm=anaM)
         class(ans) <- "closedp.custom"
         ans
 
@@ -59,5 +59,5 @@ print.closedp.custom <- function(x, ...) {
 }
 
 boxplot.closedp.custom <- function(x,...) {
-        boxplot((x$glm$y-fitted(x$glm))/sqrt(fitted(x$glm)),main="Boxplot of Pearson Residuals for the Customized Model")     
+        boxplot((x$glm$y-fitted(x$glm))/sqrt(fitted(x$glm)),main="Boxplot of Pearson Residuals for the customized model")     
 }

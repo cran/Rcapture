@@ -8,7 +8,7 @@
 uifit(x.closedp)
 }
 \arguments{
-  \item{x.closedp}{ An object produced by the \code{closedp} function. }
+  \item{x.closedp}{ An object produced by the \code{closedp.t} function. }
 }
 \value{
   \item{predicted }{ The observed and predicted values of the ui frequencies, \eqn{i = 1,\ldots,t}, for each model in \code{closedp} . For models M0, Mh Poisson2, Mh Darroch and Mb, predicted values are also extrapolated for \eqn{i = t+1,\ldots,t+5}.}
@@ -16,7 +16,7 @@ uifit(x.closedp)
   \item{day.first.capt }{ The mean and variance of the day of first capture, calculated with the observed and predicted \eqn{u_i}{ui}, for each model in \code{closedp}. }
 }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
 }
 \author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
 Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }

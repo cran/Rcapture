@@ -1,131 +1,51 @@
-"robustd.t" <- function(X, dfreq=FALSE, vt, vm="M0", vh=list("Chao"), va=2, neg=TRUE)
+"robustd.t" <- function(X, dfreq=FALSE, vt, vm="M0", vh=list("Chao"), vtheta=2, neg=TRUE)
 {
-
-############################################################################################################################################
+########################################################################################
 # Validation des arguments fournis en entrée et changement de leur forme si nécessaire
-############################################################################################################################################
+########################################################################################
 
-        # Argument dfreq
-        if(!is.logical(dfreq)||length(dfreq)!=1) stop("'dfreq' must be a logical object of length 1")
-    
-            X <- as.matrix(X)
-            t <- if(dfreq) dim(X)[2]-1 else dim(X)[2]
+        valid.one(dfreq,"logical")
+        Xvalid<-valid.X(X,dfreq)
+            X <- Xvalid$X
+            t <- Xvalid$t
             I <- length(vt) # nombre de periodes primaires
+        valid.vt(vt,t)
+        vm <- valid.vm(vm,c("none","M0","Mt","Mh","Mth"),vt,typet=TRUE)      
+        vh <- valid.vh(vh,c("Chao","Poisson","Darroch","Gamma"),vm)
+        vtheta <- valid.vtheta(vtheta,vh)
+        valid.one(neg,"logical")
     
-        # Argument vt
-        if(t!=sum(na.rm=TRUE,vt))
-            stop("The number of columns in 'X' is not equal to the total number of capture occasions (sum of the 'vt' components)")
-        if (any((vt %% 1)!=0)) stop("The 'vt' components must be integers")
-
-        # Argument X
-        if (dfreq)
-        {
-            if (any(X[,1:t]!=1&X[,1:t]!=0)) stop("Every columns of 'X' but the last one must contain only zeros and ones")
-            if (any((X[,t+1] %% 1)!=0)) stop("The last column of 'X' must contain capture histories frequencies, therefore integers")
-        } else {
-            if(any(X!=1&X!=0)) stop("'X' must contain only zeros and ones")
-        }
-    
-        # Argument vm
-        if(!(length(vt)==length(vm)||length(vm)==1)) stop("'vm' must be of length 1 or have the same length than 'vt'")
-        for (i in 1:length(vm)) {
-            if (vm[i]!="none"&&vm[i]!="M0"&&vm[i]!="Mt"&&vm[i]!="Mh"&&vm[i]!="Mth") 
-                stop("'vm' components can only take the value 'none', 'M0', 'Mt', 'Mh' or 'Mth'")
-            if ((vm[i]=="Mh"||vm[i]=="Mth")&&vt[i]<3) 
-                stop("Mh and Mth models require at least 3 capture occasions")
-        }
-        if(vm[1]=="none"||vm[length(vm)]=="none") stop("The 'no model' cannot be chosen for the first or the last period")
-        # Forme
-        if (length(vm)==1) vm <- rep(vm,length(vt))       
-        
-    
-        # Argument vh
-        nh <- sum(na.rm=TRUE,vm=="Mh"|vm=="Mth")
-        if (nh>0)
-        { 
-            vh <- as.list(vh)
-            if(!(length(vh)==nh||length(vh)==1))
-                stop("'vh' must be of length 1 or of length equals the number of heterogenous models specified in 'vm'")
-            for (i in 1:length(vh))
-            {
-                if(!is.function(vh[[i]])&&vh[[i]]!="Chao"&&vh[[i]]!="Darroch"&&vh[[i]]!="Poisson")
-                stop("The 'vh' elements must be functions or charater strings taking the values 'Chao', 'Darroch' or 'Poisson'")
-            }
-            # Forme
-            if (length(vh)==1) vh <- rep(vh,nh)
-            vht<-rep(NA,I)
-            j<-1
-            for (i in 1:I)
-            { 
-                if (vm[i]=="Mh"||vm[i]=="Mth")
-                {
-                    vht[i] <- vh[[j]]
-                    j <- j+1
-                }
-            }
-            vh <- vht
-        }
-        
-        # Argument va
-        nP <- sum(na.rm=TRUE,vh=="Poisson")
-        if (nP>0)
-        {
-            if(!(length(va)==nP||length(va)==1))
-                stop("'va' must be of length 1 or of length equals the number of Poisson heterogenous models specified in 'vh'")
-            if (!is.numeric(va)) stop("The 'va' components must be numeric values")
-            # Forme
-            if (length(va)==1) va <- rep(va,nP)
-            vat<-rep(1,I)
-            j<-1
-            for (i in 1:I)
-            { 
-                if (!is.na(vh[i])&&vh[i]=="Poisson")
-                {
-                    vat[i] <- va[j]
-                    j <- j+1
-                }
-            }
-            va <- vat
-        }
-       
-        # Argument neg
-        if(!is.logical(neg)||length(neg)!=1) stop("'neg' must be a logical object of length 1")
-
-
-        
-############################################################################################################################################
+##########################################################################################
 # AJUSTEMENT DU MODÈLE
-############################################################################################################################################
-
+##########################################################################################
 
 #-------------------------------------#
 # Élaboration et ajustement du modèle #
 #-------------------------------------#
 
         Y <- histfreq.t(X,dfreq=dfreq)
-        rd.call <- match.call()
-        Xw <- Xomega.t(vt,vm,vh,va,rd.call)     # deuxieme composante (celle de Beta) dans le modele loglineaire du robust design
-        Xp <- histpos.t(sum(na.rm=TRUE,vt))
-        Xdelta <- matrix(0,dim(Xp)[1],I)
+        fct.call <- match.call()
+        histpos <- histpos.t(sum(na.rm=TRUE,vt))
+        Xw <- Xomega(vt,vm,vh,vtheta,fct.call,typet=TRUE,histpos)     # deuxieme composante (celle de Beta) dans le modele loglineaire du robust design
+        Xdelta <- matrix(0,dim(histpos)[1],I)
         for (i in 1:I)
         {
-                if (i==1) { Xs <- Xp[,c(1:vt[i])] } else
-                { Xs <- Xp[,c((sum(na.rm=TRUE,vt[1:(i-1)])+1):sum(na.rm=TRUE,vt[1:i]))] }
+                if (i==1) { Xs <- histpos[,c(1:vt[i])] } else
+                { Xs <- histpos[,c((sum(na.rm=TRUE,vt[1:(i-1)])+1):sum(na.rm=TRUE,vt[1:i]))] }
                 Xdelta[,i] <- apply(Xs,1,max)
         }
         Zw <- Zdelta(Xdelta)     # premiere composante (celle de Alpha) dans ce meme modele
-        gammanames <- vector("character",2*I-2)
-        for (i in 1:(2*I-2)) { gammanames[i]<-paste("gamma",i,sep="") }
-        colnames(Zw) <- gammanames
-        mX <- cbind(Zw,Xw$mat)      # on fusionne ces 2 composantes explicatives
-               
+        mX. <- cbind(Zw,Xw$mat)      # on fusionne ces 2 composantes explicatives
+        gammanames <- paste("gamma",1:(2*I-2),sep="")
+        colnames(mX.) <- c(gammanames,Xw$paramnames)
+        dimX <- dim(mX.)[2]
+
         # Ajustement du modèle
-        anaMrd <- glm(Y~mX,family=poisson)
+        anaMrd <- suppressWarnings(glm(Y~mX.,family=poisson))
 
     #Vérification du bon ajustement du modèle loglinéaire
-    if(!anaMrd$converged) stop("The algorithm did not converged")
-    if(any(is.na(anaMrd$coef))) warning("Some loglinear parameter estimations cannot be evaluated")
-
+    if(!anaMrd$converged) stop("algorithm did not converged")
+    if(any(is.na(anaMrd$coef))) warning("some loglinear parameter estimations cannot be evaluated")
 
 #-----------------------------------------------------------------------------------#
 # Réajustement du modèle en enlevant les gamma et les eta (si modèle Chao) négatifs #
@@ -139,7 +59,8 @@
             indic <- as.vector(c(0,ifelse(param[2:(2*I-1)]<0,1,0)))
             for (i in 1:I)
             {
-                if ((vm[i]=="Mh"||vm[i]=="Mth")&&vh[i]=="Chao") {
+                test.Chao <- if(is.function(vh[[i]])||is.null(vh[[i]])) FALSE else if (vh[[i]]=="Chao") TRUE else FALSE
+                if(test.Chao) {
                     indic <- as.vector(c(indic,rep(0,Xw$nbparam[i]-vt[i]+2),ifelse(param[(2*I+sum(na.rm=TRUE,Xw$nbparam[1:i])-vt[i]+2):(2*I+sum(na.rm=TRUE,Xw$nbparam[1:i])-1)]<0,1,0)))
                 } else {
                     indic <- as.vector(c(indic,rep(0,Xw$nbparam[i])))
@@ -151,30 +72,20 @@
                 pos <- 1
                 while(indic[pos]==0) pos <- pos + 1
                 ppositions <- c(ppositions,pos)
-                # Retrait de la bonne colonne de mX et réajustement du modèle
-                mX <- mX[,-(pos-sum(na.rm=TRUE,ppositions<pos))]
-                anaMrd <- glm(Y~mX,family=poisson)        
+                # Retrait de la bonne colonne de mX. et réajustement du modèle
+                mX. <- mX.[,-(pos-sum(na.rm=TRUE,ppositions<pos))]
+                anaMrd <- suppressWarnings(glm(Y~mX.,family=poisson))
                 # Ajout de zéros dans le vecteur des paramètres loglinéaires
                 positions <- sort(ppositions[-1])                
-                param <- c(anaMrd$coef[1:(positions[1]-1)],0)
-                if(length(positions)>1)
-                {
-                    for ( i in 2:length(positions))
-                    {
-                        if(positions[i]==positions[i-1]+1) {
-                            param <- c(param,0)
-                        } else {
-                            param <- c(param,anaMrd$coef[(positions[i-1]-i+2):(positions[i]-i)],0)
-                        }
-                    }
-                }
-                param <- c(param,anaMrd$coef[(positions[length(positions)]-length(positions)+1):length(anaMrd$coef)])
+                param <- rep(0,dimX+1)
+                param[-positions] <- anaMrd$coef 
                 # Vecteur d'indicatrices pour les paramètres d'intérêt négatifs
                 indic <- as.vector(c(0,ifelse(param[2:(2*I-1)]<0,1,0)))
                 for (i in 1:I)
                 {
-                    if ((vm[[i]]=="Mh"||vm[[i]]=="Mth")&&vh[i]=="Chao") {
-                        indic <- as.vector(c(indic,rep(0,Xw$nbparam[i]-vt[[i]]+2),ifelse(param[(2*I+sum(na.rm=TRUE,Xw$nbparam[1:i])-vt[[i]]+2):(2*I+sum(na.rm=TRUE,Xw$nbparam[1:i])-1)]<0,1,0)))
+                    test.Chao <- if(is.function(vh[[i]])||is.null(vh[[i]])) FALSE else if (vh[[i]]=="Chao") TRUE else FALSE
+                    if (test.Chao) {
+                        indic <- as.vector(c(indic,rep(0,Xw$nbparam[i]-vt[i]+2),ifelse(param[(2*I+sum(na.rm=TRUE,Xw$nbparam[1:i])-vt[i]+2):(2*I+sum(na.rm=TRUE,Xw$nbparam[1:i])-1)]<0,1,0)))
                     } else {
                         indic <- as.vector(c(indic,rep(0,Xw$nbparam[i])))
                     }
@@ -183,43 +94,38 @@
         }
         positions <- sort(ppositions[-1]) 
 
-
 #------------------------------------------------------------------------#
 # Ajustement d'un modèle pour tester la présence d'émigration temporaire #
 #------------------------------------------------------------------------#
 
         Inono <- length(vm[vm!="none"])
-        idpemig <- 0
+        idpemig <- NULL
         for (i in 2:(I-1)) if(vm[i]!="none") idpemig <- c(idpemig,i)
-        idpemig <- idpemig[-1]
         
-        if(Inono==3)
-        {
+        if(Inono==3) {
             anaMrd2 <- NULL
             parap2 <- NULL
 
-            mX3<-cbind(mX,Xdelta[,idpemig])
-            anaMrd3 <- glm(Y~mX3,family=poisson)
+            mX3<-cbind(mX.,Xdelta[,idpemig])
+            anaMrd3 <- suppressWarnings(glm(Y~mX3,family=poisson))
             parap3<-summary(anaMrd3)$coef[length(anaMrd3$coef),1:2]
-        } else if(Inono>3)
-            {
-                mX2<-cbind(mX,apply(Xdelta[,idpemig],1,sum))
-                anaMrd2 <- glm(Y~mX2,family=poisson)
-                parap2<-summary(anaMrd2)$coef[length(anaMrd2$coef),1:2]
+        } else if(Inono>3) {
+           mX2<-cbind(mX.,apply(Xdelta[,idpemig],1,sum))
+           anaMrd2 <- suppressWarnings(glm(Y~mX2,family=poisson))
+           parap2<-summary(anaMrd2)$coef[length(anaMrd2$coef),1:2]
 
-                mX3<-cbind(mX,Xdelta[,idpemig])
-                anaMrd3 <- glm(Y~mX3,family=poisson)
-                nn<-dim(summary(anaMrd3)$coef)[1]
-                parap3<-summary(anaMrd3)$coef[(nn-Inono+3):nn,1:2]
-            } else {
-                anaMrd2 <- NULL
-                parap2 <- NULL
-    
-                anaMrd3 <- NULL
-                parap3 <- NULL
-            }
+           mX3<-cbind(mX.,Xdelta[,idpemig])
+           anaMrd3 <- suppressWarnings(glm(Y~mX3,family=poisson))
+           nn<-dim(summary(anaMrd3)$coef)[1]
+           parap3<-summary(anaMrd3)$coef[(nn-Inono+3):nn,1:2]
+        } else {
+           anaMrd2 <- NULL
+           parap2 <- NULL
+
+           anaMrd3 <- NULL
+           parap3 <- NULL
+        }
      
-
 #---------------------------------------#
 # Formation des vecteurs des paramètres #
 #---------------------------------------#
@@ -249,48 +155,18 @@
                         "You can set them to zero with the 'neg' option.","\n",sep=""))
         }
 
-
 #--------------------------------------------------------------#
 # Matrice de variances-covariances des paramètres loglinéaires #
 #--------------------------------------------------------------#
 
-        if(length(positions)>0)
-        {
-            # Insertion de colonnes de zéros
-            varcovc <- cbind(summary(anaMrd)$cov.unscaled[,1:(positions[1]-1)],rep(0,dim(summary(anaMrd)$cov.unscaled)[1]))
-            if(length(positions)>1)
-            {
-                for ( i in 2:length(positions))
-                {
-                    if(positions[i]==positions[i-1]+1) {
-                        varcovc <- cbind(varcovc,rep(0,dim(summary(anaMrd)$cov.unscaled)[1]))
-                    } else {
-                        varcovc <- cbind(varcovc,summary(anaMrd)$cov.unscaled[,(positions[i-1]-i+2):(positions[i]-i)],rep(0,dim(summary(anaMrd)$cov.unscaled)[1]))
-                    }
-                }
-            }
-            varcovc <- cbind(varcovc,summary(anaMrd)$cov.unscaled[,(positions[length(positions)]-length(positions)+1):dim(summary(anaMrd)$cov.unscaled)[2]])
-            # Insertion de lignes de zéros
-            varcov <- rbind(varcovc[1:(positions[1]-1),],rep(0,dim(varcovc)[2]))
-            if(length(positions)>1)
-            {
-                for ( i in 2:length(positions))
-                {
-                    if(positions[i]==positions[i-1]+1) {
-                        varcov <- rbind(varcov,rep(0,dim(varcovc)[2]))
-                    } else {
-                        varcov <- rbind(varcov,varcovc[(positions[i-1]-i+2):(positions[i]-i),],rep(0,dim(varcovc)[2]))
-                    }
-                }
-            }
-            varcov <- rbind(varcov,varcovc[(positions[length(positions)]-length(positions)+1):dim(varcovc)[1],]) 
-        } else { varcov <- summary(anaMrd)$cov.unscaled }
+        if(length(positions)>0) {
+             varcov <- matrix(0,dimX+1,dimX+1)
+             varcov[-positions,-positions] <- summary(anaMrd)$cov.unscaled
+        } else varcov <- summary(anaMrd)$cov.unscaled  
 
-
-
-############################################################################################################################################
+########################################################################################
 # Estimation des paramètres démographiques
-############################################################################################################################################
+########################################################################################
 
 #--------------------------------------------#
 # calcul des probabilites de capture (pstar) #
@@ -313,7 +189,7 @@
                         beta <- beta[-c(1:vt[i])]
                 } else # Tous les autres modèles
                 {
-                        Xpf <- Xclosedp(vt[i],vm[i],vh[i],va[i])
+                        Xpf <- Xclosedp(vt[i],vm[i],vh[[i]],vtheta[i])
                         pstar[i] <- sum(na.rm=TRUE,exp(Xpf$mat%*%beta[c(1:Xpf$nbparam)]))/(1+ sum(na.rm=TRUE,exp(Xpf$mat%*%beta[c(1:Xpf$nbparam)])))
                         dpstar[(2*I + if(i>1) sum(na.rm=TRUE,Xw$nbparam[1:(i-1)]) else 0):(2*I-1+sum(na.rm=TRUE,Xw$nbparam[1:i])),i] <- t(Xpf$mat)%*%exp(Xpf$mat%*%beta[c(1:Xpf$nbparam)])/(1+sum(na.rm=TRUE,exp(Xpf$mat%*%beta[c(1:Xpf$nbparam)])))^2
                         beta <- beta[-c(1:Xpf$nbparam)]
@@ -321,7 +197,6 @@
         }
         varcovpstar <- t(dpstar)%*%varcov%*%dpstar
         pstarStderr <- sqrt(diag(varcovpstar))    
-
 
 #---------------#
 # calcul des Ui #
@@ -345,8 +220,7 @@
         varcovuv <- t(duv)%*%varcov%*%duv
         uvStderr <- sqrt(diag(varcovuv))    
 
-
-#---------------#
+ #---------------#
 # calcul des Vi #
 #---------------#
 
@@ -368,7 +242,6 @@
         varcovvv <- t(dvv)%*%varcov%*%dvv
         vvStderr <- sqrt(diag(varcovvv))    
 
-
 #--------------------------------------------------------------#
 # calcul des probabilites de survie entre chaque periode (phi) #
 #--------------------------------------------------------------#
@@ -388,7 +261,6 @@
         varcovphi <- t(dphi)%*%varcov%*%dphi
         phistderr <- sqrt(diag(varcovphi))    
   
-
 #---------------------------------------#
 # calcul des taille de populations (Ni) #
 #---------------------------------------#
@@ -422,7 +294,6 @@
         NpopStderr <- sqrt(diag(varcovtpop))    
         NpopStderr <- sqrt(pmax(NpopStderr^2-Npop,0))          
 
-
 #----------------------------#
 # calcul des naissances (Bi) #
 #----------------------------#
@@ -431,8 +302,7 @@
         dB <- dNpop[,2:I] - t(phi*t(dNpop[,1:(I-1)])) - t(Npop[1:(I-1)]*t(dphi))
         varcovB <- t(dB)%*%varcov%*%dB
         BStderr <- sqrt(diag(varcovB))
-        
-        
+          
 #--------------------------------------------------------------------#
 # Calcul du nombre total d'individus qui ont passé sur le territoire #
 #--------------------------------------------------------------------#
@@ -441,10 +311,9 @@
         dNtot <- dNpop[,1] + rowSums(dB)    
         NtotStderr <- sqrt(max(t(dNtot)%*%varcov%*%dNtot-Ntot,0))
 
-
-############################################################################################################################################
+#######################################################################################
 # Présentation des résultats
-############################################################################################################################################
+#######################################################################################
 
         modelfit <- matrix(c(anaMrd$deviance,anaMrd$df.residual,anaMrd$aic),nrow=1)
         dimnames(modelfit) <- list("fitted model",c("deviance","    df","      AIC"))
@@ -516,29 +385,31 @@ print.robustd <- function(x, ...){
             cat("\nClosed population model for every period:",x$models[1],"\n")
         } else {
             cat("\nClosed population models for each period:\n")
-            print.default(x$models, print.gap = 2, quote = FALSE, right=TRUE, na.print="--")        
+            print.default(x$models, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         }
         cat("\nModel fit:\n")
         x$model.fit[c(1,3)] <- round(x$model.fit[c(1,3)],3)
         x$model.fit[2] <- round(x$model.fit[2],0)
-        print.default(x$model.fit, print.gap = 2, quote = FALSE, right=TRUE, na.print="--")
-        cat("\nTest for temporary emigration:\n")
-        x$emig.fit[,c(1,3)] <- round(x$emig.fit[,c(1,3)],3)
-        x$emig.fit[,2] <- round(x$emig.fit[,2],0)
-        print.default(x$emig.fit, print.gap = 2, quote = FALSE, right=TRUE, na.print="--")
+        print.default(x$model.fit, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
+        if(!is.null(x$emig.fit)) {
+             cat("\nTest for temporary emigration:\n")
+             x$emig.fit[,c(1,3)] <- round(x$emig.fit[,c(1,3)],3)
+             x$emig.fit[,2] <- round(x$emig.fit[,2],0)
+             print.default(x$emig.fit, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
+        }
         cat("\nCapture probabilities:\n")
-        print.default(round(x$capture.prob,4), print.gap = 2, quote = FALSE, right=TRUE, na.print="--")
+        print.default(round(x$capture.prob,4), print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         cat("\nSurvival probabilities:\n")
-        print.default(round(x$survivals,4), print.gap = 2, quote = FALSE, right=TRUE, na.print="--")
+        print.default(round(x$survivals,4), print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         cat("\nAbundances:\n")
         x$N <- round(x$N,1)
-        print.default(x$N, print.gap = 2, quote = FALSE, right=TRUE, na.print="--")
+        print.default(x$N, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         cat("\nNumber of new arrivals:\n")
         x$birth <- round(x$birth,1)
-        print.default(x$birth, print.gap = 2, quote = FALSE, right=TRUE, na.print="--")
+        print.default(x$birth, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         cat("\nTotal number of units who ever inhabited the survey area:\n")
         x$Ntot <- round(x$Ntot,1)
-        print.default(x$Ntot, print.gap = 2, quote = FALSE, right=TRUE, na.print="--")
+        print.default(x$Ntot, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         cat("\nTotal number of captured units:",x$n,"\n")
         if (length(x$neg[x$neg<2*dim(x$N)[1]])==1) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameter has been set to zero")
         if (length(x$neg[x$neg<2*dim(x$N)[1]])>1) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameters has been set to zero")

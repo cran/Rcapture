@@ -1,12 +1,13 @@
 \name{hare}
 \alias{hare}
 \docType{data}
-\title{  Closed Population Data for Snowshoe Hares }
+\title{  Snowshoe Hare Data }
 \description{
-  This data set contains closed population capture history data for snowshoe hares. 
+  This data set contains capture-recapture data for snowshoe hares. 
 }
 \usage{data(hare)}
 \format{
+68 by 6 numeric matrix, with the following columns:
   \describe{
     \item{\code{c1}, \code{c2}, \code{c3}, \code{c4}, \code{c5}, \code{c6}}{Capture histories for the six capture occasions}
   }
@@ -14,14 +15,14 @@
 \details{
   This data set is analysed in Cormack (1989) and Agresti (1994).
 
-  This data set's format is the default one, i.e. each row represents the capture history of one animal. 
+  Each row of this data set represents the capture history of one animal. 
 }
 \references{
-Agresti, A.  (1994). Simple capture-recapture models permitting unequal catchability and variable sampling effort. \emph{Biometrics}, 50, 494--500.
+Agresti, A.  (1994) Simple capture-recapture models permitting unequal catchability and variable sampling effort. \emph{Biometrics}, \bold{50}, 494--500.
 
-Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
 
-Cormack, R. M. (1989). Log-linear models for capture-recapture. \emph{Biometrics}, \bold{45}, 395--413.
+Cormack, R. M. (1989) Log-linear models for capture-recapture. \emph{Biometrics}, \bold{45}, 395--413.
 }
 \examples{
 data(hare)
@@ -32,6 +33,7 @@ plot(desc)
 
 closedp(hare)
   # The best fitting model Mth Poisson2(N = 81.1, s.e.=5.7) has an AIC of 146. 
+closedpCI.t(hare,m="Mth",h="Poisson",theta=2)
 
   # One can compare the fit of this model with that obtained by removing the
   # 2 hares caught 6 times. This can be done by adding a column to the design 
@@ -39,11 +41,7 @@ closedp(hare)
 col<-rep(0,2^6-1)
 mat<-histpos.t(6)
 col[apply(mat,1,sum)==6]<-1
-closedp.mX(hare,mX=cbind(mat,col),mname="Mt without 111111")
+closedpCI.t(hare,mX=cbind(mat,col),mname="Mt without 111111")
   # This gives N = 76.8 (s.e.=3.9) with an AIC of 146.
-
-  # Profile likelihood confidence intervals for both models:
-profileCI(hare,m="Mth",h="Poisson",a=2)
-profileCI(hare,mX=cbind(mat,col),mname="Mt without 111111")
 }
 \keyword{datasets}

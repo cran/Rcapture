@@ -1,29 +1,30 @@
 \name{duck}
 \alias{duck}
 \docType{data}
-\title{  Open Population Data for Eider Ducks }
+\title{  Eider Duck Data }
 \description{
-  This data set contains open population capture history data for eider ducks. 
+  This data set contains capture-recapture data for eider ducks. 
 }
 \usage{data(duck)}
 \format{
+63 by 7 numeric matrix, with the following columns:
   \describe{
     \item{\code{p1}, \code{p2}, \code{p3}, \code{p4}, \code{p5}, \code{p6}}{ Capture histories for six periods}
     \item{freq}{ Observed frequencies for each capture history}
     }
 }
 \details{
-  The data are extracted from a 25-year study by Coulson (1984). The capture periods are six consecutives years : years 19-24. This data set is analysed in Cormack (1989).
+  The data points are extracted from a 25-year study by Coulson (1984). The capture periods are six consecutives years : years 19-24. This data set is analysed in Cormack (1989).
   
-  This data set's format is the alternative one, i.e. each row represents an observed capture history followed by its frequency. 
+  Each row of this data set represents an observed capture history followed by its frequency. 
 }
 \source{
-Coulson, J. C. (1984). The population dynamics of the Eider Duck \emph{Somateria mollissima} and evidence of extensive non breeding by adults ducks. \emph{Ibis}, 126, 525--543.
+Coulson, J. C. (1984) The population dynamics of the Eider Duck \emph{Somateria mollissima} and evidence of extensive non breeding by adults ducks. \emph{Ibis}, \bold{126}, 525--543.
 }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
 
-Cormack, R. M. (1989). Log-linear models for capture-recapture. \emph{Biometrics}, \bold{45}, 395--413.
+Cormack, R. M. (1989) Log-linear models for capture-recapture. \emph{Biometrics}, \bold{45}, 395--413.
 }
 \examples{
 data(duck)

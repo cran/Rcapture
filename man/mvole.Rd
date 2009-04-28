@@ -7,6 +7,7 @@
 }
 \usage{data(mvole)}
 \format{
+171 by 30 numeric matrix, with the following columns:
   \describe{
     \item{\code{c11}, \code{c12}, \code{c13}, \code{c14}, \code{c15}}{Capture histories for the 5 capture occasions within primary period 1}
     \item{\code{c21}, \code{c22}, \code{c23}, \code{c24}, \code{c25}}{Capture histories for the 5 capture occasions within primary period 2}
@@ -19,16 +20,16 @@
 \details{
   The data set is extracted from Table 19.1 of Williams, Nichols and Conroy (2002). The capture occasions represent five consecutive days of trapping each month from June to Decembre 1981 at Patuxent Wildlife Research Center, Laurel, Maryland.
 
-  This data set's format is the default one, i.e. each row represents the capture history of one animal. 
+  Each row of this data set represents the capture history of one animal. 
 }
 \note{
   In this data set, ten animals are in fact not released after capture. These trap deaths are not identified. 
 }
 \source{
-Williams, B.K., Nichols, J.D., and Conroy, M.J. (2002) \emph{Analysis and Management of Animal Populations}, Academic Press: San Diego.
+Williams, B.K., Nichols, J.D., and Conroy, M.J. (2002) \emph{Analysis and Management of Animal Populations}, San Diego: Academic Press.
 }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007). Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), http://www.jstatsoft.org/
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
 }
 \examples{
   # First, a between primary period Jolly-Seber analysis is obtained.
@@ -77,7 +78,7 @@ rd.m3<-robustd.0(mvole[,-10], vt=c(5,4,rep(5,4)),vm=c("Mh","none","Mh","Mh",
 
   # The smallest AIC is obtained with the Poisson model, with parameter a=1.5 
   # within sessions.
-rd.m4<-robustd.0(mvole[,-10], vt=c(5,4,rep(5,4)),vm="Mh",vh="Poisson",va=1.5)
+rd.m4<-robustd.0(mvole[,-10], vt=c(5,4,rep(5,4)),vm="Mh",vh="Poisson",vtheta=1.5)
   # The estimators of the demographic parameters obtained with the robust design 
   # are similar to those obtained with the Jolly-Seber model applied to the 
   # between primary period data.
