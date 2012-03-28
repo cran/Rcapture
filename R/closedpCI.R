@@ -15,6 +15,7 @@ function(X, dfreq=FALSE, dtype=c("hist","nbcap"), t, t0=t, m=c("M0","Mh"), h=c("
      eval(valid.0)
      eval(valid.closedpCI)
      eval(model.0)
+     ans <- list() # pour éviter d'avoir le message "no visible binding for global variable 'ans'" dans le check
      eval(closedpCI.internal)
      ansf <- c(ans,list(t0=t0))
      class(ansf) <- "closedpCI"
@@ -41,7 +42,7 @@ valid.closedpCI <- quote({ # Validation des arguments des fonctions closedpCI
      hname <- if(is.function(h)) hname else h
      valid.one(theta,"numeric")
      valid.one(neg,"logical")
-     valid.one(alpha,"numeric")
+     valid.one(alpha,"numeric") # je devrais aussi tester que alpha est entre 0 et 1 (voir closedp.normal)
      # Argument mname
      if (missing(mname)) {
        mname <- if(!is.null(mX)) deparse(substitute(mX)) else if (m%in%c("M0","Mt")) m else
@@ -58,7 +59,7 @@ valid.closedpCI <- quote({ # Validation des arguments des fonctions closedpCI
      }
 })
 
-closedpCI.internal <- quote({ # calculs principaux des fonctions closedCI
+closedpCI.internal <- quote({ # calculs principaux des fonctions closedpCI
         n <- sum(na.rm=TRUE,Y)
         if (is.null(mX)) {
             Xclosedp.out <- Xclosedp(t=t,m=m,h=h,theta=theta,histpos=histpos)
@@ -222,6 +223,6 @@ closedpCI.internal <- quote({ # calculs principaux des fonctions closedCI
      }
      res<-pres(x$glm,typet) 
      ylab <- if(typet) "Pearson residuals in terms of fi (number of units captured i times)" else "Pearson residuals"
-     plot(1:t,res[1:t],type="b",main=main,xlab="number of captures",ylab=ylab)
+     plot(1:t,res[1:t],type="b",main=main,xlab="number of captures",ylab=ylab, ...)
      abline(h=0,lty=2)
 }

@@ -1,3 +1,21 @@
+Changes in Version 1.2-1
+  
+  o Minor bug fixes and changes in the documentation
+    
+  o Minor modification to the package vignette : A date has been added in the
+    title of the document RcaptureJSS.
+    
+  o The package vignette is now in the 'vignettes' folder. Only the PDF is left in the 
+    folder 'inst/doc'.
+
+  
+
+Changes in Version 1.2-1
+  
+  o Minor bug fixes
+
+  
+
 Changes in Version 1.2-0
 
   o The functions closedp.mX(), closedp.h() and profile.CI() are now 
@@ -17,7 +35,6 @@ Changes in Version 1.2-0
   o The plot() method for class 'closedpCI' traces the scatterplot of the 
     Pearson residuals in terms of fi (number of units captured i times) for 
     the customized model. 		
-
 	
   o closedp() is now named closedp.t()
 

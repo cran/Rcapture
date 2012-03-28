@@ -8,7 +8,8 @@
     Xvalid<-valid.X(X,dfreq,dtype,t,warn=FALSE)
          X <- Xvalid$X
          t <- Xvalid$t
-         n <- sum(histfreq.0(X=X,dfreq=dfreq,dtype=dtype,vt=t)) 
+		 histfreq <- histfreq.0(X=X,dfreq=dfreq,dtype=dtype,vt=t)
+         n <- sum(histfreq) 
     if (t<2) stop("the number of capture occasions 't' must be at least 2")    
     valid.one(t0,"numeric")
     if ((t0%%1)!=0||t0>t||t0<2) 
@@ -57,7 +58,7 @@
           }
     } else if (m=="Mh" && hname=="Chao") {
           converge <- NULL
-          Y <- histfreq.0(X=X,dfreq=dfreq,dtype=dtype,vt=t)
+          Y <- histfreq
           fi <- rev(Y)
           N <- n + ((t - 1) * fi[1] * (fi[1] - 1))/(2 * t * (fi[2] + 1))
           erreurtype <- sqrt(((t - 1) * fi[1] * (fi[1] - 1))/(2 * t * (fi[2] + 1)) + 
@@ -74,7 +75,9 @@
                mX. <- if(m=="Mb") c(0:(t-1)) else c(0:(t-2))
                cst <- rep(0,length(Y))
           } else {
-               if (m%in%c("M0","Mh")) {
+               histpos <- NA
+			   mXomit <- NA
+			   if (m%in%c("M0","Mh")) {
                     eval(model.0)
                } else if (m=="Mth") {
                     eval(model.t)

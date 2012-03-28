@@ -10,7 +10,7 @@
           lmn <- c("M0","Mt","Mh Chao","Mh Poisson2","Mh Darroch","Mh Gamma3.5","Mth Chao","Mth Poisson2","Mth Darroch","Mth Gamma3.5","Mb","Mbh")
           smn <- c("M0","Mt","MhC","MhP","MhD","MhG","MthC","MthP","MthD","MthG","Mb","Mbh")
      }
-     eval(closedp.internal)
+	 eval(closedp.internal)
      class(ans) <- c("closedp","closedp.t")
      return(ans)
 }
@@ -27,6 +27,7 @@
           lmn <- c("M0","Mh Chao","Mh Poisson2","Mh Darroch","Mh Gamma3.5")
           smn <- c("M0","MhC","MhP","MhD","MhG")
      }
+     ans <- list() # pour éviter d'avoir le message "no visible binding for global variable 'ans'" dans le check
      eval(closedp.internal)
      ansf <- c(ans,list(t0=t0))
      class(ansf) <- "closedp"
@@ -44,13 +45,13 @@ valid.closedp <- quote({ # Validation des arguments des fonctions closedp
      if (!typet) {    
          valid.one(t0,"numeric")
          if ((t0%%1)!=0||t0>t||t0<2) 
-               stop("'t0' must be an integer between 't', the number of capture occasion, and 2 inclusively")
+               stop("'t0' must be an integer between 't', the number of capture occasions, and 2 inclusively")
      }
      valid.one(neg,"logical")
      valid.one(trace,"logical")
 })
 
-closedp.internal <- quote({ # calculs principaux des fonctions closed
+closedp.internal <- quote({ # calculs principaux des fonctions closedp
     n <- sum(na.rm=TRUE,Y)
     nbcap <- rowSums(histpos)      
     nm <- length(lmn) 
@@ -198,7 +199,7 @@ closedp.internal <- quote({ # calculs principaux des fonctions closed
           cat("Abundance estimations and model fits:\n")
           tableau <- x$results
           tableau[,c(1,2)] <- round(tableau[,c(1,2)],1)
-          if (tableau[1,3]>0.001) tableau[,3] <- round(tableau[,3],3)       
+          if (!is.na(tableau[1,3])) if (tableau[1,3]>0.001) tableau[,3] <- round(tableau[,3],3)       
           tableau[,4] <- round(tableau[,4],0)
           tableau[,5] <- round(tableau[,5],3)       
           print.default(tableau, print.gap = 2, quote = FALSE, right=TRUE, ...)
@@ -226,8 +227,8 @@ closedp.internal <- quote({ # calculs principaux des fonctions closed
             nmodel <- length(model)
             liste <- vector("list",length=nmodel)
             names(liste) <- names(x$glm)[model]
-            pres<-function(x){(x$y-fitted(x))/sqrt(fitted(x))}
-            for (i in 1:nmodel) liste[[i]] <- pres(x$glm[[model[i]]])
+            pres2<-function(x){(x$y-fitted(x))/sqrt(fitted(x))}
+            for (i in 1:nmodel) liste[[i]] <- pres2(x$glm[[model[i]]])
             cex.axis <- if (nmodel>10) 0.75 else 1
             boxplot.default(liste, main=main, cex.axis=cex.axis, ...)
             abline(h=0,lty=3)
@@ -251,7 +252,7 @@ closedp.internal <- quote({ # calculs principaux des fonctions closed
           (fi-fipred)/sqrt(fipred)
      }
      plotres<-function(res,main) {
-          plot(1:t,res[1:t],type="b",ann=FALSE)
+          plot(1:t,res[1:t],type="b",ann=FALSE,...)
           mtext(main,side=3,line=0.5,adj=0,font=2)
           abline(h=0,lty=2)
      }

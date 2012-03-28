@@ -332,7 +332,7 @@
         pstar <- cbind(pstar,pstarStderr)
         phi <- cbind(phi,phistderr)
         Npop <- cbind(Npop,NpopStderr)
-        B <- cbind(round(B,digit=6),round(BStderr,digit=6))
+        B <- cbind(round(B,digits=6),round(BStderr,digits=6))
         Ntot <- cbind(Ntot,NtotStderr)
         loglinearpara <- cbind(param,sqrt(diag(varcov)))
         uv <- cbind(uv,uvStderr)

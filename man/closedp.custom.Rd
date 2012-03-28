@@ -6,7 +6,7 @@
 \alias{boxplot.closedp.custom}
 \title{ Customization of a Loglinear Model for Closed Populations Capture-Recapture Experiments }
 \description{
-This function is deprecated, please use \code{closedpCI.t} instead. 
+These functions are deprecated, please use \code{closedpCI.t} instead. 
 
 The \code{closedp.mX} function fits a loglinear model given a design matrix \code{mX}. The \code{closedp.h} function fits Mh or Mth models for which the form of the column for heterogeneity in the design matrix is determined by the user. 
 }

@@ -122,6 +122,8 @@ plot.descriptive <- function(x,main="Exploratory Heterogeneity Graph", ...){
 #        }
 #        mtext(main,side=3,line=2.7,cex=1.8)
 #
+
+
 ##################################################################################################
 ## Sous-fonctions pour le calcul des certaines stat descriptives
 

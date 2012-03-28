@@ -90,7 +90,7 @@
     }
     
     ## Pour omettre les lignes avec uniquement des zéros s'il y en a
-    zeros <- if(dfreq) apply(X[,-dim(X)[2],drop=FALSE],1,sum)==0 else apply(X,1,sum)==0
+    zeros <- if(dfreq) apply(X[,-dim(X)[2],drop=FALSE],1,sum)==0 else apply(X,1,sum)==0    ###################### équivalent : rowSums(X[,1:t])==0
     # if (sum(zeros)>0) warning("the data matrix 'X' contains cases with no capture; these are ignored")
     X <- X[!zeros,,drop=FALSE]
     
@@ -113,14 +113,13 @@
 
 "valid.vm" <- function(vm,values,vt,typet=TRUE)
 {
-    if(length(vt)==1) vm <- vm[1] else if (length(vm)==1) vm <- rep(vm,length(vt))
+	error <- paste(ifelse(length(vt)==1,"'m'","'vm' elements"),"can only take one of these values: ",paste("'",values,"'",sep="",collapse=" ")) 
+    if(is.null(vm)) stop(error)		  
+	if(length(vt)==1) vm <- vm[1] else if (length(vm)==1) vm <- rep(vm,length(vt))
     if(length(vt)!=length(vm)) stop("'vm' must be of length 1 or have the same length than 'vt'")
     for (i in 1:length(vm))
     {
-        if(!vm[i]%in%values){
-          error <- paste(ifelse(length(vt)==1,"'m'","'vm' elements"),"can only take one of these values: ",paste("'",values,"'",sep="",collapse=" ")) 
-          stop(error)
-        }
+        if(!vm[i]%in%values) stop(error)
         if(vm[i]=="Mh"&&vt[i]<3) stop("Mh models require at least 3 capture occasions")
         if(vm[i]=="Mth"&&vt[i]<3) stop("Mth models require at least 3 capture occasions")
         if(!typet&&vm[i]%in%c("Mt","Mth")) stop("models with a temporal effect can not be adjusted")
@@ -184,7 +183,7 @@ valid.t <- quote({
      t <- NULL
 })
 
-model.0 <- quote({ # Construction du modèle de type .t
+model.0 <- quote({ # Construction du modèle de type .0
      Y <- histfreq.0(X=X,dfreq=dfreq,dtype=dtype,vt=t)
      histpos <- histpos.0(t)
      cst <- log(choose(t, t:1))
@@ -195,7 +194,7 @@ model.0 <- quote({ # Construction du modèle de type .t
      } else mXomit <- NULL
 })
 
-model.t <- quote({ # Construction du modèle de type .0
+model.t <- quote({ # Construction du modèle de type .t
      Y <- histfreq.t(X,dfreq=dfreq)
      histpos <- histpos.t(t)
      cst <- rep(0,length(Y))
