@@ -60,8 +60,8 @@
   Département de mathématiques et de statistique\\
   Université Laval\\
   Québec (Québec), G1K 7P4, Canada\\
-    E-mail: \email{sbaillar@mat.ulaval.ca}\\
-  E-mail: \email{lpr@mat.ulaval.ca}\\
+    E-mail: \email{Sophie.Baillargeon@mat.ulaval.ca}\\
+  E-mail: \email{Louis-Paul.Rivest@mat.ulaval.ca}\\
   URL: \url{http://www.mat.ulaval.ca/pages/lpr/} }
 %% It is also possible to add a telephone and fax number
 %% before the e-mail in the following format:
@@ -379,7 +379,7 @@ plot(desc)
 
 The $f_i$ plot of the function \code{descriptive} in Figure \ref{descHare} shows that the two
 animals caught on all occasions create some heterogeneity in the capture probabilities. Therefore,
-it is not surprising that the best fitting model is heterogenous. Indeed, the model with the
+it is not surprising that the best fitting model is heterogeneous. Indeed, the model with the
 smallest AIC (146.327) is M$_\textrm{th Poisson2}$. It leads to an estimate $\hat N$ equals to 81.1
 ($s.e.=5.7$). The estimate for M$_\textrm{th Darroch}$ is equal to that reported in \cite{Agr94}.
 

@@ -19,7 +19,9 @@
     }
 }
 \details{
-  Data collection was carried out by Etcheverry and al.. The capture occasions represent three consecutive days of trapping in May 1999, July 1999, August 1999, May 2000, July 2000 and August 2000 in the Duchenier conservation area in southeastern Quebec. This data set is analysed in Rivest and Daigle (2004).
+  Data collection was carried out by Etcheverry and al.. The capture occasions represent three consecutive days of trapping in 
+  May 1999, July 1999, August 1999, May 2000, July 2000 and August 2000 in the Duchenier conservation area in southeastern Quebec. 
+  This data set is analyzed in Rivest and Daigle (2004).
 
   Each row of this data set represents an observed capture history followed by its frequency. 
 }

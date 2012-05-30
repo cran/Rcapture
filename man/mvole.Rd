@@ -18,7 +18,8 @@
   }
 }
 \details{
-  The data set is extracted from Table 19.1 of Williams, Nichols and Conroy (2002). The capture occasions represent five consecutive days of trapping each month from June to Decembre 1981 at Patuxent Wildlife Research Center, Laurel, Maryland.
+  The data set is extracted from Table 19.1 of Williams, Nichols and Conroy (2002). The capture occasions represent five 
+  consecutive days of trapping each month from June to December 1981 at Patuxent Wildlife Research Center, Laurel, Maryland.
 
   Each row of this data set represents the capture history of one animal. 
 }
@@ -43,7 +44,7 @@ keep2<-residuals(op.m1$glm,type="pearson")<4
 op.m2<-openp(mvole.pp,dfreq=TRUE,keep=keep2)
 op.m2$model.fit
 
-  # To find a suitable model within each primary period, the function closedp
+  # To find a suitable model within each primary period, the function closedp.t
   # can be used repeatedly. Heterogeneity is detected in all periods except
   # the second one where the data collection was perturbed (the last capture
   # occasion doesn't have any new capture and is taken out of the analysis). 
@@ -73,7 +74,7 @@ rd.m3<-robustd.0(mvole[,-10], vt=c(5,4,rep(5,4)),vm=c("Mh","none","Mh","Mh",
   # With Darroch's model, the closed population estimates of the capture 
   # probabilities are significantly smaller than those obtained from the 
   # Jolly-Seber model.  This cannot be interpreted as indicating temporary 
-  # immigration. This suggests that Darroh's model is not appropriate within
+  # immigration. This suggests that Darroch's model is not appropriate within
   # primary sessions.
 
   # The smallest AIC is obtained with the Poisson model, with parameter a=1.5 

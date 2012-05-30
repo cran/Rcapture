@@ -12,8 +12,8 @@ profileCI <- function(X, dfreq=FALSE, m="M0", h="Chao", a=2, mX=NULL, mname="Cus
         # Argument X
         if (dfreq)
         {
-            if (any(X[,1:t]!=1&X[,1:t]!=0)) stop("Every columns of 'X' but the last one must contain only zeros and ones")
-            if (any((X[,t+1]%%1)!=0)) stop("The last column of 'X' must contain capture histories frequencies, therefore integers")
+            if (any(X[,1:t]!=1&X[,1:t]!=0)) stop("every columns of 'X' but the last one must contain only zeros and ones")
+            if (any((X[,t+1]%%1)!=0)) stop("the last column of 'X' must contain capture history frequencies, therefore integers")
         } else {
             if(any(X!=1&X!=0)) stop("'X' must contain only zeros and ones")
         }
@@ -21,15 +21,15 @@ profileCI <- function(X, dfreq=FALSE, m="M0", h="Chao", a=2, mX=NULL, mname="Cus
         # Argument m
         if(!isTRUE(all.equal(length(m),1))) stop("'m' must be of length 1")
         if(!identical(m,"M0")&&!identical(m,"Mt")&&!identical(m,"Mh")&&!identical(m,"Mth"))
-        stop("'m' can only take the value 'M0', 'Mt', 'Mh' or 'Mth'")
+        stop("'m' can only take the value \"M0\", \"Mt\", \"Mh\" or \"Mth\"")
     
         # Argument h
         if(!isTRUE(all.equal(length(h),1))) stop("'h' must be of length 1")
         if(!is.function(h)&&!identical(h,"Chao")&&!identical(h,"Darroch")&&!identical(h,"Poisson"))
-        stop("'h' must be a function or a charater strings taking the value 'Chao', 'Darroch' or 'Poisson'")
+        stop("'h' must be a function or a character string taking the value \"Chao\", \"Darroch\" or \"Poisson\"")
         
         # Argument a
-        if(!isTRUE(all.equal(length(a),1))) stop("'h' must be of length 1")
+        if(!isTRUE(all.equal(length(a),1))) stop("'a' must be of length 1")
         if (!is.numeric(a)) stop("'a' must be a numeric value")
     
         # Argument mX

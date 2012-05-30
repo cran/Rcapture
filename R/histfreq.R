@@ -14,6 +14,8 @@
 
 "histfreq.0" <- function(X,dfreq,dtype="hist",vt)
 {
+  # Note : Il faut absolument que les valeurs de vt soient >= au nombre maximum de captures
+  # dans chacune des périodes. Sinon il y a une sortie générée, mais elle n'est pas bonne.  
     I <- length(vt) # nombre de periodes primaires
     t <- sum(vt)
     if (I==1) {

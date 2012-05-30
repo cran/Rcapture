@@ -14,7 +14,8 @@
     }
 }
 \details{
-  The data points are extracted from a 25-year study by Coulson (1984). The capture periods are six consecutives years : years 19-24. This data set is analysed in Cormack (1989).
+  The data points are extracted from a 25-year study by Coulson (1984). The capture periods are six consecutive years : years 19-24. 
+  This data set is analyzed in Cormack (1989).
   
   Each row of this data set represents an observed capture history followed by its frequency. 
 }
@@ -24,7 +25,7 @@ Coulson, J. C. (1984) The population dynamics of the Eider Duck \emph{Somateria 
 \references{
 Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
 
-Cormack, R. M. (1989) Log-linear models for capture-recapture. \emph{Biometrics}, \bold{45}, 395--413.
+Cormack, R. M. (1989) Loglinear models for capture-recapture. \emph{Biometrics}, \bold{45}, 395--413.
 }
 \examples{
 data(duck)
@@ -72,7 +73,7 @@ siginv<-solve(sig)
 growth.e<-t(rep(1,3))\%*\%siginv\%*\%growth/(t(rep(1,3))\%*\%siginv\%*\%rep(1,3))
 se<-1/sqrt(t(rep(1,3))\%*\%siginv\%*\%rep(1,3))
 cbind(estimate=growth.e,stderr=se)
-  # A chi-square statistics for testing the equality of the growth rates 
+  # A chi-square statistic for testing the equality of the growth rates 
   # and its pvalue
 chisq2<-t(growth-growth.e*rep(1,3))\%*\%siginv\%*\%(growth-growth.e*rep(1,3))
 c(chi2stat=chisq2,pvalue=1-pchisq(chisq2,df=2))

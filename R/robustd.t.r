@@ -5,11 +5,10 @@
 ########################################################################################
 
         valid.one(dfreq,"logical")
-        Xvalid<-valid.X(X,dfreq)
+        valid.vt(vt)
+        Xvalid<-valid.X(X=X, dfreq=dfreq, vt=vt)
             X <- Xvalid$X
-            t <- Xvalid$t
-            I <- length(vt) # nombre de periodes primaires
-        valid.vt(vt,t)
+            I <- length(vt)  ## nombre de periodes primaires
         vm <- valid.vm(vm,c("none","M0","Mt","Mh","Mth"),vt,typet=TRUE)      
         vh <- valid.vh(vh,c("Chao","Poisson","Darroch","Gamma"),vm)
         vtheta <- valid.vtheta(vtheta,vh)
@@ -44,7 +43,7 @@
         anaMrd <- suppressWarnings(glm(Y~mX.,family=poisson))
 
     #Vérification du bon ajustement du modèle loglinéaire
-    if(!anaMrd$converged) stop("algorithm did not converged")
+    if(!anaMrd$converged) stop("'glm' did not converge")
     if(any(is.na(anaMrd$coef))) warning("some loglinear parameter estimations cannot be evaluated")
 
 #-----------------------------------------------------------------------------------#
@@ -151,8 +150,8 @@
         # Vérification de la présence de paramètres gamma négatifs si l'option "neg"=FALSE
         if(!neg)
         {
-            if (any(Alpha<0)) warning(paste("One or more gamma parameters are negative.","\n",
-                        "You can set them to zero with the 'neg' option.","\n",sep=""))
+            if (any(Alpha<0)) warning("one or more gamma parameters are negative,\n",
+                                      "you can set them to zero with the 'neg' option.")
         }
 
 #--------------------------------------------------------------#
@@ -411,10 +410,14 @@ print.robustd <- function(x, ...){
         x$Ntot <- round(x$Ntot,1)
         print.default(x$Ntot, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         cat("\nTotal number of captured units:",x$n,"\n")
-        if (length(x$neg[x$neg<2*dim(x$N)[1]])==1) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameter has been set to zero")
-        if (length(x$neg[x$neg<2*dim(x$N)[1]])>1) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameters has been set to zero")
-        if (length(x$neg[x$neg>=2*dim(x$N)[1]])==1) cat("\nNote:",length(x$neg[x$neg>=2*dim(x$N)[1]]),"eta parameter has been set to zero")
-        if (length(x$neg[x$neg>=2*dim(x$N)[1]])>1) cat("\nNote:",length(x$neg[x$neg>=2*dim(x$N)[1]]),"eta parameters has been set to zero")
-        cat("\n\n")
+        ###################################################
+        ### 22 mai 2012 : On a décidé de ne plus imprimer ces notes car l'utilisateur ne comprend pas quel
+        ### impact des parametres eta fixés à zéro ont sur ses résultats. Ça l'embête plus qu'autre chose.
+        #if (length(x$neg[x$neg<2*dim(x$N)[1]])==1) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameter has been set to zero\n")
+        #if (length(x$neg[x$neg<2*dim(x$N)[1]])>1) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameters have been set to zero\n")
+        #if (length(x$neg[x$neg>=2*dim(x$N)[1]])==1) cat("\nNote:",length(x$neg[x$neg>=2*dim(x$N)[1]]),"eta parameter has been set to zero\n")
+        #if (length(x$neg[x$neg>=2*dim(x$N)[1]])>1) cat("\nNote:",length(x$neg[x$neg>=2*dim(x$N)[1]]),"eta parameters have been set to zero\n")
+        ###################################################
+        cat("\n")
         invisible(x)
 }

@@ -13,8 +13,8 @@
     # Argument X
     if (dfreq)
     {
-        if (any(X[,1:t]!=1&X[,1:t]!=0)) stop("Every columns of 'X' but the last one must contain only zeros and ones")
-        if (any((X[,t+1]%%1)!=0)) stop("The last column of 'X' must contain capture histories frequencies, therefore integers")
+        if (any(X[,1:t]!=1&X[,1:t]!=0)) stop("every columns of 'X' but the last one must contain only zeros and ones")
+        if (any((X[,t+1]%%1)!=0)) stop("the last column of 'X' must contain capture history frequencies, therefore integers")
     } else {
         if(any(X!=1&X!=0)) stop("'X' must contain only zeros and ones")
     }
@@ -24,7 +24,7 @@
     if (!isTRUE(all.equal(2^t-1,dim(mX)[1]))) stop("'mX' must have 2^t-1 rows")
     
     # Argument mname
-    if(!is.character(mname)) stop("'mname' nust be a character string specifying the model's name")
+    if(!is.character(mname)) stop("'mname' must be a character string specifying the model's name")
 
     #####################################################################################################################################
 

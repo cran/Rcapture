@@ -1,18 +1,120 @@
+Changes in Version 1.3-1 
+
+  o The data set 'ill' has been added to the package to illustrate the new feature
+    t=Inf for captures occurring in continuous time. 
+    
+  o The internal function glm.call() used to call glm() from the 'stats' package
+    to fit closed populations models. It now calls glmRcapture(), a new internal 
+    function, which is a modify version of glm() that does not calculate a NULL 
+    deviance when the model has an offset. This NULL deviance is not used by 
+    Rcapture functions. Therefore, glm.fit() is now called only once per model 
+    fit and there is no more confusion about which call of glm.fit() generated a
+    warning.      
+
+  o The warnings produced by the glmRcapture() function are no longer suppressed 
+    for closed population models. Instead, they are stored in the output value 
+    'glm.warn' (applies to the 'closedp' functions, the 'closedpCI' functions and
+    the function closedp.bc()). This new feature made the 'trace' argument of the
+    'closedp' functions useless. Therefore, it has been removed.     
+      o When a model does not converge, its name is followed by ** in the output 
+        'results' table. The print() method explains this symbol, but warnings are 
+        not printed anymore for non-convergence since they were redundant. The
+        warning for non-convergence is stored in 'glm.warn' like any other warning. 
+  
+  o The 'closedpCI' functions now generate an error if unused arguments are given.
+    This error was not generated in version 1.3 because of the addition of a ... 
+    argument to the 'closedpCI' functions (used to pass argument to optim()).
+  
+  o Diagnostic messages are now written in a consistent style.
+
+  o Notes are not printed anymore when eta parameters are set to zero for Chao's 
+    lower bound models.
+  
+  o The argument 'mX' of the closedpCI.t() function now accepts a formula (see 
+    the documentation for details about how to correctly write this formula).
+
+  o Minor change to the name of the loglinear parameters if a matrix is given as 'mX' 
+    argument: they are now named "mX.*" where "*" is the name of the 'mX' columns if 
+    the given 'mX' has columns names, otherwise "*" is the number of the 'mX' columns.  
+  
+  o A new argument has been added to the 'closedpCI' functions, 'fmaxSupCL', which  
+    allows to change the upper end point of the interval to be searched by uniroot() 
+    to find the upper bound of the multinomial profile likelihood confidence interval.
+  
+  o Bug fixes in the public functions closedp.bc() and openp() and in the internal 
+    functions valid.t(), valid.X() and valid.mname(). 
+
+
+Changes in Version 1.3  
+
+  o Normal heterogeneous models have been added to the package. They can be 
+    fitted with the closedpCI.t() and closedpCI.0() functions by giving the value
+    "Normal" to the argument 'h'. This type of model is fitted with optim() 
+    instead of glm(). 
+
+  o For closedpCI.t() and closedpCI.0(), the argument 'theta' and 'neg' have been 
+    moved to the new 'h.control' argument. This is a list accepting elements 
+    named 'theta', 'neg', 'initcoef', 'initsig' and 'method'. The last three 
+    elements concern normal heterogeneous models.
+
+  o For closedpCI.t() and closedpCI.0(), the output value 'glm' has been renamed 
+    'fit' since the function glm() is not used to fit normal heterogeneous models. 
+    For these models, 'fit' contains various output relative to the model fitted 
+    with optim() (see documentation).
+
+  o The print(), boxplot() and plot() methods for objects of class 'closedpCI' 
+    has been modified to deal with the new normal heterogeneous models.          
+
+  o descriptive(), closedp.0() and closedpCI.0() now accept the value Inf for  
+    the argument 't'. It indicates that captures occur in continuous time (see 
+    the help page 'Rcapture-package').
+      o Because of this change, the default value of 't0' for closedp.0 and 
+        closedpCI.0() is now NULL instead of t. (When t=Inf, by default the 
+        frequencies considered for the model fit are those for the units captured 
+        between 1 and tmax times, where tmax is the larger number of captures 
+        observed.)  
+
+  o The impact of the argument 't0' has been changed in closedp.0(), closedpCI.0() 
+    and closedp.bc(). If t0 < t, there is no longer columns added to the design 
+    matrix of the loglinear model. Instead, observations are removed from the 
+    design matrix, the response vector and the offset vector used to fit the 
+    model. This change affects the AIC criteria for every model. For the Mh Chao 
+    model only, it also affects the degrees of freedom and the deviance.  
+
+  o The code has been improved and clarified in the following ways:
+      o Blocks of code were kept in quotes. The code has been modified in order to 
+        eliminate these quotes. Instead, many internal functions have been created.
+      o Argument validations and default values have been standardized.
+          o In the functions argument definition, 't' and 'mname' had no default 
+            value. Their default value is now NULL to make it clear that these 
+            arguments are not mandatory, except for 't' when dtype="nbcap".
+          o The default value for 'h' is now NULL since when ones ask for a model 
+            without heterogeneity, this argument is no used. Also, the vector 
+            given in the function definition did not include every possible 
+            values for 'h' since it can be a function.
+      o plotCI() is no longer a method. It is now a function like uifit().           
+
+  o The documentation has been improved and updated according to the code 
+    modifications. 
+
+  o Tests with 'testthat' have been added to the package in the folder 
+    'inst/tests'.
+    
+  o A file Rcapture-Ex.Rout.save has been added to the package source in the 
+    folder tests/Examples. Now R CMD check compares the output from the package
+    examples to this file and reports any differences.
+
+  
+
 Changes in Version 1.2-1
   
-  o Minor bug fixes and changes in the documentation
+  o Minor bug fixes and changes in the documentation.
     
   o Minor modification to the package vignette : A date has been added in the
-    title of the document RcaptureJSS.
+    title of the document 'RcaptureJSS'.
     
-  o The package vignette is now in the 'vignettes' folder. Only the PDF is left in the 
-    folder 'inst/doc'.
-
-  
-
-Changes in Version 1.2-1
-  
-  o Minor bug fixes
+  o The package vignette is now in the folder 'vignettes'. Only the PDF is left 
+    in the folder 'inst/doc'.
 
   
 
@@ -36,10 +138,10 @@ Changes in Version 1.2-0
     Pearson residuals in terms of fi (number of units captured i times) for 
     the customized model. 		
 	
-  o closedp() is now named closedp.t()
+  o closedp() is now named closedp.t().
 
   o closedp.t() now identifies the non-convergent model in the print.  Also, its
-    returned list contains an element named converged.  This is a logical vector
+    returned list contains an element named 'converge'.  This is a logical vector
     indicating for each model whether it converged or not.
 	
   o The new argument 'trace' of closedp.t() allows to print a note for each  
@@ -55,12 +157,12 @@ Changes in Version 1.2-0
   o In closedp.t(), the returned list has changed.  It now has only one glm 
     element, this element is a list of the glm objects for each model.  Also 
     the output now features an element named 'parameters' which is a list of  
-    the parameter estimates for each model.	
+    capture-recapture parameter estimates for each model.	
 
   o The new plot() method for class 'closedp' produces scatterplots of the 
     Pearson residuals in terms of fi (number of units captured i times) for 
     the heterogeneous models Mh Poisson2, Mh Darroch and Mh Gamma3.5 
-    if they converged
+    if they converged.
 	
   o The boxplot() method for class 'closedp' does not trace boxplots for the 
     non-convergent models anymore.
@@ -98,12 +200,12 @@ Changes in Version 1.2-0
     of the full capture histories.
 
   o In the new .0 functions, the argument 't' is required if 'dtype' takes
-    the value 'nbcap'.  It represents the number of capture occasions in the
+    the value "nbcap".  It represents the number of capture occasions in the
     experiment.	
 
 
   o closedp.bc() now computes bias corrected estimates for a model specified
-    using the arguments 'm', 'h' and 'theta' as with the closedpCI functions.
+    using the arguments 'm', 'h' and 'theta' as with the 'closedpCI' functions.
 	
   o Bias correction is now possible for any customized Mh model.	
 
@@ -136,7 +238,7 @@ Changes in Version 1.2-0
     merging capture occasions.
 	
   o The new argument 'drop' of perdiohist() allows to omit from the output 
-    data set the unobserved capture histories having a frequency of 0.	
+    data set the unobserved capture histories (frequency of 0).	
 
 	
   o histpos.0() now works when 'vt' is a scalar.	

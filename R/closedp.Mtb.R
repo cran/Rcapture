@@ -70,7 +70,7 @@ print.closedp.Mtb <- function(x, ...) {
         tableau[,4] <- round(tableau[,4],0)
         tableau[,c(3,5)] <- round(tableau[,c(3,5)],3)       
         print.default(tableau, print.gap = 2, quote = FALSE, right=TRUE, ...)
-        cat("\nWarning: Model Mtb is not log-linear.\nThe abundance estimation for this model can be unstable.")
-        cat("\n\n")
+        cat("\nNote: Model Mtb is not loglinear.\nThe abundance estimation for this model can be unstable.\n")
+        cat("\n")
         invisible(x)
 }

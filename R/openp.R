@@ -5,10 +5,11 @@
 ############################################################################################################################################
 
         valid.one(dfreq,"logical")
-        Xvalid<-valid.X(X,dfreq)
+        Xvalid <- valid.X(X=X, dfreq=dfreq)
             X <- Xvalid$X
             I <- Xvalid$t
-        m<-valid.vm(m,c("up","ep"),I)
+        if (I<=2) stop("loglinear models for open populations require at least 3 capture occasions")
+        m <- valid.vm(m,c("up","ep"),I)
         valid.one(neg,"logical")
         if(length(keep)!=2^I-1||!is.logical(keep)) stop("'keep' must be a logical vector of length 2^I-1")
 
@@ -43,7 +44,7 @@
 
 
         #Vérification du bon ajustement du modèle loglinéaire
-        if(!anaMpo$converged) stop("algorithm did not converged")
+        if(!anaMpo$converged) stop("'glm' did not converge")
         if(any(is.na(anaMpo$coef))) warning("the design matrix is not of full rank; some loglinear parameter estimations cannot be evaluated")
 
 
@@ -57,7 +58,7 @@
 
         param<-anaMpo$coef
         ppositions <- 0
-        test <- if(m=="up") neg&&I>2 else neg  
+        test <- if(m=="up") neg && I > 2 else neg  
         if (test)
         {
             # Vecteur d'indicatrices pour les paramètres d'intérêt négatifs
@@ -102,11 +103,11 @@
 #------------------------------------------------------#
 
         # Effet de trappe homogène
-        if(I==2)
-        {
-            anaMpo2 <- NULL
-            parap2 <- NULL
-        } else {
+        if(I==2)              ## inutile stop si I <=2
+        {                     ## inutile stop si I <=2
+            anaMpo2 <- NULL   ## inutile stop si I <=2
+            parap2 <- NULL    ## inutile stop si I <=2
+        } else {              ## inutile stop si I <=2
             trap <- rowSums(histpos[,-1]*histpos[,-I])
             mX2. <- cbind(mX.,trap)
             anaMpo2 <- suppressWarnings(glm(Y~mX2.,family=poisson,na.action=na.omit))
@@ -116,7 +117,7 @@
                 anaMpo2 <- NULL
                 parap2 <- NULL
             }
-        } 
+        }                     ## inutile stop si I <=2 
 
 
         # Effet de trappe hétérogène
@@ -169,14 +170,17 @@
         # Vérification de la présence de paramètres gamma négatifs si l'option "neg"=FALSE
         if(!neg)
         {
-            if (m=="ep"&&any(Alpha<0)) warning(paste("One or more gamma parameters are negative.","\n",
-                        "You can set them to zero with the 'neg' option.","\n",sep=""))
+            if (m=="ep"&&any(Alpha<0)) 
+              warning("one or more gamma parameters are negative,\n",
+                      "you can set them to zero with the argument 'neg'.")
 
-            if (m=="up"&&I>3&&any(param[c(3:(I-1),(I+2):(2*I-1))]<0)) warning(paste("One or more relevant gamma parameters are negative.","\n",
-                                            "You can set them to zero with the 'neg' option.","\n",sep=""))
+            if (m=="up"&&I>3&&any(param[c(3:(I-1),(I+2):(2*I-1))]<0)) 
+              warning("one or more relevant gamma parameters are negative,\n",
+                      "you can set them to zero with the argument 'neg'.")
 
-            if (m=="up"&&I==3&&param[5]<0) warning(paste("One relevant gamma parameter is negative.","\n",
-                                            "You can set it to zero with the 'neg' option.","\n",sep=""))
+            if (m=="up"&&I==3&&param[5]<0) 
+              warning("one relevant gamma parameter is negative,\n",
+                      "you can set it to zero with the argument 'neg'.")
         }
 
 
@@ -454,8 +458,10 @@
         dimnames(modelfit) <- list("fitted model",c("deviance","    df","      AIC"))
         
         trapfit <- cbind(c(anaMpo2$deviance,anaMpo3$deviance),c(anaMpo2$df.residual,anaMpo3$df.residual),c(anaMpo2$aic,anaMpo3$aic))
-        if (dim(trapfit)[1]==1) { dimnames(trapfit) <- list(c("model with homogenous trap effect"),c("deviance","    df","      AIC"))
-        } else if (dim(trapfit)[1]==2) { dimnames(trapfit) <- list(c("model with homogenous trap effect","model with trap effect"),c("deviance","    df","      AIC"))}    
+        if (!is.null(trapfit)) {
+          if (dim(trapfit)[1]==1) { dimnames(trapfit) <- list(c("model with homogenous trap effect"),c("deviance","    df","      AIC"))
+          } else if (dim(trapfit)[1]==2) { dimnames(trapfit) <- list(c("model with homogenous trap effect","model with trap effect"),c("deviance","    df","      AIC"))}
+        }
                  
         titre.periode<-paste("period",1:I)
         titre.inter.periode<-paste("period",1:(I-1),"->",1:(I-1)+1)
@@ -524,10 +530,12 @@ print.openp <- function(x, ...){
         x$model.fit[,c(1,3)] <- round(x$model.fit[,c(1,3)],3)
         x$model.fit[,2] <- as.integer(x$model.fit[,2])
         print.default(x$model.fit, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
-        cat("\nTest for trap effect:\n")
-        x$trap.fit[,c(1,3)] <- round(x$trap.fit[,c(1,3)],3)
-        x$trap.fit[,2] <- round(x$trap.fit[,2],0)
-        print.default(x$trap.fit, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
+        if (!is.null(x$trap.fit)) {
+          cat("\nTest for trap effect:\n")
+          x$trap.fit[,c(1,3)] <- round(x$trap.fit[,c(1,3)],3)
+          x$trap.fit[,2] <- round(x$trap.fit[,2],0)
+          print.default(x$trap.fit, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
+        }
         cat("\nCapture probabilities:\n")
         print.default(round(x$capture.prob,4), print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         cat("\nSurvival probabilities:\n")
@@ -542,9 +550,13 @@ print.openp <- function(x, ...){
         x$Ntot <- round(x$Ntot,1)
         print.default(x$Ntot, print.gap = 2, quote = FALSE, right=TRUE, na.print="--", ...)
         cat("\nTotal number of captured units:",x$n,"\n")
-        if (length(x$neg[x$neg<2*dim(x$N)[1]])==1) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameter has been set to zero")
-        if (length(x$neg[x$neg<2*dim(x$N)[1]])>1) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameters has been set to zero")
-        cat("\n\n")
+        ###################################################
+        ### 22 mai 2012 : On a décidé de ne plus imprimer ces notes car l'utilisateur ne comprend pas quel
+        ### impact des parametres eta fixés à zéro ont sur ses résultats. Ça l'embête plus qu'autre chose.
+        #if (length(x$neg[x$neg<2*dim(x$N)[1]])==1) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameter has been set to zero\n")
+        #if (length(x$neg[x$neg<2*dim(x$N)[1]])>1) cat("\nNote:",length(x$neg[x$neg<2*dim(x$N)[1]]),"gamma parameters has been set to zero\n")
+        ###################################################
+        cat("\n")
         invisible(x)
 }
 

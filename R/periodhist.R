@@ -4,11 +4,10 @@
     ############################################
     # Validation des arguments fournis en entrée
     valid.one(dfreq,"logical")
-    Xvalid<-valid.X(X,dfreq)
+    valid.vt(vt)
+    Xvalid <- valid.X(X=X, dfreq=dfreq, vt=vt)
         X <- Xvalid$X
-        t <- Xvalid$t
     valid.one(drop,"logical")
-    valid.vt(vt,t)
     ############################################
 
         I <- length(vt)

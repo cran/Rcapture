@@ -1,7 +1,9 @@
-export(closedp,closedp.t,closedp.0,closedpCI.t,closedpCI.0,closedp.bc,closedp.Mtb,closedp.h,closedp.mX,profileCI,descriptive,histpos.0,histpos.t,openp,robustd.0,robustd.t,uifit,periodhist,plotCI)
+export(closedp,closedp.t,closedp.0,closedpCI.t,closedpCI.0,closedp.bc,closedp.Mtb,
+       closedp.h,closedp.mX,profileCI,descriptive,histpos.0,histpos.t,openp,robustd.0,
+       robustd.t,uifit,periodhist,plotCI)
 
 importFrom(graphics, plot, boxplot)
-importFrom(stats, glm, optimize, uniroot)
+importFrom(stats, glm.fit, optimize, uniroot, optim)
 
 S3method(boxplot,closedp)
 S3method(boxplot,closedpCI)
@@ -10,7 +12,6 @@ S3method(plot,closedp)
 S3method(plot,closedpCI)
 S3method(plot,descriptive)
 S3method(plot,openp)
-S3method(plotCI,closedpCI)
 S3method(print,closedp)
 S3method(print,closedp.bc)
 S3method(print,closedpCI)

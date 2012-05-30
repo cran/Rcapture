@@ -14,7 +14,8 @@
     }
 }
 \details{
-  The data come from an eight-year (1973 to 1980) study by Allen W. Stokes of lazuli buntings wintering in Logan, Utah. This data set is analysed in Burnham and al. (1987) and in Cormack (1993).
+  The data come from an eight-year (1973 to 1980) study by Allen W. Stokes of lazuli buntings wintering in Logan, Utah. 
+  This data set is analyzed in Burnham and al. (1987) and in Cormack (1993).
 
   Each row of this data set represents an observed capture history followed by its frequency. 
 }
@@ -64,7 +65,7 @@ se<-1/sqrt(t(rep(1,5))\%*\%siginv\%*\%rep(1,5))
 cbind(estimate=phi,stderr=se)
   # The chi-square goodness of fit statistic for a constant survival 
   # and its pvalue are:
-chisq4<-t(op.m2$survivals[2:6,1]-phi*rep(1,5))\%*\%siginv \%*\% 
+chisq4<-t(op.m2$survivals[2:6,1]-phi*rep(1,5))\%*\%siginv\%*\% 
         (op.m2$survivals[2:6,1]-phi*rep(1,5))
 cbind(chi2stat=chisq4,pvalue=1-pchisq(chisq4,df=4))
   # The hypothesis of a constant survival is accepted.

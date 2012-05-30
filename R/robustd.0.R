@@ -5,16 +5,18 @@
 ############################################################################################################################################
 
         valid.one(dfreq,"logical")
-        Xvalid<-valid.X(X,dfreq)
+        valid.vt(vt)
+        Xvalid<-valid.X(X=X, dfreq=dfreq, vt=vt)
             X <- Xvalid$X
-            t <- Xvalid$t
-            I <- length(vt) # nombre de periodes primaires
-        valid.vt(vt,t)
+            I <- length(vt)  ## nombre de periodes primaires
         vm <- valid.vm(vm,c("none","M0","Mt","Mh","Mth"),vt,typet=FALSE)              
         vh <- valid.vh(vh,c("Chao","Poisson","Darroch","Gamma"),vm)
         vtheta <- valid.vtheta(vtheta,vh)
         valid.one(neg,"logical")
-
+        
+        
+        
+        
  ############################################################################################################################################
 # AJUSTEMENT DU MODÈLE
 ############################################################################################################################################
@@ -41,7 +43,7 @@
 
 
         # Vérification du bon ajustement du modèle loglinéaire
-        if(!anaMrd$converged) stop("algorithm did not converged")
+        if(!anaMrd$converged) stop("'glm' did not converge")
         if(any(is.na(anaMrd$coef))) warning("some loglinear parameter estimations cannot be evaluated")
     
 #-------------------------------------------------------#
@@ -145,8 +147,8 @@
         # Vérification de la présence de paramètres gamma négatifs si l'option "neg"=FALSE
         if(!neg)
         {
-            if (any(Alpha<0)) warning(paste("One or more gamma parameters are negative.","\n",
-                        "You can set them to zero with the 'neg' option.","\n",sep=""))
+            if (any(Alpha<0)) warning("one or more gamma parameters are negative,\n",
+                                      "you can set them to zero with the argument 'neg'.")
         }
 
 #--------------------------------------------------------------#
