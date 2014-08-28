@@ -30,8 +30,8 @@ integers between 0 and \eqn{t_i}{ti} inclusively.
 \references{
 Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
 }
-\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
-Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
+\author{ Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} and Sophie Baillargeon }
+
 \note{ 
 The \code{histpos.t} function is called by \code{\link{descriptive}}, \code{\link{closedp}}, \code{\link{closedp.bc}}, \code{\link{closedp.Mtb}}, \code{\link{openp}}, \code{\link{robustd.t}}.
 
@@ -42,6 +42,6 @@ The \code{histpos.0} function is called by \code{\link{robustd.0}}.
 histpos.t(5)
 histpos.0(5)
 
-histpos.0(rep(5,3))
+histpos.0(rep(5, 3))
 }
 \keyword{manip}

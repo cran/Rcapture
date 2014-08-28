@@ -18,9 +18,9 @@
    For heterogeneous models, the form of the heterogeneity is specified with the arguments 
    \code{h} and \code{h.control}. If \code{h} is given with \code{mX}, heterogeneity is added in \code{mX}.\cr
    
-   These functions extend \code{closedp.t} and \code{closedp.0} as 
+   These functions extend \code{\link{closedp.t}} and \code{\link{closedp.0}} as 
    they broaden the range of models one can fit and they compute confidence intervals. 
-   Unlike the \code{closedp} functions, it fits only one model at a time. 
+   Unlike the \code{\link{closedp}} functions, it fits only one model at a time. 
 }
 \usage{
 closedpCI.t(X, dfreq=FALSE, m=c("M0","Mt","Mh","Mth"), mX=NULL,
@@ -30,14 +30,14 @@ closedpCI.t(X, dfreq=FALSE, m=c("M0","Mt","Mh","Mth"), mX=NULL,
 closedpCI.0(X, dfreq=FALSE, dtype=c("hist","nbcap"), t=NULL, t0=NULL, 
             m=c("M0","Mh"), mX=NULL, h=NULL, h.control=list(), 
             mname=NULL, alpha=0.05, fmaxSupCL=3, \dots)
+
+plotCI(x.closedpCI, main="Profile Likelihood Confidence Interval", \dots)
 			
 \method{print}{closedpCI}(x, \dots)
 
 \method{boxplot}{closedpCI}(x, main="Boxplots of Pearson Residuals", \dots)
 
 \method{plot}{closedpCI}(x, main="Scatterplot of Pearson Residuals", \dots)
-
-plotCI(x.closedpCI, main="Profile Likelihood Confidence Interval", \dots)
 }
 \arguments{
   \item{X}{ The matrix of the observed capture histories (see \code{\link{Rcapture-package}} for a 
@@ -61,32 +61,51 @@ plotCI(x.closedpCI, main="Profile Likelihood Confidence Interval", \dots)
              on the \code{m} argument. If a \code{mX} argument is given, it must be a matrix  (or 
              an object that can be coerced to a matrix by \code{as.matrix}). The order of the capture 
              histories in the \code{mX} matrix must be as defined in the \code{histpos.t} or 
-             \code{histpos.0} function. For the \code{closedpCI.t} function only, \code{mX}
-             can also be an object of class "\code{\link{formula}}". The details of a formula 
-             specification are given under \bold{Details}. An intercept is always added to the 
-             model. Therefore, \code{mX} must not  
-             contain a column of ones if it is a matrix. Also, if the argument \code{h} 
-             is not \code{NULL}, one or more columns for heterogeneity are added to the design 
-             matrix.}
-  \item{h}{ A character string ("Chao", "LB", "Poisson", "Darroch", "Gamma" or "Normal") or a 
+             \code{histpos.0} function.\cr
+             For the \code{closedpCI.t} function only, \code{mX} can also be an object of class "\code{\link{formula}}" or a hierarchical loglinear model name. The details of a formula specification are given under \bold{Details} and the details of a hierarchical loglinear model name specification are given in the \code{\link{closedpMS.t}} documentation.\cr
+             An intercept is always added to the model. Therefore, \code{mX} must not contain a column of ones if it is a matrix. Also, if the argument \code{h} is not \code{NULL}, one or more columns for heterogeneity are added to the design matrix.}
+  \item{h}{ A character string ("LB", "Chao", "Poisson", "Darroch", "Gamma" or "Normal") or a 
             numerical \code{R} function specifying the form of the column(s) for heterogeneity 
-            in the design matrix. "Chao" and "LB" represents Chao's lower bound model, 
-            "Poisson" represents the function \eqn{f(k)=theta^k-1}, 
-            "Darroch" represents the function \eqn{f(k)=k^2/2}, 
-            and "Gamma" represents the function \eqn{f(k)=-\log(theta + k) + \log(theta)}{f(k)=-log(theta + k) + log(theta)} 
+            in the design matrix.\cr
+            "LB" and "Chao" represents Chao's lower bound model (the default),\cr 
+            "Poisson" represents the function \eqn{f(k)=theta^k-1},\cr 
+            "Darroch" represents the function \eqn{f(k)=k^2/2},\cr 
+            and "Gamma" represents the function \eqn{f(k)=-\log(theta + k) + \log(theta)}{f(k)=-log(theta + k) + log(theta)}\cr 
             where \eqn{k} is the number of captures and \eqn{theta} is a parameter specified with 
-            the \code{h.control} element \code{theta}. "Normal" represents heterogeneity 
-            modeled with a normal mixing distribution, as presented in Rivest (2011).
+            the \code{h.control} element \code{theta}.\cr
+            "Normal" represents heterogeneity 
+            modeled with a normal mixing distribution, as presented in Rivest (2011).\cr
             If an \code{R} function is given, it must be the implementation of any convex 
             mathematical function \eqn{f(k)} (it must have only one argument).}
-  \item{h.control }{ A list of elements to control the heterogeneous part of the model, if any (see \bold{Details}). }
+  \item{h.control }{ A list of elements to control the heterogeneous part of the model, if any.\cr
+  For a Poisson or Gamma heterogeneous model:
+\describe{
+  \item{\code{theta}}{ The value of the parameter \eqn{theta} in \eqn{f(k)=theta^k-1} for the Poisson model
+                (the default value is 2) and in \eqn{f(k)=-\log(theta + k) + \log(theta)}{f(k)=-log(theta + k) + log(theta)} 
+                for the Gamma model (the default value is 3.5). }
+}
+For a Chao's lower bound heterogeneous model:
+\describe{
+  \item{\code{neg}}{ If this option is set to \code{TRUE} (the default), negative eta parameters in 
+              Chao's lower bound models are set to zero. }
+}
+For a Normal heterogeneous model:
+\describe{       
+  \item{\code{initcoef}}{ Initial values for the loglinear coefficients given to \code{\link{optim}}. 
+                   The default values are taken from Darroch's model. }
+  \item{\code{initsig}}{ Initial value for the sigma parameter of the normal mixing distribution. 
+                  The default is \code{0.2}. }
+  \item{\code{method}}{ The method to be used by \code{\link{optim}}. The default is \code{"BFGS"}.\cr }
+}
+}
   \item{mname}{ A character string specifying the name of the customized model. By default,
                 it is derived from the arguments specifying the model.}
   \item{alpha}{ A confidence interval with confidence level 1-\code{alpha} is constructed. The value of alpha 
                 must be between 0 and 1; the default is 0.05.  }
-  \item{fmaxSupCL}{ A numeric. The upper end point of the interval to be searched by \code{uniroot} 
-                   to find the upper bound of the multinomial profile likelihood confidence interval 
-                   (Cormack 1992) is defined by \code{fmaxSupCL}\eqn{\times \hat{N}}{x \hat{N}}. In 
+  \item{fmaxSupCL}{ A numeric (by default 3). The upper end point of the interval to be searched by
+                   \code{\link{uniroot}} to find the upper bound of the multinomial profile likelihood 
+                   confidence interval (Cormack 1992) is defined by 
+                   \code{fmaxSupCL}\eqn{\times \hat{N}}{x \hat{N}}. In 
                    this product, \code{fmaxSupCL} is a factor multiplying \eqn{\hat{N}}, the population 
                    size estimated by Poisson regression. If the upper bound obtained is equal
                    the upper end point \code{fmaxSupCL}\eqn{\times \hat{N}}{x \hat{N}}, the 
@@ -94,23 +113,17 @@ plotCI(x.closedpCI, main="Profile Likelihood Confidence Interval", \dots)
                    \eqn{>}. In that case, one could try to increase the value of \code{fmaxSupCL} 
                    to find the upper bound of the multinomial profile likelihood confidence interval 
                    instead of a minimum value for this upper bound. }
-  \item{x}{ An object, produced by a \code{closedpCI} function, to print or to plot.}
+  \item{\dots}{ Further arguments to be passed to \code{\link{glm}}, \code{\link{optim}}, 
+                \code{\link{print.default}}, \code{\link{plot.default}} or \code{\link{boxplot.default}}.}
   \item{x.closedpCI}{ An object, produced by a \code{closedpCI} function, to produce a plot
                       of the multinomial profile likelihood for \eqn{N}.}
   \item{main}{ A main title for the plot}
-  \item{\dots}{ Further arguments to be passed to \code{optim}, \code{print.default}, \code{plot.default} or 
-                \code{boxplot.default}.}
+  \item{x}{ An object, produced by a \code{closedpCI} function, to print or to plot.}
   }
 \details{ 
-The \code{closedpCI.t} function fits models using the frequencies of the observable capture histories 
-(vector of size \eqn{2^t-1}), whereas \code{closedpCI.0} uses the number of units capture i times, for 
-\eqn{i=1,\ldots,t}{i=1,\ldots,t} (vector of size \eqn{t}). Thus, \code{closedpCI.0} can be used with data 
-sets larger than those for \code{closedpCI.t}, but it cannot fit models with a temporal effect. 
+The \code{closedpCI.t} function fits models using the frequencies of the observable capture histories (vector of size \eqn{2^t-1}), whereas \code{closedpCI.0} uses the number of units capture i times, for  \eqn{i=1,\ldots,t}{i=1,\ldots,t} (vector of size \eqn{t}). Thus, \code{closedpCI.0} can be used with data sets larger than those for \code{closedpCI.t}, but it cannot fit models with a temporal effect. See \code{\link{Rcapture-package}} for more details about the distinction between \code{.t} and \code{.0} functions.
 
-These functions do not work for closed population models featuring a behavioral effect, such as Mb and Mbh. 
-The abundance estimation is calculated as the number of captured units plus the exponential of the Poisson 
-regression intercept. However, models with a behavioral effect can by fitted with \code{\link{closedp.t}} 
-(Mb and Mbh), \code{\link{closedp.Mtb}} and \code{\link{closedp.bc}}.\cr
+These functions do not work for closed population models featuring a behavioral effect, such as Mb and Mbh. The abundance estimation is calculated as the number of captured units plus the exponential of the Poisson regression intercept. However, models with a behavioral effect can by fitted with \code{\link{closedp.t}} (Mb and Mbh), \code{\link{closedp.Mtb}} and \code{\link{closedp.bc}}.\cr
 
 CHAO'S LOWER BOUND MODELS
 
@@ -126,16 +139,12 @@ CHAO'S LOWER BOUND MODELS
        
   A Chao's lower bound model contains \eqn{t-2} parameters, called
   eta parameters, for the heterogeneity. These parameters should theoretically be greater 
-  or equal to zero (see Rivest and Baillargeon (2007)). When the element \code{neg}
-  of the argument \code{h.control} is set 
-  to TRUE (the default), negative eta parameters are set to zero (to do so, columns are
-  removed from the design matrix of the model). Consequently, heterogeneous models are no 
-  longer particular cases of 
-  Chao's lower bound model. Therefore, likelihood ratio tests cannot be conducted 
-  anymore to test whether a chosen heterogeneous model is adequate. Also, the degrees 
-  of freedom of Chao's model increase when eta parameters are set to zero.\cr
+  or equal to zero (see Rivest and Baillargeon (2007)). When the element \code{neg} of
+  the argument \code{h.control} is set to \code{TRUE} (the default), negative eta parameters are
+  set to zero (to do so, columns are removed from the design matrix of the model). Degrees 
+  of freedom of Chao's lower bound model increase when eta parameters are set to zero.\cr
 
-ARGUMENT \code{mX} : formula specification\cr
+ARGUMENT \code{mX} : FORMULA SPECIFICATION\cr
 For the \code{closedpCI.t} function, \code{mX}
 can be an object of class "\code{\link{formula}}". The only accepted variables 
 in this formula are \code{c1} to \code{ct}. The variable \code{ci} represents 
@@ -150,30 +159,6 @@ example, if \code{t=3}, the Mt model with an interaction between the first and
 the second capture occasion is fitted if \code{mX = ~ . + c1:c2}. 
 See \code{\link{formula}} for more details of allowed formulae.\cr
 
-ARGUMENT \code{h.control}\cr
-The \code{h.control} argument is a list to supply any of the following elements to control the 
-heterogeneous part of the model, if any.
-
-For a Poisson or Gamma heterogeneous model:
-\describe{
-  \item{theta}{ The value of the parameter \eqn{theta} in \eqn{f(k)=theta^k-1} for the Poisson model
-                (the default value is 2) and in \eqn{f(k)=-\log(theta + k) + \log(theta)}{f(k)=-log(theta + k) + log(theta)} 
-                for the Gamma model (the default value is 3.5). }
-}
-For a Chao's lower bound heterogeneous model:
-\describe{
-  \item{neg}{ If this option is set to \code{TRUE} (the default), negative eta parameters in 
-              Chao's lower bound models are set to zero. }
-}
-For a Normal heterogeneous model:
-\describe{       
-  \item{initcoef}{ Initial values for the loglinear coefficients given to \code{\link{optim}}. 
-                   The default values are taken from Darroch's model. }
-  \item{initsig}{ Initial value for the sigma parameter of the normal mixing distribution. 
-                  The default is \code{0.2}. }
-  \item{method}{ The method to be used by \code{\link{optim}}. The default is \code{"BFGS"}.\cr }
-}
-
 PLOT METHODS AND FUNCTIONS
   
   The \code{boxplot.closedpCI} function produces a boxplot of the Pearson residuals of the customized model.
@@ -186,47 +171,67 @@ PLOT METHODS AND FUNCTIONS
   }
 \value{
 \item{n}{ The number of captured units}
-\item{t}{ The number of capture occasions in the data matrix \code{X}}
+\item{t}{ The total number of capture occasions in the data matrix \code{X}.
+          When captures occur in continuous time (input argument \code{t=Inf}),
+          this output value is the larger number of captures observed.}
 \item{t0}{ For \code{closedpCI.0} only: the value of the argument \code{t0} used in the computations.}
-\item{results}{ A table containing the estimated population size and its standard error,
-                the deviance, the number of degrees of freedom and the Akaike's information criterion. If the name
-                of the model is followed by ** in this table, it means that the model did not 
-                converge. Therefore, the estimated population size for this model is 
-                questionable.}
+\item{results}{ A table containing, for the fitted model:
+    \describe{
+    \item{\code{abundance}}{:  the estimated population size,}
+    \item{\code{stderr}}{:  the standard error of the estimated population size,}
+    \item{\code{deviance}}{:  the model's deviance,}
+    \item{\code{df}}{:  the number of degrees of freedom,}
+    \item{\code{AIC}}{:  the Akaike's information criterion,}
+    \item{\code{BIC}}{:  the bayesian information criterion,}
+    \item{\code{infoFit}}{:  a numerical code giving information about error or warnings 
+          encountered when fitting the model (see \code{\link{Rcapture-package}} for details).}
+    }}
+\item{bias}{ Not produced for normal heterogeneous models (\code{h="Normal"}): The asymptotic bias of the estimated population size.}
 \item{fit}{ The 'glm' object obtained from fitting the model except for
             normal heterogeneous models (\code{h="Normal"}). These models are not fitted 
-            with \code{glm.fit}. For them, \code{fit} is a list with the following elements:\cr
-            \code{parameters}: The matrix of parameters (loglinear coefficients + sigma parameter) 
-                               estimates with their standard errors.\cr
-            \code{varcov}: The estimated variance-covariance matrix of the estimated parameters.\cr
-            \code{y}: The y vector used to fit the model.\cr
-            \code{fitted.values}: The model fitted values.\cr 
-            \code{initparam}: The initial values for the parameters (loglinear coefficients + 
-                              sigma parameter) used by \code{\link{optim}}.\cr
-            \code{optim.out}: The output produced by \code{\link{optim}}.}            
-\item{glm.warn}{ Not produced for normal heterogeneous models (\code{h="Normal"}): 
-                 A vector of character strings. If the \code{\link{glm.fit}} function generates
+            with \code{glm}. For them, \code{fit} is a list with the following elements:
+            \describe{
+            \item{\code{parameters}}{  the matrix of parameters (loglinear coefficients + sigma parameter) estimates with their standard errors,}
+            \item{\code{varcov}}{  the estimated variance-covariance matrix of the estimated parameters,}
+            \item{\code{y}}{  the y vector used to fit the model,}
+            \item{\code{fitted.values}}{  the model fitted values,} 
+            \item{\code{initparam}}{  the initial values for the parameters (loglinear coefficients + 
+                              sigma parameter) used by \code{\link{optim}},}
+            \item{\code{optim}}{  the output produced by \code{\link{optim}}.}
+            }}            
+\item{fit.warn}{ A vector of character strings. If the \code{\link{glm}} or \code{\link{optim}} 
+                 (for normal heterogeneous models) function generates
                  one or more warnings when fitting the model, a copy of these warnings are
-                 stored in \code{glm.warn}. \code{NULL} if \code{\link{glm.fit}} did not produce
-                 any warnings. }
+                 stored in \code{fit.warn}. \code{NULL} if no warnings occured. }
 \item{neg.eta}{ For Chao's lower bound models only: the position of the eta parameters set 
-                to zero in the loglinear parameter vector, if any. If not \code{NULL}, the deviance
-                and degrees of freedom of the fitted Chao's lower bound model cannot be
-                used to conduct a likelihood ratio test to investigate whether a particular 
-                heterogeneous model is adequate (see \bold{Details}). } 
+                to zero in the loglinear parameter vector, if any. } 
 \item{CI}{ Not produced for normal heterogeneous models (\code{h="Normal"}): A table containing 
-           the abundance estimation and its multinomial profile likelihood confidence interval.}
+           the abundance estimation and its multinomial profile likelihood confidence interval.
+           The last column of the table, named \code{infoCI}, contains a numerical code giving information about error or warnings encountered when calculating the confidence interval. Here is a description of the meaning of this numerical code:
+\describe{
+\item{   0}{  no error or warning occured;}
+\item{  -1}{  an error occured while calculating the multinomial abundance estimation;}
+\item{   4}{  a warning occured while calculating the multinomial abundance estimation;} 
+\item{   5}{  a warning occured while calculating the lower bound of the multinomial profile likelihood confidence interval;}
+\item{   6}{  a warning occured while calculating the upper bound of the multinomial profile likelihood confidence interval.}
+}}
+\item{CI.err}{ Not produced for normal heterogeneous models (\code{h="Normal"}): If
+               an error occured while calculating the multinomial abundance, a copy of the error message is
+               stored in \code{CI.err}. \code{NULL} if no error occured. } 
+\item{CI.warn}{ Not produced for normal heterogeneous models (\code{h="Normal"}): If 
+                 one or more warnings occur while calculating the multinomial abundance estimation or the profile likelihood confidence interval, a copy of these warnings are
+                 stored in \code{CI.warn}. \code{NULL} if no warnings occured.} 
 \item{alpha}{ 1-the confidence level of the interval.}
-\item{NCI}{ Not produced for normal heterogeneous models (\code{h="Normal"}): 
+\item{N.CI}{ Not produced for normal heterogeneous models (\code{h="Normal"}): 
             The x-coordinates for \code{plot.closedpCI.t}.}
-\item{loglikCI}{ Not produced for normal heterogeneous models (\code{h="Normal"}): 
+\item{loglik.CI}{ Not produced for normal heterogeneous models (\code{h="Normal"}): 
                  The y-coordinates for \code{plot.closedpCI.t}.} 
 }
 \note{ For normal heterogeneous models, the \code{closedpCI} functions use \code{\link{optim}}
-       from the \pkg{stats} package. Otherwise, models are fitted with \code{\link{glm.fit}}
+       from the \pkg{stats} package. Otherwise, models are fitted with \code{\link{glm}}
        and the code to compute the multinomial profile likelihood confidence interval 
-       calls the functions \code{\link{glm.fit}}, \code{\link{optimize}} and \code{\link{uniroot}},
-       also from the \pkg{stats} package. }
+       calls the functions \code{\link{glm}}, \code{\link{optimize}} and \code{\link{uniroot}},
+       all from the \pkg{stats} package. }
 \references{ 
 Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
 
@@ -239,25 +244,25 @@ Rivest, L.P. (2011) A lower bound model for multiple record systems estimation w
 
 Rivest, L.P. and Baillargeon, S. (2007) Applications and extensions of Chao's moment estimator for the size of a closed population. \emph{Biometrics}, \bold{63}(4), 999--1006.
 }
-\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
-Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
+\author{ Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} and Sophie Baillargeon }
+
 \seealso{\code{\link{closedp}},  \code{\link{closedp.Mtb}}}
 \examples{
 data(hare)
-CI<-closedpCI.t(hare, m = "Mth", h = "Poisson", h.control = list(theta = 2))
+CI <- closedpCI.t(hare, m = "Mth", h = "Poisson", h.control = list(theta = 2))
 CI
 plotCI(CI)
 
 data(HIV)
-mat<-histpos.t(4)
-mX2<-cbind(mat,mat[,1]*mat[,2])
+mat <- histpos.t(4)
+mX2 <- cbind(mat, mat[, 1] * mat[ ,2])
 closedpCI.t(HIV, dfreq = TRUE, mX = mX2, mname = "Mt interaction 1,2")
 # which can be obtained more conveniently with
 closedpCI.t(HIV, dfreq = TRUE, mX = ~ . + c1:c2, mname = "Mt interaction 1,2")
 
 data(BBS2001)
-CI0<-closedpCI.0(BBS2001, dfreq = TRUE, dtype = "nbcap", t = 50, t0 = 20,
-                 m = "Mh", h = "Gamma", h.control = list(theta = 3.5))
+CI0 <- closedpCI.0(BBS2001, dfreq = TRUE, dtype = "nbcap", t = 50, t0 = 20,
+                   m = "Mh", h = "Gamma", h.control = list(theta = 3.5))
 CI0
 plot(CI0)
 plotCI(CI0)
@@ -275,12 +280,12 @@ closedpCI.t(period3, m = "Mh", h = psi)
 histpos <- histpos.t(4)
 diabetes <- cbind(histpos, c(58,157,18,104,46,650,12,709,14,20,7,74,8,182,10))
 # chosen interaction set I in Rivest (2011)
-closedpCI.t(X=diabetes, dfreq=TRUE, mX= ~ . + c1:c3 + c2:c4 + c3:c4, 
-            h="Normal", mname="Mth normal with I")
+closedpCI.t(X = diabetes, dfreq = TRUE, mX = ~ . + c1:c3 + c2:c4 + c3:c4, 
+            h = "Normal", mname = "Mth normal with I")
 
 ### Example of captures in continuous time
 ### Illegal immigrants data
 data(ill)
-closedpCI.0(ill, dtype="nbcap", dfreq=TRUE, t=Inf, m="Mh", h="LB")
+closedpCI.0(ill, dtype = "nbcap", dfreq = TRUE, t = Inf, m = "Mh", h = "LB")
 }
 \keyword{ models }

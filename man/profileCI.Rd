@@ -3,7 +3,7 @@
 \alias{print.profileCI}
 \title{ Profile Likelihood Confidence Interval for Abundance Estimation in Closed Populations Capture-Recapture Experiments }
 \description{
-This function is deprecated, please use \code{closedpCI.t} instead.
+As of version 1.2-0 of \pkg{Rcapture}, this function is deprecated, but kept for back compatibility. Please use \code{\link{closedpCI.t}} instead.
 
 The \code{profileCI} function computes the multinomial profile likelihood for the abundance of some closed population 
 capture-recapture models. 
@@ -51,16 +51,16 @@ Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-r
 
 Cormack, R. M. (1992) Interval estimation for mark-recapture studies of closed populations. \emph{Biometrics}, \bold{48}, 567--576.
  }
-\author{Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
+\author{ Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} and Sophie Baillargeon }
 \seealso{\code{\link{closedp}}, \code{\link{closedp.mX}}, \code{\link{closedp.h}} }
 \examples{
 data(hare)
 profileCI(hare, m = "Mth", h = "Poisson", a = 2)
 
 data(HIV)
-mat<-histpos.t(4)
-mX2<-cbind(mat,mat[,1]*mat[,2])
+mat <- histpos.t(4)
+mX2 <- cbind(mat, mat[, 1] * mat[, 2])
 
-profileCI(hare,m="Mh",h="Chao")
+profileCI(hare, m = "Mh", h = "Chao") 
 }
 \keyword{ models }

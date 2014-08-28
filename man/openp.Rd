@@ -70,27 +70,27 @@ Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-r
 
 Rivest, L.P. and Daigle, G. (2004) Loglinear models for the robust design in mark-recapture experiments. \emph{Biometrics}, \bold{60}, 100--107.
 }
-\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
-Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
+\author{ Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} and Sophie Baillargeon }
+
 \seealso{\code{\link{closedp}}, \code{\link{periodhist}}, \code{\link{robustd}}}
 \examples{
 data(duck)
-op.m1 <- openp(duck, dfreq=TRUE)
+op.m1 <- openp(duck, dfreq = TRUE)
 plot(op.m1)
 
 # To remove the capture history 111111.
-keep2 <- apply(histpos.t(6),1,sum)!=6
-op.m2 <- openp(duck, dfreq=TRUE, keep=keep2)
+keep2 <- apply(histpos.t(6), 1, sum) != 6
+op.m2 <- openp(duck, dfreq = TRUE, keep = keep2)
 op.m2
 
 # To remove the capture histories with 5 captures or more
-keep3 <- apply(histpos.t(6),1,sum)<5
-op.m3 <- openp(duck, dfreq=TRUE, keep=keep3)
+keep3 <- apply(histpos.t(6), 1, sum) < 5
+op.m3 <- openp(duck, dfreq = TRUE, keep = keep3)
 op.m3
 
 
 data(mvole)
-mvole.op<-periodhist(mvole,vt=rep(5,6))
-openp(mvole.op, dfreq=TRUE)
+mvole.op <- periodhist(mvole, vt = rep(5, 6))
+openp(mvole.op, dfreq = TRUE)
 }
 \keyword{ models }

@@ -13,7 +13,7 @@ The number of capture occasions \eqn{t} is 50.
 36 by 2 numeric matrix, with the following columns:
   \describe{
     \item{\code{nbcap}}{ Numbers of captures}
-    \item{freq}{ Observed frequencies for each number of captures}
+    \item{\code{freq}}{ Observed frequencies for each number of captures}
     }
 }
 \details{
@@ -47,7 +47,7 @@ closedpCI.0(BBS2001, dfreq = TRUE, dtype = "nbcap", t = 50, t0 = 20,
 
    # One can also calculate a profile confidence interval for Chao's 
    # lower bound:
-closedpCI.0(BBS2001,dfreq=TRUE,dtype="nbcap",t=50,t0=20,
-            m="Mh",h="Chao")   
+closedpCI.0(BBS2001, dfreq = TRUE, dtype = "nbcap", t = 50, t0 = 20,
+            m = "Mh", h = "Chao")   
 }
 \keyword{datasets}

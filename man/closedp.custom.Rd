@@ -6,7 +6,7 @@
 \alias{boxplot.closedp.custom}
 \title{ Customization of a Loglinear Model for Closed Populations Capture-Recapture Experiments }
 \description{
-These functions are deprecated, please use \code{closedpCI.t} instead. 
+As of version 1.2-0 of \pkg{Rcapture}, these functions are deprecated, but kept for back compatibility. Please use \code{closedpCI.t} instead. 
 
 The \code{closedp.mX} function fits a loglinear model given a design matrix \code{mX}. The \code{closedp.h} function 
 fits Mh or Mth models for which the form of the column for heterogeneity in the design matrix is determined by the user. 
@@ -55,16 +55,17 @@ closedp.h(X, dfreq=FALSE, m="Mh", h="Poisson", a=2)
 \references{ 
 Rivest, L.P. and Baillargeon, S. (2007) Applications and extensions of Chao's moment estimator for the size of a closed population. \emph{Biometrics}, \bold{63}(4), 999--1006.
 }
-\author{Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
+\author{ Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} and Sophie Baillargeon }
+
 \seealso{\code{\link{closedp}}, \code{\link{closedp.Mtb}} }
 \examples{
 data(HIV)
-mat<-histpos.t(4)
-mX2<-cbind(mat,mat[,1]*mat[,2])
-closedp.mX(HIV,dfreq=TRUE,mX=mX2)
+mat <- histpos.t(4)
+mX2 <- cbind(mat, mat[, 1] * mat[, 2])
+closedp.mX(HIV, dfreq = TRUE, mX = mX2)
 
 data(mvole)
-period3<-mvole[,11:15]
+period3 <- mvole[, 11:15]
 psi <- function(x) { -log(3.5 + x) + log(3.5) }
 closedp.h(period3, h = psi)
 }

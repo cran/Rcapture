@@ -10,15 +10,14 @@
 The functions \code{closedp.t} and \code{closedp.0} fit various loglinear models for closed populations in 
 capture-recapture experiments. For back compatibility, \code{closedp.t} is also named \code{closedp}.
 
-\code{closedp.t} fits more models than \code{closedp.0} but for data set with more than 20 capture occasions, 
-the function might fail. However, \code{closedp.0} works with fairly large data sets (see Details).     
+\code{closedp.t} fits more models than \code{closedp.0} but for data set with more than 20 capture occasions, the function might fail. However, \code{closedp.0} works with fairly large data sets (see \bold{Details}).     
 }
 \usage{
-closedp(X, dfreq=FALSE, neg=TRUE)
-closedp.t(X, dfreq=FALSE, neg=TRUE)
+closedp(X, dfreq=FALSE, neg=TRUE, \dots)
+closedp.t(X, dfreq=FALSE, neg=TRUE, \dots)
 
 closedp.0(X, dfreq=FALSE, dtype=c("hist","nbcap"), t=NULL, t0=NULL, 
-          neg=TRUE)
+          neg=TRUE, \dots)
 
 \method{print}{closedp}(x, \dots)
 
@@ -44,9 +43,10 @@ closedp.0(X, dfreq=FALSE, dtype=c("hist","nbcap"), t=NULL, t0=NULL,
              of \code{t0} is the larger number of captures observed. }
   \item{neg}{ If this option is set to TRUE, negative eta parameters in Chao's lower 
               bound models are set to zero (see \bold{Details}). }
+  \item{\dots}{ Further arguments to be passed to \code{\link{glm}}, \code{\link{print.default}},
+                \code{\link{boxplot.default}} or \code{\link{plot.default}}.}
   \item{x}{ An object, produced by a \code{closedp} function, to print or to plot.}
-  \item{main}{ A main title for the plot}
-  \item{\dots}{ Further arguments to be passed to methods (see \code{print.default}, \code{boxplot.default} and \code{plot.default}).}
+  \item{main}{ A main title for the plot.}
   }
 \details{
    \code{closedp.t} fits models M0, Mt, Mh Chao (LB), Mh Poisson2, Mh Darroch, Mh Gamma3.5, 
@@ -55,7 +55,9 @@ closedp.0(X, dfreq=FALSE, dtype=c("hist","nbcap"), t=NULL, t0=NULL,
    \code{closedp.0} can be used with larger data sets than \code{closedp.t}. 
    This is explained by the fact that \code{closedp.t} fits models using the frequencies of 
    the observable capture histories (vector of size \eqn{2^t-1}), whereas \code{closedp.0} 
-   uses the numbers of units captured i times, for \eqn{i=1,\ldots,t} (vector of size \eqn{t}).
+   uses the numbers of units captured i times, for \eqn{i=1,\ldots,t} (vector of size \eqn{t}). 
+   See \code{\link{Rcapture-package}} for more details about the distinction between \code{.t}
+   and \code{.0} functions.
     
   Multinomial profile confidence intervals for the abundance are constructed by \code{\link{closedpCI.t}} 
   and \code{\link{closedpCI.0}}.
@@ -81,11 +83,9 @@ closedp.0(X, dfreq=FALSE, dtype=c("hist","nbcap"), t=NULL, t0=NULL,
   Chao's lower bound models contain \eqn{t-2} parameters, called
   eta parameters, for the heterogeneity. These parameters should theoretically be greater 
   or equal to zero (see Rivest and Baillargeon (2007)). When the argument \code{neg} is set 
-  to TRUE (the default), negative eta parameters are set to zero (to do so, columns are
-  removed from the design matrix of the model). Consequently, heterogeneous models are no longer 
-  particular cases of Chao's model. Therefore, likelihood ratio tests cannot be conducted 
-  anymore to test whether a chosen heterogeneous model is adequate. Also, the degrees 
-  of freedom of Chao's model increase when eta parameters are set to zero.\cr
+  to \code{TRUE} (the default), negative eta parameters are set to zero (to do so, columns are
+  removed from the design matrix of the model). Degrees of freedom of Chao's model increase 
+  when eta parameters are set to zero.\cr
 
 OTHER MODELS FOR HETEROGENEITY
 
@@ -118,39 +118,48 @@ PLOT METHODS AND FUNCTIONS
 }
 \value{
 \item{n}{ The number of captured units.}
-\item{t}{ The total number of capture occasions in the data matrix \code{X}.}
+\item{t}{ The total number of capture occasions in the data matrix \code{X}.
+          When captures occur in continuous time (input argument \code{t=Inf}),
+          this output value is the larger number of captures observed.}
 \item{t0}{ For \code{closedp.0} only: the value of the argument \code{t0} used in the computations.}
-\item{results}{ A table containing, for every fitted model, the estimated population size and 
-                its standard error, the deviance, the number of degrees of 
-                freedom and the Akaike's information criterion. If the name of a model is followed 
-                by ** in this table, it means that the model did not converge. Therefore,
-                the estimated population size for this model is questionable.}
-\item{converge}{ A logical vector indicating whether or not the fitted models converged.}
+\item{results}{ A table containing, for every fitted model:
+    \describe{
+    \item{\code{abundance}}{:  the estimated population size,}
+    \item{\code{stderr}}{:  the standard error of the estimated population size,}
+    \item{\code{deviance}}{:  the model's deviance,}
+    \item{\code{df}}{:  the number of degrees of freedom,}
+    \item{\code{AIC}}{:  the Akaike's information criterion,}
+    \item{\code{BIC}}{:  the bayesian information criterion,}
+    \item{\code{infoFit}}{:  a numerical code giving information about error or warnings 
+          encountered when fitting the model (see \code{\link{Rcapture-package}} for details).}
+    }}
+\item{bias}{ A vector, the asymptotic bias of the estimated population size for every fitted model.}
 \item{glm}{ A list of the 'glm' objects obtained from fitting models.} 
-\item{glm.warn}{ A list of character string vectors. If the \code{\link{glm.fit}} function generates
+\item{glm.err}{ A list of character string vectors. If the \code{\link{glm}} function generates
+                an error when fitting a model, a copy of the error message is
+                 stored in \code{glm.err$mname} where \code{mname} is a short name to identify
+                 the model. A \code{NULL} list element means that no error occured for the considered model.} 
+\item{glm.warn}{ A list of character string vectors. If the \code{\link{glm}} function generates
                  one or more warnings when fitting a model, a copy of these warnings are
-                 stored in \code{glm.warn$Mname} where \code{Mname} is a short name to identify
-                 the model. A \code{NULL} list element means that \code{\link{glm.fit}} did not 
+                 stored in \code{glm.warn$mname} where \code{mname} is a short name to identify
+                 the model. A \code{NULL} list element means that \code{\link{glm}} did not 
                  produce any warnings for the considered model. }
-\item{parameters}{ Capture-recapture parameters estimates. It contains N, the estimated population size, and p or \eqn{p_1}{p1} 
-                   to \eqn{p_t}{pt} defined as follows for the different models :
-\tabular{ll}{
-M0 \tab the capture probability at any capture occasion \cr
-Mt \tab the capture probabilities for each capture occasion \cr
-Mh models \tab the average probability of capture \cr 
-Mth models \tab the average probabilities of capture for each occasion \cr
-Mb and Mbh \tab the probability of first capture at any capture occasion 
-}
-For models Mb and Mbh, it also contains c, the recapture probability at any capture occasion.}
+\item{parameters}{ Capture-recapture parameters estimates. It contains N, the estimated population size, 
+                   and p or \eqn{p_1}{p1} to \eqn{p_t}{pt} defined as follows for the different models :
+    \describe{
+    \item{}{M0: the capture probability at any capture occasion,}
+    \item{}{Mt: the capture probabilities for each capture occasion,}
+    \item{}{Mh models: the average probability of capture,} 
+    \item{}{Mth models: the average probabilities of capture for each occasion,}
+    \item{}{Mb and Mbh: the probability of first capture at any capture occasion.} 
+    }
+    For models Mb and Mbh, it also contains c, the recapture probability at any capture occasion.}
 \item{neg.eta}{ The position of the eta parameters set to zero in the loglinear parameter 
-                vector of model MhC and MthC. If not \code{NULL}, likelihood ratio tests cannot be 
-                conducted to test whether a particular heterogeneous model is adequate by
-                comparing it's deviance to the deviance of Chao's lower bound model 
-                (see \bold{Details}).}
+                vector of models MhC and MthC. \code{NULL} if no parameters are set to zero.}
 \item{X}{ A copy of the data given as input in the function call.}
 \item{dfreq}{ A copy of the \code{dfreq} argument given in the function call.}
 }
-\note{ This function uses the \code{\link{glm.fit}} function of the \pkg{stats} package. }
+\note{ This function uses the \code{\link{glm}} function of the \pkg{stats} package. }
 \references{ 
 Agresti, A. (1994) Simple capture-recapture models permitting unequal catchability and variable sampling effort. \emph{Biometrics}, \bold{50}, 494--500.
 
@@ -166,32 +175,32 @@ Rivest, L.P. and Baillargeon, S. (2007) Applications and extensions of Chao's mo
 
 Seber, G.A.F. (1982) The Estimation of Animal Abundance and Related Parameters, 2nd edition, New York: Macmillan.
 }
-\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
-Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
-\seealso{\code{\link{closedpCI.t}}, \code{\link{closedpCI.0}}, \code{\link{closedp.bc}}, \code{\link{closedp.Mtb}}, \code{\link{uifit}}. }
+\author{ Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} and Sophie Baillargeon }
+
+\seealso{\code{\link{closedpCI.t}}, \code{\link{closedpCI.0}}, \code{\link{closedp.bc}}, \code{\link{closedp.Mtb}}, \code{\link{closedpMS.t}}, \code{\link{uifit}}. }
 \examples{
 data(hare)
-hare.closedp<-closedp.t(hare)
+hare.closedp <- closedp.t(hare)
 hare.closedp
 boxplot(hare.closedp)
 
 data(mvole)
-period3<-mvole[,11:15]
+period3 <- mvole[, 11:15]
 closedp.t(period3)
 
 data(BBS2001)
-BBS.closedp<-closedp.0(BBS2001,dfreq=TRUE,dtype="nbcap",t=50,t0=20)
+BBS.closedp <- closedp.0(BBS2001, dfreq = TRUE, dtype = "nbcap", t = 50, t0 = 20)
 BBS.closedp
 plot(BBS.closedp)
 
 ### Seber (1982) p.107
 # When there is 2 capture occasions, the heterogeneity models cannot be fitted
-X <- matrix(c(1,1,167,1,0,781,0,1,254),byrow=TRUE,ncol=3)
-closedp.t(X,dfreq=TRUE)
+X <- matrix(c(1,1,167,1,0,781,0,1,254), byrow = TRUE, ncol = 3)
+closedp.t(X, dfreq = TRUE)
 
 ### Example of captures in continuous time
 ### Illegal immigrants data
 data(ill)
-closedp.0(ill, dtype="nbcap", dfreq=TRUE, t=Inf)
+closedp.0(ill, dtype = "nbcap", dfreq = TRUE, t = Inf)
 }
 \keyword{models}

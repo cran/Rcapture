@@ -41,12 +41,12 @@ periodhist(X, dfreq=FALSE, vt, drop=TRUE)
 \references{
 Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
 }
-\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
-Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
+\author{ Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} and Sophie Baillargeon }
+
 \seealso{ \code{\link{openp}} }
 \examples{
 data(mvole)
-mvole.op<-periodhist(mvole,vt=rep(5,6))
-openp(mvole.op, dfreq=TRUE)
+mvole.op <- periodhist(mvole, vt = rep(5, 6))
+openp(mvole.op, dfreq = TRUE)
 }
 \keyword{ manip }

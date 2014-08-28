@@ -23,12 +23,12 @@ uifit(x.closedp)
 \references{
 Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
 }
-\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
-Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
+\author{ Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} and Sophie Baillargeon }
+
 \seealso{\code{\link{closedp}} }
 \examples{
 data(mvole)
-period3<-mvole[,11:15]
+period3 <- mvole[, 11:15]
 cp <- closedp(period3)
 uifit(cp)
 }

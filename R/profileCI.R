@@ -19,14 +19,11 @@ profileCI <- function(X, dfreq=FALSE, m="M0", h="Chao", a=2, mX=NULL, mname="Cus
         }
        
         # Argument m
-        if(!isTRUE(all.equal(length(m),1))) stop("'m' must be of length 1")
-        if(!identical(m,"M0")&&!identical(m,"Mt")&&!identical(m,"Mh")&&!identical(m,"Mth"))
-        stop("'m' can only take the value \"M0\", \"Mt\", \"Mh\" or \"Mth\"")
+        m <- valid.vm(vm=m, values=c("M0","Mt","Mh","Mth"), vt=t, typet=TRUE)
     
         # Argument h
-        if(!isTRUE(all.equal(length(h),1))) stop("'h' must be of length 1")
-        if(!is.function(h)&&!identical(h,"Chao")&&!identical(h,"Darroch")&&!identical(h,"Poisson"))
-        stop("'h' must be a function or a character string taking the value \"Chao\", \"Darroch\" or \"Poisson\"")
+        if (missing(h) && m %in% c("M0","Mt")) h <- NULL
+        h <- valid.h(h=h, values=c("Chao","Poisson","Darroch"), m=m, call=call)$h
         
         # Argument a
         if(!isTRUE(all.equal(length(a),1))) stop("'a' must be of length 1")

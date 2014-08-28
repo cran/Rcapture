@@ -13,7 +13,7 @@ effectively expelled is apprehended exactly \eqn{i} times.
 6 by 2 numeric matrix, with the following columns:
   \describe{
     \item{\code{nbcap}}{ Numbers of captures, i.e. number of times an illegal immigrant is apprehended by the police}
-    \item{freq}{ Observed frequencies for each number of captures}
+    \item{\code{freq}}{ Observed frequencies for each number of captures}
     }
 }
 \details{
@@ -35,19 +35,19 @@ Bohning, D. and Schon, D. (2005) Nonparametric Maximum Likelihood Estimation of 
 \examples{
 data(ill)
 
-sdesc <- descriptive(ill, dtype="nbcap", dfreq=TRUE, t=Inf)
+sdesc <- descriptive(ill, dtype = "nbcap", dfreq = TRUE, t = Inf)
 plot(sdesc)
    # A mixture model looks appropriate
 
-closedp.0(ill, dtype="nbcap", dfreq=TRUE, t=Inf)
+closedp.0(ill, dtype = "nbcap", dfreq = TRUE, t = Inf)
 
    # We can try to fit a normal mixture model:
-closedpCI.0(ill, dtype="nbcap", dfreq=TRUE, t=Inf, m="Mh", h="Normal")
+closedpCI.0(ill, dtype = "nbcap", dfreq = TRUE, t = Inf, m = "Mh", h = "Normal")
    # We get an estimate similar to the Mh Gamma3.5 estimate.
 
    # Estimates are highly variable and it seems difficult to come up with a
    # definitive answer. The lower bound estimate is useful in this context.
-closedpCI.0(ill, dtype="nbcap", dfreq=TRUE, t=Inf, m="Mh", h="LB")
+closedpCI.0(ill, dtype = "nbcap", dfreq = TRUE, t = Inf, m = "Mh", h = "LB")
    # Considering the lower limit of a 95\% confidence estimate for the lower bound, 
    # there should be at least 8 000 illegal immigrants in the Netherlands. 
    # Less than 25\% have been caught.

@@ -5,7 +5,7 @@ uifit <- function(x.closedp)
     # Validation de l'argument fourni en entrée
     if(!any(class(x.closedp)=="closedp.t")) stop("'x.closedp' must be an object produced with 'closedp' or 'closedp.t")
     ############################################################################################################################
-    # Ma fonction fonctionne correctement car les éléments glm, parameter et converge de l'objet de type closedp
+    # Ma fonction fonctionne correctement car les éléments glm et parameter de l'objet de type closedp
     # contiennent des sorties pour les mêmes modèles, et ce, dans le même ordre.
 
         t <- x.closedp$t
@@ -14,7 +14,7 @@ uifit <- function(x.closedp)
         for (i in 1:t) { ifirstcap <- c(ifirstcap,rep(i,2^(t-i))) }
 
         # Identification des modèles qui ont été ajustés
-        lmn<-names(x.closedp$converge)
+        lmn<-rownames(x.closedp$results)
         nm<-length(lmn)
 
         # Initialisation du tableau principal de sorties

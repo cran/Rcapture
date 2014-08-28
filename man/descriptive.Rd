@@ -69,20 +69,20 @@ White, G. (2005) \emph{Software Developed by Department of Fishery and Wildlife 
 
 White, G. and Burnham, K.P. (1999) Program Mark: Survival Estimation from Populations of Marked Animals. \emph{Bird Study}, \bold{46} (Supplement), 120--138. 
 }
-\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
-Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
+\author{ Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} and Sophie Baillargeon }
+
 \examples{
 data(hare)
-hare.desc<-descriptive(hare)
+hare.desc <- descriptive(hare)
 hare.desc
 plot(hare.desc)
 
-data(catb)
-catb.desc1<-descriptive(catb,dfreq=TRUE,dtype="nbcap",t=11)
-plot(catb.desc1)
-# To illustrate the option t=Inf
-catb.desc2<-descriptive(catb,dfreq=TRUE,dtype="nbcap",t=Inf)
-plot(catb.desc2)
+data(cbird)
+cbird.desc1 <- descriptive(cbird, dfreq = TRUE, dtype = "nbcap", t = 11)
+plot(cbird.desc1)
+# To illustrate the option t = Inf
+cbird.desc2 <- descriptive(cbird, dfreq = TRUE, dtype = "nbcap", t = Inf)
+plot(cbird.desc2)
 # the y coordinate has changed
 }
 \keyword{ univar }

@@ -36,7 +36,7 @@
         Zw <- Zdelta(Xdelta)     # premiere composante (celle de Alpha) dans ce meme modele
         mX. <- cbind(Zw,Xw$mat)      # on fusionne ces 2 composantes explicatives
         gammanames <- paste("gamma",1:(2*I-2),sep="")
-        colnames(mX.) <- c(gammanames,Xw$paramnames)
+        colnames(mX.) <- c(gammanames,Xw$coeffnames)
         dimX <- dim(mX.)[2]
 
         # Ajustement du modèle
@@ -60,9 +60,9 @@
             {
                 test.Chao <- if(is.function(vh[[i]])||is.null(vh[[i]])) FALSE else if (vh[[i]]=="Chao") TRUE else FALSE
                 if(test.Chao) {
-                    indic <- as.vector(c(indic,rep(0,Xw$nbparam[i]-vt[i]+2),ifelse(param[(2*I+sum(na.rm=TRUE,Xw$nbparam[1:i])-vt[i]+2):(2*I+sum(na.rm=TRUE,Xw$nbparam[1:i])-1)]<0,1,0)))
+                    indic <- as.vector(c(indic,rep(0,Xw$nbcoeff[i]-vt[i]+2),ifelse(param[(2*I+sum(na.rm=TRUE,Xw$nbcoeff[1:i])-vt[i]+2):(2*I+sum(na.rm=TRUE,Xw$nbcoeff[1:i])-1)]<0,1,0)))
                 } else {
-                    indic <- as.vector(c(indic,rep(0,Xw$nbparam[i])))
+                    indic <- as.vector(c(indic,rep(0,Xw$nbcoeff[i])))
                 }
             }
             while(sum(na.rm=TRUE,indic)>0) # Répéter la boucle jusqu'à ce qu'aucun gamma approprié ne soit négatif
@@ -84,9 +84,9 @@
                 {
                     test.Chao <- if(is.function(vh[[i]])||is.null(vh[[i]])) FALSE else if (vh[[i]]=="Chao") TRUE else FALSE
                     if (test.Chao) {
-                        indic <- as.vector(c(indic,rep(0,Xw$nbparam[i]-vt[i]+2),ifelse(param[(2*I+sum(na.rm=TRUE,Xw$nbparam[1:i])-vt[i]+2):(2*I+sum(na.rm=TRUE,Xw$nbparam[1:i])-1)]<0,1,0)))
+                        indic <- as.vector(c(indic,rep(0,Xw$nbcoeff[i]-vt[i]+2),ifelse(param[(2*I+sum(na.rm=TRUE,Xw$nbcoeff[1:i])-vt[i]+2):(2*I+sum(na.rm=TRUE,Xw$nbcoeff[1:i])-1)]<0,1,0)))
                     } else {
-                        indic <- as.vector(c(indic,rep(0,Xw$nbparam[i])))
+                        indic <- as.vector(c(indic,rep(0,Xw$nbcoeff[i])))
                     }
                 }
             }
@@ -179,19 +179,19 @@
                 if (vm[i]=="none") # cas du no model
                 {
                         pstar[i]<- exp(beta[1]+log(2^vt[i]-1))/(1+exp(beta[1]+log(2^vt[i]-1)))
-                        dpstar[(2*I + if(i>1) sum(na.rm=TRUE,Xw$nbparam[1:(i-1)]) else 0):(2*I-1+sum(na.rm=TRUE,Xw$nbparam[1:i])),i] <- exp(beta[1]+log(2^vt[i]-1))/(1+exp(beta[1]+log(2^vt[i]-1)))^2
+                        dpstar[(2*I + if(i>1) sum(na.rm=TRUE,Xw$nbcoeff[1:(i-1)]) else 0):(2*I-1+sum(na.rm=TRUE,Xw$nbcoeff[1:i])),i] <- exp(beta[1]+log(2^vt[i]-1))/(1+exp(beta[1]+log(2^vt[i]-1)))^2
                         beta <- beta[-1]
                 } else if (vm[i]=="Mt") # cas du Modele Mt
                 {
                         pstar[i] <- 1-prod((1+exp(beta[c(1:vt[i])]))^-1)
-                        dpstar[(2*I + if(i>1) sum(na.rm=TRUE,Xw$nbparam[1:(i-1)]) else 0):(2*I-1+sum(na.rm=TRUE,Xw$nbparam[1:i])),i] <- prod((1+exp(beta[c(1:vt[i])]))^-1)*exp(beta[c(1:vt[i])])/(1+exp(beta[c(1:vt[i])]))
+                        dpstar[(2*I + if(i>1) sum(na.rm=TRUE,Xw$nbcoeff[1:(i-1)]) else 0):(2*I-1+sum(na.rm=TRUE,Xw$nbcoeff[1:i])),i] <- prod((1+exp(beta[c(1:vt[i])]))^-1)*exp(beta[c(1:vt[i])])/(1+exp(beta[c(1:vt[i])]))
                         beta <- beta[-c(1:vt[i])]
                 } else # Tous les autres modèles
                 {
                         Xpf <- Xclosedp(vt[i],vm[i],vh[[i]],vtheta[i])
-                        pstar[i] <- sum(na.rm=TRUE,exp(Xpf$mat%*%beta[c(1:Xpf$nbparam)]))/(1+ sum(na.rm=TRUE,exp(Xpf$mat%*%beta[c(1:Xpf$nbparam)])))
-                        dpstar[(2*I + if(i>1) sum(na.rm=TRUE,Xw$nbparam[1:(i-1)]) else 0):(2*I-1+sum(na.rm=TRUE,Xw$nbparam[1:i])),i] <- t(Xpf$mat)%*%exp(Xpf$mat%*%beta[c(1:Xpf$nbparam)])/(1+sum(na.rm=TRUE,exp(Xpf$mat%*%beta[c(1:Xpf$nbparam)])))^2
-                        beta <- beta[-c(1:Xpf$nbparam)]
+                        pstar[i] <- sum(na.rm=TRUE,exp(Xpf$mat%*%beta[c(1:Xpf$nbcoeff)]))/(1+ sum(na.rm=TRUE,exp(Xpf$mat%*%beta[c(1:Xpf$nbcoeff)])))
+                        dpstar[(2*I + if(i>1) sum(na.rm=TRUE,Xw$nbcoeff[1:(i-1)]) else 0):(2*I-1+sum(na.rm=TRUE,Xw$nbcoeff[1:i])),i] <- t(Xpf$mat)%*%exp(Xpf$mat%*%beta[c(1:Xpf$nbcoeff)])/(1+sum(na.rm=TRUE,exp(Xpf$mat%*%beta[c(1:Xpf$nbcoeff)])))^2
+                        beta <- beta[-c(1:Xpf$nbcoeff)]
                 }
         }
         varcovpstar <- t(dpstar)%*%varcov%*%dpstar
@@ -347,7 +347,7 @@
         dimnames(Npop) <- list(titre.periode,c("estimate","stderr"))
         dimnames(B) <- list(titre.inter.periode,c("estimate","stderr"))
         dimnames(Ntot) <- list("all periods",c("estimate","stderr"))
-        dimnames(loglinearpara) <- list(c("intercept",gammanames,Xw$paramnames),c("estimate","stderr"))
+        dimnames(loglinearpara) <- list(c("intercept",gammanames,Xw$coeffnames),c("estimate","stderr"))
         dimnames(uv) <- list(titre.i,c("estimate","stderr"))
         dimnames(vv) <- list(titre.i,c("estimate","stderr"))
 

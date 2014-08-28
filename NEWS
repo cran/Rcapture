@@ -1,4 +1,150 @@
-Changes in Version 1.3-1 
+Changes in Version 1.4-2 (2014-08-28)
+=====================================
+
+  o Documentation update.
+
+  o A data set has been added to the package : the lesbian data set.
+
+
+Changes in Version 1.4-1 (2014-07-17)
+=====================================
+
+  o Documentation update.
+
+
+
+Changes in Version 1.4-0 (2014-07-04)
+=====================================
+
+  o Fonction closedpMS.t() has been added to the package. MS stands for Model
+    Selection. This function fits every possible hierachical loglinear model
+    for a given data set and for given constraints (see closedpMS.t() 
+    documentation for details).
+
+  o The name of a hierarchical loglinear model can now be given as 'mX' argument
+    to a closedpCI function (see closedpMS.t() documentation to learn about the 
+    syntax of hierarchical loglinear model name in Rcapture)
+
+  o Rcapture do not use glmRcapture(), an internal version of glm(), anymore.
+    For better maintainability, it is back to calling glm() directly. To avoid
+    warnings from fitting the NULL model, the internal function glm.call() asks
+    glm() to remove the intercept from the model, but an intercept is added to
+    the model manually through an explanatory variable taking a constant value
+    of 1. Because of this trick, the NULL deviance might not be exactly correct, 
+    but it is not used by Rcapture.
+
+  o Functions calling glm() can now pass arguments to glm() through the special
+    argument ... (added to the closedp functions and closedp.bc()). The function
+    closedp.Mtb() has also a new argument ..., to pass arguments to optim() as
+    the closedpCI functions already do.
+
+
+
+Changes in Version 1.3-4 (2014-07-02)
+=====================================
+
+  o Improvement of the warnings trace when eta parameters are removed from an
+    heterogeneous Chao's lower bound model: the warning messages now indicate
+    from which fit it comes.
+
+  o Non-integer capture frequencies in input data set are now accepted, but 
+    they still generate warnings from glm().
+
+  o A model design matrix with fewer rows than columns now produce a warning
+    instead of an error, but the closedpCI functions do not calculate a 
+    multinomial profile likelihood confidence interval in that case.
+
+  o The data set 'catb' has been renamed 'cbird'.
+
+
+
+Changes in Version 1.3-3 (2014-06-20) 
+=====================================
+
+  o Closed population functions now calculate asymptotic bias for abundance 
+    estimators.
+
+  o Closed population functions now calculate a Bayesian Information Criterion
+    (BIC) for the fitted models.
+
+  o The way Rcapture treats warnings and errors produced while fitting a closed 
+    population model has been revised :
+      o If an error occurs while executing a function fitting only one model 
+        (closedpCI functions, closedp.bc(), closedp.Mtb()), the execution is 
+        stopped and the error message is printed (usual behavior in R, no change 
+        here). However, if an error occurs while fitting a model in a call to 
+        a function fitting more than one model (closedp functions), the 
+        execution of the call is not stopped anymore. Instead, the row in the 
+        results table for the problematic model is filled with NA and the
+        error message is stored in a new output value called 'glm.err'.
+      o Warning messages, if any, are stored in an output value called
+        'glm.warn', 'fit.warn' or 'optim.warn', depending on the function. In
+        previous versions of Rcapture, warnings produced when fitting a model
+        with optim() (normal heterogeneous model or the Mtb model) were not  
+        stored. They were printed in the console. However, warnings from calls
+        to the glmRcapture() function, used to fit any other model, were stored 
+        since version 1.3-1.
+      o A new column called 'infoFit' has been added to the 'results' table. It 
+        contains a numerical code giving information about errors or warnings 
+        encountered (see the Rcapture documentation for details).
+      o The output value 'converge' of closedp functions and closedp.bc() has 
+        been removed since information about convergence is now given through 
+        the column 'infoFit' of the 'results' table. In addition, in case of non 
+        convergence, the symbol '**' is not added anymore to the name of the
+        model and no more note is added to the print.
+
+  o closedpCI functions now keep a trace of errors and warnings produced while 
+    calculating the multinomial profile likelihood confidence interval. They
+    are stored in 'CI.err' and 'CI.warn'. A new column in the output value 'CI', 
+    named 'infoCI', gives information about errors or warnings encountered (see
+    the closedpCI documentation for details).
+
+  o closedp.bc() can now perform a correction for negative eta parameters in the
+    Mth Chao lower bound model, just like any other closed population function
+    already did. This correction is done by default.
+
+  o Argument modifications for new features (described above) or consistency
+    with closedpCI functions:
+      o closedp.bc(): 'theta' must now be input through the new argument 
+                      'h.control', which also accepts a 'neg' element to control
+                       the correction for negative eta parameters in the Mth
+                       Chao lower bound model. 
+      o closedp.Mtb(): a new argument 'method' as been added to allow the user 
+                       to modify the optim() argument 'method'.  
+
+  o Output values modifications for new features (described above) or consistency:
+      o closed population functions : 'results' contains three new columns,
+                                      named 'bias', 'BIC' and 'infoFit'.
+      o closedp functions: 'converge' has been removed, 'glm.err' has been added.
+      o closedp.bc(): 'converge' has been removed, 'neg.eta' has been added.
+      o closedp.Mtb(): 'fit' has been renamed 'optim', 'optim.warn' has been added.
+      o closedpCI functions: 'glm.warn' has been renamed 'fit.warn', 
+                             'CI.err' and 'CI.warn' have been added,
+                             'CI' contains a new column named 'infoCI'.
+
+
+
+Changes in Version 1.3-2 (2014-06-05)
+=====================================
+
+  o The vignette from an article in the Journal of Statistical Software
+    has been removed because it was outdated.
+
+  o Reorganisation of the internal code for closedpCI functions.
+
+  o Output values added for consistency:
+      o 't' and 't0' in closedp.bc(),
+      o 't' and 'fit' in closedp.Mtb().
+
+  o Bug fixes:
+      o closedpCI functions now work with a formula containing only one term
+        (including the intercept only model),
+      o profileCI() now works with model Mt and 2 capture occasions.
+
+
+
+Changes in Version 1.3-1 (2012-05-31)
+=====================================
 
   o The data set 'ill' has been added to the package to illustrate the new feature
     t=Inf for captures occurring in continuous time. 
@@ -45,7 +191,9 @@ Changes in Version 1.3-1
     functions valid.t(), valid.X() and valid.mname(). 
 
 
-Changes in Version 1.3  
+
+Changes in Version 1.3 (2012-03-22) 
+=====================================
 
   o Normal heterogeneous models have been added to the package. They can be 
     fitted with the closedpCI.t() and closedpCI.0() functions by giving the value
@@ -104,10 +252,11 @@ Changes in Version 1.3
     folder tests/Examples. Now R CMD check compares the output from the package
     examples to this file and reports any differences.
 
-  
 
-Changes in Version 1.2-1
-  
+
+Changes in Version 1.2-1 (2012-03-28)
+=====================================
+ 
   o Minor bug fixes and changes in the documentation.
     
   o Minor modification to the package vignette : A date has been added in the
@@ -118,7 +267,8 @@ Changes in Version 1.2-1
 
   
 
-Changes in Version 1.2-0
+Changes in Version 1.2-0 (2009-04-28)
+=====================================
 
   o The functions closedp.mX(), closedp.h() and profile.CI() are now 
     deprecated.  They are replaced by the new function closedpCI.t() which 
@@ -258,12 +408,14 @@ Changes in Version 1.2-0
 
  
  
-Changes in Version 1.1
+Changes in Version 1.1 (2008-01-28)
+=====================================
   
   o Bug fixes for R 2.7.0.
 
 
   
-Changes in Version 1.0
+Changes in Version 1.0 (2007-05-02)
+===================================
 
   o First CRAN release of the Rcapture package.

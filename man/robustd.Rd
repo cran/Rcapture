@@ -88,8 +88,8 @@ Rivest, L.P. and Daigle, G. (2004) Loglinear models for the robust design in mar
 \note{ 
 This function uses the \code{glm} function of the \pkg{stats} package. 
 }
-\author{ Sophie Baillargeon \email{Sophie.Baillargeon@mat.ulaval.ca} and\cr
-Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} }
+\author{ Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} and Sophie Baillargeon }
+
 \seealso{\code{\link{closedp}}, \code{\link{openp}} }
 \examples{
 data(mvole)
@@ -98,13 +98,17 @@ data(mvole)
   # tenth capture occasion doesn't have any new capture and is taken
   # out of the analysis). This number being large, we can only use 
   # the robustd.0 function to fit a robust design model.
-robustd.0(mvole[,-10],vt=c(5,4,rep(5,4)),vm="Mh",vh="Poisson",vtheta=1.5)
-# Not run: 
-# robustd.t(mvole[,-10],vt=c(5,4,rep(5,4)),vm="Mh",vh="Poisson",vtheta=1.5)
-# should fail
+
+  # Not run :
+# robustd.0(mvole[, -10], vt = c(5, 4, rep(5, 4)), vm = "Mh", vh = "Poisson", vtheta = 1.5)
+  # Should take a few seconds to run.
+
+  # Not run: 
+# robustd.t(mvole[, -10], vt = c(5, 4, rep(5, 4)), vm = 'Mh', vh = 'Poisson', vtheta = 1.5)
+  # Should fail.
 
   # Considering only the first 3 periods of the data set, we can use the 
   # robustd.t function to fit a model with a temporal effect.
-robustd.t(mvole[,c(1:9,11:15)],vt=c(5,4,5),vm="Mth",vh="Poisson",vtheta=1.5)
+robustd.t(mvole[, c(1:9, 11:15)], vt = c(5, 4, 5), vm = "Mth", vh = "Poisson", vtheta = 1.5)
 }
 \keyword{ models }

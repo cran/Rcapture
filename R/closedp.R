@@ -1,16 +1,16 @@
-"closedp" <- "closedp.t" <- function(X,dfreq=FALSE,neg=TRUE)
+closedp <- closedp.t <- function(X,dfreq=FALSE,neg=TRUE, ...)
 {    
   call <- match.call()
-  closedp.internal(X=X, dfreq=dfreq, neg=neg, call=call)  
+  closedp.internal(X=X, dfreq=dfreq, neg=neg, call=call, ...)  
 }
 
-"closedp.0" <- function(X,dfreq=FALSE,dtype=c("hist","nbcap"),t=NULL,t0=NULL,neg=TRUE)
+closedp.0 <- function(X,dfreq=FALSE,dtype=c("hist","nbcap"),t=NULL,t0=NULL,neg=TRUE, ...)
 {    
   call <- match.call()
-  closedp.internal(X=X, dfreq=dfreq, dtype=dtype[1], t=t, t0=t0, neg=neg, call=call)  
+  closedp.internal(X=X, dfreq=dfreq, dtype=dtype[1], t=t, t0=t0, neg=neg, call=call, ...)  
 }
 
-closedp.internal <- function(X, dfreq=FALSE, dtype="hist", t=NULL, t0=NULL, neg=TRUE, call) 
+closedp.internal <- function(X, dfreq=FALSE, dtype="hist", t=NULL, t0=NULL, neg=TRUE, call, ...) 
 {
   # Initialisation de variables
   typet <- substr(paste(call[1]), nchar(paste(call[1])), nchar(paste(call[1]))) %in% c("t", "p")
@@ -61,16 +61,23 @@ closedp.internal <- function(X, dfreq=FALSE, dtype="hist", t=NULL, t0=NULL, neg=
   nm <- length(lmn) 
   
   # Initialisation d'objets de la sortie
-  tableau <- matrix(nrow=nm,ncol=5)
-  dimnames(tableau) <- list(lmn,c("abundance","stderr","deviance","df","AIC"))
-  converge <- vector(mode="logical",length=nm)
-  names(converge) <- lmn
+  tableau <- matrix(NA_real_, nrow=nm, ncol=7)
+  dimnames(tableau) <- list(lmn,c("abundance","stderr","deviance","df","AIC","BIC","infoFit"))
+  bias <- rep(NA_real_, length=nm)
   glm. <- vector(mode="list",length=nm)
+  glm.err <- vector(mode="list",length=nm)
   glm.warn <- vector(mode="list",length=nm)
   param <- vector(mode="list",length=nm)
-  names(glm.) <- names(glm.warn) <- names(param) <- smn
-  neg.eta <- vector(mode="list")
-  nmC <- 1
+  neg.eta <- vector(mode="list",length=nm)
+  names(bias) <- names(glm.) <- names(glm.err) <- names(glm.warn) <- names(param) <- names(neg.eta) <- smn
+  for (j in 1:nm) {
+    nomparam <- if (smn[j] %in% c("M0","MhC","MhP","MhD","MhG")) c("N","p") else 
+      if (smn[j] %in% c("Mt","MthC","MthP","MthD","MthG")) c("N",paste("p",1:t,sep="")) else
+      if (smn[j] %in% c("Mb","Mbh")) c("N","p","c")
+    param[[j]] <- matrix(nrow = 1, ncol = length(nomparam))
+    dimnames(param[[j]]) <- list("estimate:",nomparam)
+  }
+  htype <- rep(NA, nm)
   
   # Boucle qui ajuste tous les modèles
   t. <- if (typet) t else t0
@@ -79,143 +86,142 @@ closedp.internal <- function(X, dfreq=FALSE, dtype="hist", t=NULL, t0=NULL, neg=
     # Construction de la matrice X
     if (smn[j] %in% c("M0", "Mt", "Mb", "Mbh")) { 
       m <- smn[j]
-      h <- NULL; theta <- NULL
+      htype[j] <- "none"; h <- NULL; theta <- NULL
     } else {
       m <- substr(smn[j],1,nchar(smn[j])-1)
-      if (smn[j] %in% c("MhC", "MthC")) {h <- "Chao";    theta <- NULL}
-      if (smn[j] %in% c("MhP", "MthP")) {h <- "Poisson"; theta <- 2}
-      if (smn[j] %in% c("MhD", "MthD")) {h <- "Darroch"; theta <- NULL}
-      if (smn[j] %in% c("MhG", "MthG")) {h <- "Gamma";   theta <- 3.5}
-    }  
+      if (smn[j] %in% c("MhC", "MthC")) {htype[j] <- h <- "Chao";    theta <- NULL}
+      if (smn[j] %in% c("MhP", "MthP")) {htype[j] <- h <- "Poisson"; theta <- 2}
+      if (smn[j] %in% c("MhD", "MthD")) {htype[j] <- h <- "Darroch"; theta <- NULL}
+      if (smn[j] %in% c("MhG", "MthG")) {htype[j] <- h <- "Gamma";   theta <- 3.5}
+    }
+    # On n'utilise pas getmX ici car une grosse partie de cette fonction traite
+    # l'argument mX alors qu'on ne peut pas fournir cet argument ici
     Xclosedp.out <- Xclosedp(t=t., m=m, h=h, theta=theta, histpos=histpos, nbcap=nbcap)
     mX. <- Xclosedp.out$mat
-    mX.names <- Xclosedp.out$paramnames
-    colnames(mX.) <- mX.names
+    colnames(mX.) <- Xclosedp.out$coeffnames
+    nca <- if (smn[j] == "MhC") 2 else if (smn[j] == "MthC") t+1 else NA  
+      ## nca : le nombre de colonnes dans la matrice de design (incluant une colonne
+      ## pour l'ordonnée à l'origine) ne modélisant pas l'hétérogénéité
+      ## utile pour la correction des eta négatifs pour le modèle Chao ou LB 
     
-    # Ajustement du modèle
-    glm.out <- glm.call(Y=Y, mX.=mX., cst=cst, mname=lmn[j])
-    glmo <- glm.out$glmo
-    glmo.warn <- glm.out$warnings
+    #####  Ajustement du modèle
+    fit.out <- closedp.fitone(n = n, Y = Y, mX. = mX., nbcap = nbcap, nca = nca, 
+                              cst = cst, htype = htype[j], neg = neg, ...)
+
+    glm.[[j]] <- glmo <- fit.out$fit
+    if(!is.null(fit.out$fit.err)) glm.err[[j]] <- fit.out$fit.err
+    if(!is.null(fit.out$fit.warn)) glm.warn[[j]] <- fit.out$fit.warn
+    neg.eta[[j]] <- if (htype[j] == "Chao") fit.out$neg.eta else "removed later"
     
-    ##### Réajustement du modèle en enlevant les eta négatifs pour les modèles de Chao
-    if (smn[j] %in% c("MhC","MthC") && neg) {
-      nca <- if (smn[j] == "MhC") 2 else t+1
-      neg.out <- Chao.neg(glmo=glmo, nca=nca, mname=lmn[j])
-      glmo <- neg.out$glmo
-      glmo.warn <- neg.out$warnings
-      # Pour identifier les eta fixés à zéro
-      pnames <- if(is.null(glmo$offset)) colnames(glmo$model)[-1] else colnames(glmo$model)[-(1:2)]  
-      idnegeta<-setdiff(mX.names,pnames)
-      if (length(idnegeta)) {
-        neg.eta[[nmC]] <- idnegeta 
-        names(neg.eta)[nmC] <- smn[j]
-        nmC<-nmC+1
-      } 
-    }
-    glm.[[j]] <- glmo
-    if (!is.null(glmo.warn)) glm.warn[[j]] <- glmo.warn  # car affecter NULL à un élément d'une liste efface cet élément, je ne veux pas ça
-    converge[j] <- glmo$converge
+    # Calculs à faire seulement si glm a produit une sortie
+    # (on laisse dans tableau et param les NA mis lors de l'initialisation
+    #  en cas d'erreur lors de l'ajustement du modèle)
+    if (is.null(fit.out$fit.err)) {
+      
+      # On met les statistiques d'ajustement du modèle dans tableau
+      tableau[j, 3:6] <- fit.out$resultsFit[-1]
+      
+      # Sauf le bias que l'on place dans un vecteur à part
+      bias[j] <- fit.out$resultsFit[1]
+      
+      # Calcul de N et de son erreur type
+      coeff <- coef(glmo)
+      varcov <- vcov(glmo)
+      
+      if (smn[j]=="Mb") {
+        
+        N <-(exp(coeff[1])*(1+exp(coeff[3]))^t)/(1+exp(coeff[3])-exp(coeff[2]))
+        tableau[j, 1] <- N
+        
+        v1 <- 1
+        v2 <- exp(coeff[2])/(1+exp(coeff[3])-exp(coeff[2]))
+        v3 <- (t*exp(coeff[3])/(1+exp(coeff[3]))-exp(coeff[3])/(1+exp(coeff[3])-exp(coeff[2]))) 
+        v <- N*c(v1,v2,v3)
+        tableau[j, 2] <- sqrt((t(v)%*%varcov%*%v)-N) 
+      
+      } else if (smn[j]=="Mbh") {
+        
+        N <- exp(coeff[1])*((1+exp(coeff[4]))^(t-1))*(1+exp(coeff[2]+coeff[3])/(1+exp(coeff[4])-exp(coeff[3]))) 
+        tableau[j, 1] <- N
+        
+        v1 <- (1+exp(coeff[2]+coeff[3])/(1+exp(coeff[4])-exp(coeff[3])))
+        v2 <- exp(coeff[2]+coeff[3])/(1+exp(coeff[4])-exp(coeff[3]))
+        v3 <- exp(coeff[2]+coeff[3])/(1+exp(coeff[4])-exp(coeff[3])) + exp(coeff[2]+2*coeff[3])/((1+exp(coeff[4])-exp(coeff[3]))^2)
+        v4 <- (t-1)*exp(coeff[4])/(1+exp(coeff[4]))-exp(coeff[2]+coeff[3]+coeff[4])/((1+exp(coeff[4])-exp(coeff[3]))^2)
+        v <- exp(coeff[1])*((1+exp(coeff[4]))^(t-1))*c(v1,v2,v3,v4)
+        tableau[j, 2] <- sqrt((t(v)%*%varcov%*%v) - N) 
+        
+      } else {
+        
+        tableau[j, 1:2] <- getN(n = n, intercept = coeff[1], stderr.intercept = varcov[1,1])
+        N <- tableau[j, 1]
+        
+      }
+      
+      # Avertissement pour grand biais au besoin
+      biasWarn <- getBiasWarn(N = N, bias = bias[j])
+      if(!is.null(biasWarn)) glm.warn[[j]] <- c(glm.warn[[j]], biasWarn) 
     
+      # Calcul des probabilités de capture
+      if (smn[j]=="M0") {
+        param[[j]][1,] <- c(N,exp(coeff[2])/(1+exp(coeff[2])))
+      }
+      if (smn[j]=="Mt") {
+        param[[j]][1,] <- c(N,exp(coeff[2:(t+1)])/(1+exp(coeff[2:(t+1)])))
+      }
+      if (smn[j]%in%c("MhC","MhP","MhD","MhG")) {
+  #            ifirstcap <- rep(1:t,2^(t-1:t))
+  #            param[[j]]<-c(N,sum(na.rm=TRUE,glmo$fitted.values[ifirstcap==1])/N)
+        fi<-tapply(Y,list(nbcap),sum)
+        param[[j]][1,] <- c(N,sum(fi*1:t.)/(t.*N))
+        ##### À vérifier avec Louis-Paul
+      }
+      if (smn[j]%in%c("MthC","MthP","MthD","MthG")) {
+        ifirstcap <- rep(1:t,2^(t-1:t))
+        upred <- rep(0,t)
+        for ( i in 1:t ) { upred[i] <- sum(na.rm=TRUE,glmo$fitted.values[ifirstcap==i]) }
+        deno <- N
+        for ( i in 2:t ) { deno <- c(deno,N-sum(na.rm=TRUE,upred[1:(i-1)])) }          
+        param[[j]][1,] <- c(N,upred/deno)
+      }
+      if (smn[j]=="Mb") {
+        param[[j]][1,] <- c(N,1-exp(coeff[2])/(1+exp(coeff[3])), exp(coeff[3])/(1+exp(coeff[3])))
+      }
+      if (smn[j]=="Mbh") {
+        ifirstcap <- rep(1:t,2^(t-1:t))
+        p <- sum(na.rm=TRUE,glmo$fitted.values[ifirstcap==1])/N
+        cpar <- (glmo$fitted.values[1]/(N*p))^(1/(t-1))
+        param[[j]][1,] <- c(N,p,cpar)
+      }
+  
+    } 
     
-    # Calcul de N et de son erreur type
-    varcov <- summary(glmo)$cov.unscaled 
-    if (smn[j]=="Mb") {
-      N <-(exp(glmo$coef[1])*(1+exp(glmo$coef[3]))^t)/(1+exp(glmo$coef[3])-exp(glmo$coef[2]))
-      v1 <- 1
-      v2 <- exp(glmo$coef[2])/(1+exp(glmo$coef[3])-exp(glmo$coef[2]))
-      v3 <-(t*exp(glmo$coef[3])/(1+exp(glmo$coef[3])) -exp(glmo$coef[3])/(1+exp(glmo$coef[3])-exp(glmo$coef[2]))) 
-      v <- N*c(v1,v2,v3)
-      erreurtype <-sqrt((t(v)%*%varcov%*%v)-N) # calcul de l'erreur type 
-    } else
-    if (smn[j]=="Mbh") {
-      N <- exp(glmo$coef[1])*((1+exp(glmo$coef[4]))^(t-1))*(1+exp(glmo$coef[2]+glmo$coef[3])/(1+exp(glmo$coef[4])-exp(glmo$coef[3])))  # calcul de la taille de la population N
-      v1 <- (1+exp(glmo$coef[2]+glmo$coef[3])/(1+exp(glmo$coef[4])-exp(glmo$coef[3])))
-      v2 <- exp(glmo$coef[2]+glmo$coef[3])/(1+exp(glmo$coef[4])-exp(glmo$coef[3]))
-      v3 <- exp(glmo$coef[2]+glmo$coef[3])/(1+exp(glmo$coef[4])-exp(glmo$coef[3])) + exp(glmo$coef[2]+2*glmo$coef[3])/((1+exp(glmo$coef[4])-exp(glmo$coef[3]))^2)
-      v4 <- (t-1)*exp(glmo$coef[4])/(1+exp(glmo$coef[4])) - exp(glmo$coef[2]+glmo$coef[3]+glmo$coef[4])/((1+exp(glmo$coef[4])-exp(glmo$coef[3]))^2)
-      v <- exp(glmo$coef[1])*((1+exp(glmo$coef[4]))^(t-1))*c(v1,v2,v3,v4)
-      erreurtype <- sqrt((t(v)%*%varcov%*%v) - N)  # calcul de l erreur type        
-    } else { 
-      N <- n + exp(glmo$coef[1])
-      erreurtype <- sqrt(exp(glmo$coef[1])+(exp(2*glmo$coef[1]))*varcov[1,1]) 
-    }       
-    tableau[j,] <- c(N,erreurtype,glmo$dev,glmo$df.residual,glmo$aic)
-    
-    
-    # Calcul des probabilités de capture
-    if (smn[j]=="M0") {
-      param[[j]]<-c(N,exp(glmo$coef[2])/(1+exp(glmo$coef[2])))
-      nomparam <- c("N","p")
-    }
-    if (smn[j]=="Mt") {
-      param[[j]]<-c(N,exp(glmo$coef[2:(t+1)])/(1+exp(glmo$coef[2:(t+1)])))
-      nomparam <- c("N",paste("p",1:t,sep=""))
-    }
-    if (smn[j]%in%c("MhC","MhP","MhD","MhG")) {
-#            ifirstcap <- rep(1:t,2^(t-1:t))
-#            param[[j]]<-c(N,sum(na.rm=TRUE,glmo$fitted.values[ifirstcap==1])/N)
-      fi<-tapply(Y,list(nbcap),sum)
-      param[[j]]<-c(N,sum(fi*1:t.)/(t.*N))
-      ##### À vérifier avec Louis-Paul
-      nomparam <- c("N","p")
-    }
-    if (smn[j]%in%c("MthC","MthP","MthD","MthG")) {
-      ifirstcap <- rep(1:t,2^(t-1:t))
-      upred <- rep(0,t)
-      for ( i in 1:t ) { upred[i] <- sum(na.rm=TRUE,glmo$fitted.values[ifirstcap==i]) }
-      deno <- N
-      for ( i in 2:t ) { deno <- c(deno,N-sum(na.rm=TRUE,upred[1:(i-1)])) }          
-      param[[j]]<-c(N,upred/deno)
-      nomparam <- c("N",paste("p",1:t,sep=""))
-    }
-    if (smn[j]=="Mb") {
-      param[[j]]<-c(N,1-exp(glmo$coef[2])/(1+exp(glmo$coef[3])),exp(glmo$coef[3])/(1+exp(glmo$coef[3])))
-      nomparam <- c("N","p","c")
-    }
-    if (smn[j]=="Mbh") {
-      ifirstcap <- rep(1:t,2^(t-1:t))
-      p <- sum(na.rm=TRUE,glmo$fitted.values[ifirstcap==1])/N
-      cpar <- (glmo$fitted.values[1]/(N*p))^(1/(t-1))
-      param[[j]]<-c(N,p,cpar)
-      nomparam <- c("N","p","c")
-    }
-    param[[j]] <- matrix(param[[j]],nrow=1)  # Meilleur format de sortie, pas de notation scientifique
-    dimnames(param[[j]]) <- list("estimate:",nomparam)  
-    
+    # code pour les conditions mis dans le tableau
+    tableau[j, 7] <- getInfo(err = glm.err[[j]], warn = glm.warn[[j]])
+  
   }    
   
+  
   # Préparation des sorties
-  ### 22 mai 2012 : On a décidé de ne pas afficher cet avertissement.
-  #if (!all(sapply(glm.warn,is.null))) warning("the 'glm.fit' function generated one or more warnings (see the output value 'glm.warn')")
-  ###
-  rownames(tableau)<-paste(lmn,ifelse(converge,"","**"),sep="")
-  ans <- list(n=n, t=t, t0=t0, results=tableau, converge=converge, glm=glm., glm.warn=glm.warn, parameters=param,
-              neg.eta=neg.eta, X=X, dfreq=dfreq)
+  neg.eta <- neg.eta[htype == "Chao"] # afin de ne conserver que les éléments pertinents
+  ans <- list(n=n, t=t, t0=t0, results=tableau, bias = bias, glm=glm., glm.err=glm.err, 
+              glm.warn=glm.warn, parameters=param, neg.eta=neg.eta, X=X, dfreq=dfreq)
   if (typet) ans$t0 <- NULL
   class(ans) <- if (typet) c("closedp", "closedp.t") else "closedp"
   return(ans)  
 }
 
 
-#####################################################################################################
-# Méthodes pour objets de type closedp
+#--------------------------------------------------------------------------------------------------#
+#### Méthodes pour objets de type closedp ####
 
-"print.closedp" <- function(x, ...) {
+print.closedp <- function(x, ...) {
   cat("\nNumber of captured units:",x$n,"\n\n")
   
   if (!is.null(x$results)) {
-    cat("Abundance estimations and model fits:\n")
-    tableau <- x$results
-    tableau[,c(1,2)] <- round(tableau[,c(1,2)],1)
-    if (!is.na(tableau[1,3])) if (tableau[1,3]>0.001) tableau[,3] <- round(tableau[,3],3)       
-    tableau[,4] <- round(tableau[,4],0)
-    tableau[,5] <- round(tableau[,5],3)       
-    print.default(tableau, print.gap = 2, quote = FALSE, right=TRUE, ...)
+    cat("Abundance estimations and model fits:\n")    
+    tabprint(tab = x$results, digits = c(1,1,3,0,3,3,NA), warn = x$glm.warn, ...)
     
-    for ( i in 1:length(x$converge))
-    {
-      if (!x$converge[i]) cat(paste("\n ** model",names(x$converge[i]),"did not converge\n"))
-    }
     ###################################################
     ### 22 mai 2012 : On a décidé de ne plus imprimer ces notes car l'utilisateur ne comprend pas quel
     ### impact des parametres eta fixés à zéro ont sur ses résultats. Ça l'embête plus qu'autre chose.
@@ -226,17 +232,17 @@ closedp.internal <- function(X, dfreq=FALSE, dtype="hist", t=NULL, t0=NULL, neg=
     ###################################################
   }
   
-  if (dim(tableau)[1]==3) cat("\nNote: When there is 2 capture occasions, only models M0, Mt and Mb are fitted.\n")
-  if (dim(tableau)[1]==1) cat("\nNote: When there is 2 capture occasions, only model M0 is fitted.\n")
+  if (dim(x$results)[1]==3) cat("\nNote: When there is 2 capture occasions, only models M0, Mt and Mb are fitted.\n")
+  if (dim(x$results)[1]==1) cat("\nNote: When there is 2 capture occasions, only model M0 is fitted.\n")
   
   cat("\n")
   invisible(x)
 }
 
-"boxplot.closedp" <- function(x,main="Boxplots of Pearson Residuals", ...){
-  if (!is.null(x$results)) {
-    model<-which(x$converge)   
-    nmodel <- length(model)
+boxplot.closedp <- function(x,main="Boxplots of Pearson Residuals", ...){
+  model <- which(x$results[, "infoFit"] %in% c(0,2,3))
+  nmodel <- length(model)
+  if (nmodel>0) {     
     liste <- vector("list",length=nmodel)
     names(liste) <- names(x$glm)[model]
     pres2<-function(x){(x$y-fitted(x))/sqrt(fitted(x))}
@@ -244,13 +250,15 @@ closedp.internal <- function(X, dfreq=FALSE, dtype="hist", t=NULL, t0=NULL, neg=
     cex.axis <- if (nmodel>10) 0.75 else 1
     boxplot.default(liste, main=main, cex.axis=cex.axis, ...)
     abline(h=0,lty=3)
-  } else cat("Note: There is no residuals to plot.\n")
+  } else {
+    cat("Note: There is no residuals to plot.\n")
+  }
 }
 
-"plot.closedp" <- function(x,main="Residual plots for some heterogeneity models", ...){
+plot.closedp <- function(x,main="Residual plots for some heterogeneity models", ...){
   typet <- if(any(class(x)=="closedp.t")) TRUE else FALSE
   t <- if(typet) x$t else x$t0
-  converge <- x$converge[c("Mh Poisson2","Mh Darroch","Mh Gamma3.5")]
+  converge <- x$results[c("Mh Poisson2","Mh Darroch","Mh Gamma3.5"), "infoFit"] %in% c(0,2,3)
   if (sum(converge)==0) stop("models did not converge, there is no data to plot")  
   plotres<-function(res,main) {
     plot(1:t,res[1:t],type="b",ann=FALSE,...)
