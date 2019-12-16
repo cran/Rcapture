@@ -12,8 +12,8 @@
 \tabular{ll}{
 Package: \tab \pkg{Rcapture}\cr
 Type: \tab Package\cr
-Version: \tab 1.4-2\cr
-Date: \tab 2014-08-28\cr
+Version: \tab 1.4-3\cr
+Date: \tab 2019-12-16\cr
 License: \tab GPL-2\cr
 }
 
@@ -168,8 +168,6 @@ Rivest, L.P. (2008) Why a time effect often has a limited impact on capture-reca
 
 \examples{
 # Here is an example on the lesbian data set.
-
-data(lesbian)
 
 desc <- descriptive(lesbian, dfreq = TRUE)
 desc

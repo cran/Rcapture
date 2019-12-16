@@ -45,7 +45,7 @@ Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-r
 
 \seealso{ \code{\link{openp}} }
 \examples{
-data(mvole)
+# mvole data set aggregated per primary period
 mvole.op <- periodhist(mvole, vt = rep(5, 6))
 openp(mvole.op, dfreq = TRUE)
 }

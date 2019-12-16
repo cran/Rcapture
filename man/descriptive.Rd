@@ -49,7 +49,7 @@ descriptive(X, dfreq=FALSE, dtype=c("hist","nbcap"), t=NULL)
     \dots\cr
     ct: the number of units released on occasion \eqn{i} and recaptured for the first time on occasion \eqn{t};\cr
     not recapt: the number of units released on occasion \eqn{i} and never recaptured again.\cr
-    The m.array matrix is used in Mark (see White and Burnham 1999; White 2005) and MSurge (see Choquet, Reboulet, Pradel, Gimenez, 
+    The m.array matrix is used in Mark (see White and Burnham 1999) and MSurge (see Choquet, Reboulet, Pradel, Gimenez, 
     and Lebreton 2004) to fit open population models to the data.
     }
    \item{call }{ The function call (object of class "call").}
@@ -65,24 +65,22 @@ Lindsay, B. G. (1986) Exponential family mixture models (with least-squares esti
 
 Rivest, L.P. (2008) Why a time effect often has a limited impact on capture-recapture estimates in closed populations. \emph{Canadian Journal of Statistics}, \bold{36}(1), 75--84.
 
-White, G. (2005) \emph{Software Developed by Department of Fishery and Wildlife Biology and Colorado Coop. Fish and Wildlife Unit, Colorado State University}. \url{http://www.warnercnr.colostate.edu/~gwhite/software.html}.
-
-White, G. and Burnham, K.P. (1999) Program Mark: Survival Estimation from Populations of Marked Animals. \emph{Bird Study}, \bold{46} (Supplement), 120--138. 
+White, G. and Burnham, K.P. (1999) Program Mark: Survival Estimation from Populations of Marked Animals. \emph{Bird Study}, \bold{46} (Supplement), 120--138. The software can be downloaded here: \url{http://www.phidot.org/software/mark/}.
 }
 \author{ Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} and Sophie Baillargeon }
 
 \examples{
-data(hare)
+# hare data set
 hare.desc <- descriptive(hare)
 hare.desc
 plot(hare.desc)
 
-data(cbird)
+# cbird data set
 cbird.desc1 <- descriptive(cbird, dfreq = TRUE, dtype = "nbcap", t = 11)
 plot(cbird.desc1)
-# To illustrate the option t = Inf
+# To illustrate the option t = Inf.
 cbird.desc2 <- descriptive(cbird, dfreq = TRUE, dtype = "nbcap", t = Inf)
 plot(cbird.desc2)
-# the y coordinate has changed
+# The y coordinate has changed.
 }
 \keyword{ univar }

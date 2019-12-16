@@ -29,19 +29,19 @@ Xclosedp <- function(t, m, h, theta, histpos, nbcap, mX = NULL)
     if (m=="Mbh") {
       inv_c1<-1-histpos[,1]
       nbcap_av <- rep(t-t:1,2^(t:1-1))  # nbre d'occasions de capture avant la premiere capture
-      nbcap_ap <- (nbcap-1) # nbre de capture après la premiere capture
+      nbcap_ap <- (nbcap-1) # nbre de capture apres la premiere capture
       mX <- cbind(inv_c1,nbcap_av,nbcap_ap)
       cnames <- c("eta","beta1","beta2")
     }
   } else {
-    # On ne touche pas à mX, c'est celui donné en entrée que l'on prend
+    # On ne touche pas a mX, c'est celui donne en entree que l'on prend
     cnames <- if(ncol(mX) > 0 && (is.null(colnames(mX)) || any(colnames(mX)=="")))  {
                  paste("mX.",1:ncol(mX),sep="") 
               } else {
                 colnames(mX)
               }
   }
-  if (is.function(h) || !is.null(h) && h != "Normal") { ## Colonnes pour l'hétérogénéité au besoin
+  if (is.function(h) || !is.null(h) && h != "Normal") { ## Colonnes pour l'heterogeneite au besoin
     if (is.function(h)) {
       mX2 <- h(nbcap)
       cnames2 <- "tau"

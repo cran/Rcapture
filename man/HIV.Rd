@@ -5,7 +5,7 @@
 \description{
   Epidemiological capture-recapture data on HIV from four reporting centers in Rome, Italy.
 }
-\usage{data(HIV)}
+\usage{HIV}
 \format{
 15 by 5 numeric matrix, with the following columns:
   \describe{
@@ -25,7 +25,6 @@ Abeni, D.A., Brancato, G. and Perucci, C. A. (1994) Capture-recapture to estimat
 Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
 }
 \examples{
-data(HIV)
 desc <- descriptive(HIV, dfreq=TRUE)
 desc
   # 1774 out of 1896 individuals (94\%) appear on one list only.

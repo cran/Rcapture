@@ -1,15 +1,34 @@
+Changes in Version 1.4-3 (2019-12-16)
+=====================================
+
+  o Outputs of some closed population functions have been adapted to be more consistent 
+    (asymptotic bias always in a seperate element, never in "results" table anymore).
+
+  o Data sets are now lazily loaded.
+  
+  o Documentation updated.
+
+  o Imports improved in NAMESPACE.
+  
+  o Bug with R 4.0.0 fixed.
+  
+  o Non-ASCII characters removed from script files.
+  
+
+
 Changes in Version 1.4-2 (2014-08-28)
 =====================================
 
-  o Documentation update.
+  o Documentation updated.
 
   o A data set has been added to the package : the lesbian data set.
+
 
 
 Changes in Version 1.4-1 (2014-07-17)
 =====================================
 
-  o Documentation update.
+  o Documentation updated.
 
 
 

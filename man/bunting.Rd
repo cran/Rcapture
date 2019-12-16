@@ -5,7 +5,7 @@
 \description{
   This data set contains frequencies of capture histories for 8 years of observation of lazuli buntings. 
 }
-\usage{data(bunting)}
+\usage{bunting}
 \format{
 255 by 9 numeric matrix, with the following columns:
   \describe{
@@ -27,7 +27,6 @@ Burnham, K.P., Anderson, D.R., White, G.C., Brownie, C. and Pollock, K.H. (1987)
 Cormack, R. M. (1993) The flexibility of GLIM analyses of multiple recapture or resighting data. In J.D. Lebreton and P. North editors: \emph{Marked Individuals in the Study of Bird Population}. Basel, Switzerland: Birkhauser Verlag, 39--49. 
 }
 \examples{
-data(bunting)
 descriptive(bunting, dfreq = TRUE)
   # 1430 birds among the 1681 birds seen (85\%) were caught only once. 
   # This suggests the presence of transient birds at each capture occasion. 
@@ -65,8 +64,8 @@ se <- 1 / sqrt(t(rep(1, 5)) \%*\% siginv \%*\% rep(1, 5))
 cbind(estimate = phi, stderr = se)
   # The chi-square goodness of fit statistic for a constant survival 
   # and its pvalue are:
-chisq4 <- t(op.m2$survivals[2:6, 1] - phi * rep(1,5)) \%*\% siginv \%*\% 
-          (op.m2$survivals[2:6, 1] - phi * rep(1, 5))
+chisq4 <- t(op.m2$survivals[2:6, 1] - as.vector(phi)) \%*\% siginv \%*\% 
+          (op.m2$survivals[2:6, 1] - as.vector(phi))
 cbind(chi2stat = chisq4, pvalue = 1 - pchisq(chisq4, df = 4))
   # The hypothesis of a constant survival is accepted.
 }

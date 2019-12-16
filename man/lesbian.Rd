@@ -6,7 +6,7 @@
   Epidemiological capture-recapture data on the lesbian population from four four organisations
 that serve the lesbian and gay population of Allegheny County, Pennsylvania, United States and maintain large mailing lists.
 }
-\usage{data(lesbian)}
+\usage{lesbian}
 \format{
 15 by 5 numeric matrix, with the following columns:
   \describe{
@@ -23,8 +23,6 @@ that serve the lesbian and gay population of Allegheny County, Pennsylvania, Uni
 Aaron, D.J., Chang, Y.-F., Markovic, N., LaPorte, R. E. (2003) Estimating the lesbian population: a capture-recapture approach. \emph{Journal of Epidemiology and Community Health }, \bold{57}(3), 207--209.
 }
 \examples{
-data(lesbian)
-
 closedp(lesbian, dfreq = TRUE)
 
 # According to the BIC, the best model is Mth Darroch.

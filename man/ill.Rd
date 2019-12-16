@@ -8,7 +8,7 @@ Illegal immigrants in the Netherlands
 This data set contains the frequency \eqn{f_i}{fi} that an illegal immigrant who is not
 effectively expelled is apprehended exactly \eqn{i} times.
 }
-\usage{data(ill)}
+\usage{ill}
 \format{
 6 by 2 numeric matrix, with the following columns:
   \describe{
@@ -33,8 +33,6 @@ van der Heijden, P.G.M., Cruyff, M. and van Houwelingen, H.C. (2003) Estimating 
 Bohning, D. and Schon, D. (2005) Nonparametric Maximum Likelihood Estimation of Population Size Based on the Counting Distribution. \emph{Journal of the Royal Statistical Society: Series C (Applied Statistics)}, \bold{54}(4), 721-737.
 }
 \examples{
-data(ill)
-
 sdesc <- descriptive(ill, dtype = "nbcap", dfreq = TRUE, t = Inf)
 plot(sdesc)
    # A mixture model looks appropriate

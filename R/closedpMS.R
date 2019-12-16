@@ -3,7 +3,7 @@ closedpMS.t <- function(X, dfreq = FALSE, h=NULL, h.control=list(),
   
   call <- match.call()
   
-  #########  Validation des arguments en entrée et initialisation de variables  #########
+  #########  Validation des arguments en entree et initialisation de variables  #########
   
   # Validation des arguments et obtention de la valeur de t
   valid.one(dfreq,"logical")
@@ -21,9 +21,9 @@ closedpMS.t <- function(X, dfreq = FALSE, h=NULL, h.control=list(),
   neg <- valid.neg(neg = h.control$neg, htype = htype)
   initsig <- valid.initsig(initsig = h.control$initsig, htype = htype)
   method <- valid.method(method = h.control$method, htype = htype)
-  # initcoef ne peut pas être fourni car le nombre de paramètres change selon le modèle
+  # initcoef ne peut pas etre fourni car le nombre de parametres change selon le modele
 
-  # maxorder, forced et stopiflong sont validés lors de l'appel à la fonction getAllModels
+  # maxorder, forced et stopiflong sont valides lors de l'appel a la fonction getAllModels
   
 #   if(is.null(call$maxorder)) {
 #     maxorder <- t - 1
@@ -37,26 +37,26 @@ closedpMS.t <- function(X, dfreq = FALSE, h=NULL, h.control=list(),
 #     stop("the number of models to fit is large, therefore this command should be long to run,",
 #          "\nset 'stopiflong' to FALSE if you really want to run it")
   
-  #########  Création de variables communes à tous les modèles  #########   
+  #########  Creation de variables communes a tous les modeles  #########   
   
-  ### Création du vecteur de variable réponse Y
+  ### Creation du vecteur de variable reponse Y
   Y <- histfreq.t(X=X,dfreq=dfreq)
   n <- sum(na.rm=TRUE,Y)
   
-  ### Création de la variable offset
+  ### Creation de la variable offset
   cst <- 0  
   
   
-  #########  Boucle sur tous les modèles  ######### 
+  #########  Boucle sur tous les modeles  ######### 
   
-  # Identification de tous les modèles à ajuster
+  # Identification de tous les modeles a ajuster
   name <- getAllModels(t=t, maxorder=maxorder, forced=forced, stopiflong=stopiflong)
   modeles <- getFormulaFromName(name=name)
   
-  # Objets pour stocker les résultats
-  tableau <- matrix(NA_real_, nrow=length(modeles), ncol=8)
-  dimnames(tableau) <- list(name, c("abundance", "stderr", "bias",
-                                    "deviance", "df", "AIC", "BIC", "infoFit"))
+  # Objets pour stocker les resultats
+  tableau <- matrix(NA_real_, nrow=length(modeles), ncol=7)
+  dimnames(tableau) <- list(name,c("abundance","stderr","deviance","df","AIC","BIC","infoFit"))
+  bias <- rep(NA_real_, length=length(modeles))
   fit.err <- vector(mode="list", length=length(modeles))
   fit.warn <- vector(mode="list", length=length(modeles))
   names(fit.err) <- names(fit.warn) <- name
@@ -65,17 +65,17 @@ closedpMS.t <- function(X, dfreq = FALSE, h=NULL, h.control=list(),
     names(neg.eta) <- name
   }
   
-  # Boucle qui ajuste tous les modèles
+  # Boucle qui ajuste tous les modeles
   for (j in 1:length(modeles)) {
     
-    ### Création de la matrice X (qui est propre au modèle)
+    ### Creation de la matrice X (qui est propre au modele)
     getmX.out <- getmX(typet=TRUE, t=t, t0=t, m=NULL, h=h, theta=theta, 
                                   mX=modeles[[j]])
     mX. <- getmX.out$mX. 
     nbcap <- getmX.out$nbcap
     nca <- getmX.out$nca
     
-    ### Ajustement du modèle
+    ### Ajustement du modele
     fit.out <- closedp.fitone(n = n, Y = Y, mX. = mX., nbcap = nbcap, nca = nca, 
                                          cst = cst, htype = htype, neg = neg, 
                                          initsig = initsig, method = method, ...)
@@ -84,13 +84,14 @@ closedpMS.t <- function(X, dfreq = FALSE, h=NULL, h.control=list(),
     if(!is.null(fit.out$fit.warn)) fit.warn[[j]] <- fit.out$fit.warn
     if (htype == "Chao") neg.eta[[j]] <- fit.out$neg.eta
     
-    # Calculs à faire seulement si glm a produit une sortie
+    # Calculs a faire seulement si glm a produit une sortie
     # (on laisse dans tableau et param les NA mis lors de l'initialisation
-    #  en cas d'erreur lors de l'ajustement du modèle)
+    #  en cas d'erreur lors de l'ajustement du modele)
     if (is.null(fit.out$fit.err)) {
       
-      # On met les statistiques d'ajustement du modèle dans tableau
-      tableau[j, 3:7] <- fit.out$resultsFit
+      # On met les statistiques d'ajustement du modele dans tableau et bias
+      tableau[j, 3:6] <- fit.out$resultsFit[-1]
+      bias[j] <- fit.out$resultsFit[[1]]
       
       # On estime N
       intercept <- if(htype == "Normal") fit.out$fit$parameters[1, 1] else coef(fit.out$fit)[1]
@@ -98,18 +99,18 @@ closedpMS.t <- function(X, dfreq = FALSE, h=NULL, h.control=list(),
       tableau[j, 1:2] <- getN(n = n, intercept = intercept, stderr.intercept = stderr.intercept)
       
       # Avertissement pour grand biais au besoin
-      biasWarn <- getBiasWarn(N = tableau[j, "abundance"], bias = tableau[j, "bias"])
+      biasWarn <- getBiasWarn(N = tableau[j, "abundance"], bias = bias[j])
       if(!is.null(biasWarn)) fit.warn[[j]] <- c(fit.warn[[j]], biasWarn) 
       
     }
     
     # code pour les conditions mis dans le tableau
-    tableau[j, 8] <- getInfo(err = fit.err[[j]], warn = fit.warn[[j]])
+    tableau[j, 7] <- getInfo(err = fit.err[[j]], warn = fit.warn[[j]])
     
   }
   
-  # Sortie des résultats
-  ans <- list(n = n, t = t, results = tableau, fit.err = fit.err, fit.warn = fit.warn)
+  # Sortie des resultats
+  ans <- list(n = n, t = t, results = tableau, bias = bias, fit.err = fit.err, fit.warn = fit.warn)
   if (htype == "Chao") ans <- c(ans, neg.eta)
   class(ans) <- "closedpMS"
   ans
@@ -123,7 +124,7 @@ print.closedpMS <- function(x, ...) {
     cat("Abundance estimations and model fits for the models with the smallest BIC:\n")
     tableau <- x$results[order(x$results[, "BIC"]), ]
     tabprint(tab = tableau[1:min(10,nrow(tableau)), ], 
-                        digits = c(1,1,1,3,0,3,3,NA), warn = x$fit.warn, ...)
+                        digits = c(1,1,3,0,3,3,NA), warn = x$fit.warn, ...)
   }
   
   cat("\n")
@@ -136,7 +137,7 @@ plot.closedpMS <- function(x, main="Models comparison based on BIC", omitOutlier
   BIC <- x$results[, "BIC"]
   
   if (omitOutliers) {
-    # On retire les valeurs extrêmes : < q1 - 1.5*IQR  ou  > q3 + 1.5*IQR
+    # On retire les valeurs extremes : < q1 - 1.5*IQR  ou  > q3 + 1.5*IQR
     Nq1 <- quantile(N,0.25)
     Nq3 <- quantile(N,0.75)
     keepN <- N > Nq1 - 1.5*(Nq3-Nq1) & N < Nq3 + 1.5*(Nq3-Nq1)
@@ -177,39 +178,39 @@ getAllModels <- function(t, maxorder = t - 1, forced = 1:t, stopiflong = TRUE) {
          "therefore this command should be long to run,",
          "\nset 'stopiflong' to FALSE if you really want to run it")
   
-  # Informations sur les termes forcés dans le modèle
+  # Informations sur les termes forces dans le modele
   forcedOrder <- nchar(forced)
   minorder <- if(length(forced) == 0) 1 else max(forcedOrder)
   if (minorder > maxorder) 
     stop("the order of one of the forced term is larger than 'maxorder'")
   
-  # Liste qui contiendra tous les modèles possibles
+  # Liste qui contiendra tous les modeles possibles
   modeles <- list()
-  # (un modèle = un vecteur des termes de haut de hiérarchie formant son nom)
-  # (l'objet modeles change de taille au fil des itérations, car il n'y a pas de
-  #  formule simple pour calculer le nombre total de modèles)
+  # (un modele = un vecteur des termes de haut de hierarchie formant son nom)
+  # (l'objet modeles change de taille au fil des iterations, car il n'y a pas de
+  #  formule simple pour calculer le nombre total de modeles)
   
   #---------------------------------------------------------------------------#
   
   # Boucle sur les ordres
-  # on insère dans les modèles les termes un ordre à la fois,
-  # en débutant par les termes de l'ordre le plus élévé possible, soit t-1
+  # on insere dans les modeles les termes un ordre a la fois,
+  # en debutant par les termes de l'ordre le plus eleve possible, soit t-1
   for (i in maxorder:1) {
     
     # Tous les termes possibles de cet ordre
     termesPossibles <- vapply(combn(1:t,i, simplify = FALSE), 
                               paste, collapse="", FUN.VALUE = "a")
     
-    # Termes de cet ordre forcés dans le modèle
+    # Termes de cet ordre forces dans le modele
     iforced <- forced[forcedOrder == i]
     
-    # Étape A : intégration de termes aux modèles précédents, un modèle à la fois
+    # etape A : integration de termes aux modeles precedents, un modele a la fois
     if (length(modeles) > 0) {
       for (j in 1:length(modeles)) {
         
-        # Identification des termes d'ordre inférieur qui sont obligatoirement
-        # présents dans le modèle (par hiérarchie), qui ne doivent donc pas
-        # apparaître dans le nom du modèle
+        # Identification des termes d'ordre inferieur qui sont obligatoirement
+        # presents dans le modele (par hierarchie), qui ne doivent donc pas
+        # apparaitre dans le nom du modele
         termesInfForces <- NULL
         for (k in 1:length(modeles[[j]])) {
           combin <- combn(unlist(strsplit(modeles[[j]][k], split = "")), i, simplify = FALSE)
@@ -218,42 +219,42 @@ getAllModels <- function(t, maxorder = t - 1, forced = 1:t, stopiflong = TRUE) {
         }
         iforcedNonHierar <- iforced[!(iforced %in% termesInfForces)]
         
-        # Identification des termes qui pourraient apparaître dans le nom du modèle
+        # Identification des termes qui pourraient apparaitre dans le nom du modele
         termesInfLibres <- setdiff(termesPossibles, termesInfForces)
         termesInfLibresNotForced <- setdiff(termesInfLibres, iforced)
         
-        # Boucle sur le nombre de termes d'ordre inférieur non forcés 
-        # intégrés au modèle
+        # Boucle sur le nombre de termes d'ordre inferieur non forces 
+        # integres au modele
         if (length(termesInfLibresNotForced) > 0) {          
           for (k in length(termesInfLibresNotForced):1) {
             
-            # Énumération de toutes les combinaisons de termes d'ordre inférieur
-            # libres et non forcés
+            # enumeration de toutes les combinaisons de termes d'ordre inferieur
+            # libres et non forces
             termesInfChoisis <- combn(termesInfLibresNotForced, k, simplify = FALSE)
             
-            # Ajout des termes forcés s'il y en a et s'ils ne sont pas
-            # présents par hiérarchie
+            # Ajout des termes forces s'il y en a et s'ils ne sont pas
+            # presents par hierarchie
             termesInfChoisis <- lapply(termesInfChoisis, c, iforcedNonHierar)
             
-            # Ajout de ces combinaisons aux termes déjà dans le modèle
+            # Ajout de ces combinaisons aux termes deja dans le modele
             ajout <- lapply(termesInfChoisis, c, modeles[[j]])
             # Pour remettre les termes dans l'ordre voulu
             na <- k + length(iforcedNonHierar)
             ajout <- lapply(ajout, '[', c((na+1):(na+length(modeles[[j]])), 1:na))
             
-            # On ajoute ces modèles à la liste de tous les modèles
+            # On ajoute ces modeles a la liste de tous les modeles
             modeles <- c(modeles, ajout)
           }
         }
         
-        # Ajout des termes forcés de l'ordre i sans autres termes de l'ordre i
+        # Ajout des termes forces de l'ordre i sans autres termes de l'ordre i
         if (length(iforcedNonHierar) > 0) {
           modeles <- c(modeles, list(c(modeles[[j]], iforcedNonHierar)))
         }
         
-        # Il faut retirer le modèle j de la liste si :
-        # - au moins un terme forcé est dans termesInfLibres 
-        #   (car le modèle ne contient pas le terme en question)
+        # Il faut retirer le modele j de la liste si :
+        # - au moins un terme force est dans termesInfLibres 
+        #   (car le modele ne contient pas le terme en question)
         # - 
         if(length(termesInfLibres) > length(termesInfLibresNotForced)) { 
           modeles[[j]] <- character(0)
@@ -262,14 +263,14 @@ getAllModels <- function(t, maxorder = t - 1, forced = 1:t, stopiflong = TRUE) {
       }  
     }
     
-    # Étape B : ajout de modèles sans termes d'ordre suppérieur à i
-    # On n'insère que les modèles contenant les termes forcés de
-    # l'ordre i traité à cette itération, s'il y en a.   
+    # etape B : ajout de modeles sans termes d'ordre supperieur a i
+    # On n'insere que les modeles contenant les termes forces de
+    # l'ordre i traite a cette iteration, s'il y en a.   
     if(i >= minorder) {
       
       termesPossiblesNotForced <- setdiff(termesPossibles, iforced)
       
-      # Boucle sur le nombre de termes possibles non forcés
+      # Boucle sur le nombre de termes possibles non forces
       if (length(termesPossiblesNotForced) > 0) {
         for (j in length(termesPossiblesNotForced):1) {
           modeles <- c(modeles, 
@@ -279,24 +280,24 @@ getAllModels <- function(t, maxorder = t - 1, forced = 1:t, stopiflong = TRUE) {
         }
       }
       
-      # Ajout du modèle contenant uniquement les termes forcés d'ordre i,
-      # s'il y a des termes forcés de cet ordre
+      # Ajout du modele contenant uniquement les termes forces d'ordre i,
+      # s'il y a des termes forces de cet ordre
       if (length(iforced) > 0) modeles <- c(modeles, list(iforced))
     }
     
-    # Étape C : Retirer les éléments de la liste qui sont des 
+    # etape C : Retirer les elements de la liste qui sont des 
     # vecteurs vides, s'il y a lieu
     modeles <- modeles[lapply(modeles, length) > 0]
     
   } 
   
-  # Pour tous les modèles, on met les termes formant sont nom entre crochets,
-  # séparés par des virgules
+  # Pour tous les modeles, on met les termes formant sont nom entre crochets,
+  # separes par des virgules
   noms <- paste0("[", vapply(modeles, paste, collapse = ",", FUN.VALUE = "a"), "]")
-  # On ajoute le modèle contenant seulement une ordonnée à l'origine,
-  # s'il n'y a pas de termes forcés dans le modèle
+  # On ajoute le modele contenant seulement une ordonnee a l'origine,
+  # s'il n'y a pas de termes forces dans le modele
   if(length(forced) == 0) noms <- c(noms, "[]")
-  # Sortie : on retourne les noms trouvés
+  # Sortie : on retourne les noms trouves
   noms
 }
 

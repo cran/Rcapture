@@ -15,7 +15,7 @@
 "histfreq.0" <- function(X,dfreq,dtype="hist",vt)
 {
   # Note : Il faut absolument que les valeurs de vt soient >= au nombre maximum de captures
-  # dans chacune des périodes. Sinon il y a une sortie générée, mais elle n'est pas bonne.  
+  # dans chacune des periodes. Sinon il y a une sortie generee, mais elle n'est pas bonne.  
     I <- length(vt) # nombre de periodes primaires
     t <- sum(vt)
     if (I==1) {
@@ -27,7 +27,7 @@
                Y <- rep(0,t)
                Y[i] <- fi
          } 
-         Y <- rev(Y) # On veut la fréquence pour nbcap = t à 1
+         Y <- rev(Y) # On veut la frequence pour nbcap = t a 1
     } else {
          Xh<-apply(X[,1:vt[1]],1,sum)
          for (i in 2:I)  Xh<-cbind(Xh,apply(X[,c((sum(na.rm=TRUE,vt[1:(i-1)])+1):sum(na.rm=TRUE,vt[1:i]))],1,sum))

@@ -2,18 +2,18 @@ uifit <- function(x.closedp)
 {
 
     ############################################################################################################################
-    # Validation de l'argument fourni en entrée
-    if(!any(class(x.closedp)=="closedp.t")) stop("'x.closedp' must be an object produced with 'closedp' or 'closedp.t")
+    # Validation de l'argument fourni en entree
+    if(!inherits(x.closedp, "closedp.t")) stop("'x.closedp' must be an object produced with 'closedp' or 'closedp.t")
     ############################################################################################################################
-    # Ma fonction fonctionne correctement car les éléments glm et parameter de l'objet de type closedp
-    # contiennent des sorties pour les mêmes modèles, et ce, dans le même ordre.
+    # Ma fonction fonctionne correctement car les elements glm et parameter de l'objet de type closedp
+    # contiennent des sorties pour les memes modeles, et ce, dans le meme ordre.
 
         t <- x.closedp$t
 
         ifirstcap <- NULL
         for (i in 1:t) { ifirstcap <- c(ifirstcap,rep(i,2^(t-i))) }
 
-        # Identification des modèles qui ont été ajustés
+        # Identification des modeles qui ont ete ajustes
         lmn<-rownames(x.closedp$results)
         nm<-length(lmn)
 
@@ -23,11 +23,11 @@ uifit <- function(x.closedp)
         stat <- matrix(nrow=nm,ncol=1)
         dimnames(stat) <- list(lmn,c("Chi-suare value"))
 
-        # Valeurs observées
+        # Valeurs observees
         desc<- descriptive(x.closedp$X,x.closedp$dfreq)
         tableau[,1]<-c(desc$base.freq[,2],rep(NA,5))
 
-    # Boucle qui traite tous les modèles
+    # Boucle qui traite tous les modeles
     for (j in 1:nm)
     {
         glmo <- x.closedp$glm[[j]]
@@ -83,7 +83,7 @@ uifit <- function(x.closedp)
 
     }
 
-    # Statistiques sur le jour de la première capture
+    # Statistiques sur le jour de la premiere capture
     Mean <- colSums((1:t)*tableau[1:t,])/colSums(tableau[1:t,])
     Variance <- colSums(((1:t)^2)*tableau[1:t,])/colSums(tableau[1:t,]) - Mean^2
     firstcapt <- cbind(Mean,Variance)

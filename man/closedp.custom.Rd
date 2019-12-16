@@ -59,12 +59,12 @@ Rivest, L.P. and Baillargeon, S. (2007) Applications and extensions of Chao's mo
 
 \seealso{\code{\link{closedp}}, \code{\link{closedp.Mtb}} }
 \examples{
-data(HIV)
+# HIV data set
 mat <- histpos.t(4)
 mX2 <- cbind(mat, mat[, 1] * mat[, 2])
 closedp.mX(HIV, dfreq = TRUE, mX = mX2)
 
-data(mvole)
+# Third primary period of mvole data set
 period3 <- mvole[, 11:15]
 psi <- function(x) { -log(3.5 + x) + log(3.5) }
 closedp.h(period3, h = psi)

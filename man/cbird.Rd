@@ -7,7 +7,7 @@ Catbird Site Occupancy Data
 \description{
 This data set contains site occupancy data for catbirds. The number of capture occasions \eqn{t} is 11.
 }
-\usage{data(cbird)}
+\usage{cbird}
 \format{
 6 by 2 numeric matrix, with the following columns:
   \describe{
@@ -26,7 +26,6 @@ out of \eqn{t=11} visits. The frequencies for \eqn{i=7,\ldots,11} are null and d
 \source{
 Royle, A. J. (2006) Site occupancy models with heterogeneous detection probabilities. \emph{Biometrics}, \bold{62}, 97--102 }
 \examples{
-data(cbird)
 desc <- descriptive(cbird, dfreq = TRUE, dtype = "nbcap", t = 11)
 plot(desc)
    # The heterogeneity graph is mildly convex, mostly because of 

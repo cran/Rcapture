@@ -2,7 +2,7 @@
 {
 
     ############################################
-    # Validation des arguments fournis en entrée
+    # Validation des arguments fournis en entree
     valid.one(dfreq,"logical")
     valid.vt(vt)
     Xvalid <- valid.X(X=X, dfreq=dfreq, vt=vt)

@@ -5,7 +5,7 @@
 \description{
   This data set contains robust design capture history data for adult male meadow voles. 
 }
-\usage{data(mvole)}
+\usage{mvole}
 \format{
 171 by 30 numeric matrix, with the following columns:
   \describe{
@@ -33,8 +33,7 @@ Williams, B.K., Nichols, J.D., and Conroy, M.J. (2002) \emph{Analysis and Manage
 Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
 }
 \examples{
-  # To
-data(mvole)
+  # This example deals only with the first four primary periods of the data set.
 mvole4 <- mvole[, 1:20]
 
   # First, a between primary period Jolly-Seber analysis is obtained.

@@ -54,10 +54,10 @@ Cormack, R. M. (1992) Interval estimation for mark-recapture studies of closed p
 \author{ Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} and Sophie Baillargeon }
 \seealso{\code{\link{closedp}}, \code{\link{closedp.mX}}, \code{\link{closedp.h}} }
 \examples{
-data(hare)
+# hare data set
 profileCI(hare, m = "Mth", h = "Poisson", a = 2)
 
-data(HIV)
+# HIV data set
 mat <- histpos.t(4)
 mX2 <- cbind(mat, mat[, 1] * mat[, 2])
 

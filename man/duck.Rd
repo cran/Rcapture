@@ -5,7 +5,7 @@
 \description{
   This data set contains capture-recapture data for eider ducks. 
 }
-\usage{data(duck)}
+\usage{duck}
 \format{
 63 by 7 numeric matrix, with the following columns:
   \describe{
@@ -28,7 +28,6 @@ Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-r
 Cormack, R. M. (1989) Loglinear models for capture-recapture. \emph{Biometrics}, \bold{45}, 395--413.
 }
 \examples{
-data(duck)
 op.m1 <- openp(duck, dfreq = TRUE)
 op.m1$model.fit
   # The pvalue of the goodness of fit test based on the deviance is
@@ -75,7 +74,7 @@ se <- 1/sqrt(t(rep(1, 3)) \%*\% siginv \%*\% rep(1, 3))
 cbind(estimate = growth.e, stderr = se)
   # A chi-square statistic for testing the equality of the growth rates 
   # and its pvalue
-chisq2 <- t(growth - growth.e * rep(1, 3)) \%*\% siginv \%*\% (growth - growth.e * rep(1, 3))
+chisq2 <- t(growth - as.vector(growth.e)) \%*\% siginv \%*\% (growth - as.vector(growth.e))
 c(chi2stat = chisq2, pvalue = 1 - pchisq(chisq2, df = 2))
   # The hypothesis of a common growth rate is rejected
 }

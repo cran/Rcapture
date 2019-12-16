@@ -74,7 +74,7 @@ Rivest, L.P. and Daigle, G. (2004) Loglinear models for the robust design in mar
 
 \seealso{\code{\link{closedp}}, \code{\link{periodhist}}, \code{\link{robustd}}}
 \examples{
-data(duck)
+# duck data set
 op.m1 <- openp(duck, dfreq = TRUE)
 plot(op.m1)
 
@@ -89,7 +89,7 @@ op.m3 <- openp(duck, dfreq = TRUE, keep = keep3)
 op.m3
 
 
-data(mvole)
+# mvole data set aggregated per primary period
 mvole.op <- periodhist(mvole, vt = rep(5, 6))
 openp(mvole.op, dfreq = TRUE)
 }

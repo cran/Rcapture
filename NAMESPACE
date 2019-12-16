@@ -2,8 +2,8 @@ export(closedp,closedp.t,closedp.0,closedpCI.t,closedpCI.0,closedp.bc,closedp.Mt
        closedp.h,closedp.mX,closedpMS.t,getAllModels,profileCI,descriptive,histpos.0,histpos.t,
        openp,robustd.0,robustd.t,uifit,periodhist,plotCI)
 
-importFrom(graphics, plot, boxplot)
-importFrom(stats, glm, optimize, uniroot, optim)
+import(stats, graphics)
+importFrom(utils, combn)
 
 S3method(boxplot,closedp)
 S3method(boxplot,closedpCI)

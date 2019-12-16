@@ -92,8 +92,6 @@ This function uses the \code{glm} function of the \pkg{stats} package.
 
 \seealso{\code{\link{closedp}}, \code{\link{openp}} }
 \examples{
-data(mvole)
-
   # The mvole data set contains a total of 30 capture occasions (the 
   # tenth capture occasion doesn't have any new capture and is taken
   # out of the analysis). This number being large, we can only use 

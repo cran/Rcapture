@@ -14,34 +14,34 @@ closedp.internal <- function(X, dfreq=FALSE, dtype="hist", t=NULL, t0=NULL, neg=
 {
   # Initialisation de variables
   typet <- substr(paste(call[1]), nchar(paste(call[1])), nchar(paste(call[1]))) %in% c("t", "p")
-           # différent des autres fonctions car closedp existe (=closedp.t) 
+           # different des autres fonctions car closedp existe (=closedp.t) 
   tinf <- if(is.null(t)) FALSE else is.infinite(t)
   
-  ######### Validation des arguments en entrée #########
+  ######### Validation des arguments en entree #########
   valid.one(dfreq,"logical")
   valid.dtype(dtype)
   valid.t(t=t, pInf=!typet)
   Xvalid <- valid.X(X=X, dfreq=dfreq, dtype=dtype, t=t, warn=typet)
     X <- Xvalid$X
-    t <- Xvalid$t  ## t est modifié s'il prennait la valeur NULL ou Inf
-  t0 <- valid.t0(t0=t0, typet=typet, t=t) # doit être soumis après valid.X qui modifie t
+    t <- Xvalid$t  ## t est modifie s'il prennait la valeur NULL ou Inf
+  t0 <- valid.t0(t0=t0, typet=typet, t=t) # doit etre soumis apres valid.X qui modifie t
   valid.one(neg,"logical")
   ########### Fin de la validation des arguments ###########
   
   
-  #### Préparation pour l'ajustement du modèle
+  #### Preparation pour l'ajustement du modele
 
-  # Création du vecteur de variable réponse Y
+  # Creation du vecteur de variable reponse Y
   getY.out <- getY(typet=typet, X=X, dfreq=dfreq, dtype=dtype, t=t, t0=t0) 
   Y <- getY.out$Y
   n <- getY.out$n 
-  # Préliminaire à la création de la matrice X 
+  # Preliminaire a la creation de la matrice X 
   histpos <- gethistpos(typet=typet, t=t, t0=t0)
   nbcap <- getnbcap(histpos)
-  # Création de la variable offset
+  # Creation de la variable offset
   cst <- getcst(typet=typet, tinf=tinf, t=t, t0=t0, nbcap=nbcap)
  
-  # Identification des modèles à ajuster
+  # Identification des modeles a ajuster
   if (typet) {
     if (t==2) {
       lmn <- smn <- c("M0","Mt","Mb")
@@ -79,7 +79,7 @@ closedp.internal <- function(X, dfreq=FALSE, dtype="hist", t=NULL, t0=NULL, neg=
   }
   htype <- rep(NA, nm)
   
-  # Boucle qui ajuste tous les modèles
+  # Boucle qui ajuste tous les modeles
   t. <- if (typet) t else t0
   for (j in 1:nm)
   {          
@@ -101,10 +101,10 @@ closedp.internal <- function(X, dfreq=FALSE, dtype="hist", t=NULL, t0=NULL, neg=
     colnames(mX.) <- Xclosedp.out$coeffnames
     nca <- if (smn[j] == "MhC") 2 else if (smn[j] == "MthC") t+1 else NA  
       ## nca : le nombre de colonnes dans la matrice de design (incluant une colonne
-      ## pour l'ordonnée à l'origine) ne modélisant pas l'hétérogénéité
-      ## utile pour la correction des eta négatifs pour le modèle Chao ou LB 
+      ## pour l'ordonnee a l'origine) ne modelisant pas l'heterogeneite
+      ## utile pour la correction des eta negatifs pour le modele Chao ou LB 
     
-    #####  Ajustement du modèle
+    #####  Ajustement du modele
     fit.out <- closedp.fitone(n = n, Y = Y, mX. = mX., nbcap = nbcap, nca = nca, 
                               cst = cst, htype = htype[j], neg = neg, ...)
 
@@ -113,15 +113,15 @@ closedp.internal <- function(X, dfreq=FALSE, dtype="hist", t=NULL, t0=NULL, neg=
     if(!is.null(fit.out$fit.warn)) glm.warn[[j]] <- fit.out$fit.warn
     neg.eta[[j]] <- if (htype[j] == "Chao") fit.out$neg.eta else "removed later"
     
-    # Calculs à faire seulement si glm a produit une sortie
+    # Calculs a faire seulement si glm a produit une sortie
     # (on laisse dans tableau et param les NA mis lors de l'initialisation
-    #  en cas d'erreur lors de l'ajustement du modèle)
+    #  en cas d'erreur lors de l'ajustement du modele)
     if (is.null(fit.out$fit.err)) {
       
-      # On met les statistiques d'ajustement du modèle dans tableau
+      # On met les statistiques d'ajustement du modele dans tableau
       tableau[j, 3:6] <- fit.out$resultsFit[-1]
       
-      # Sauf le bias que l'on place dans un vecteur à part
+      # Sauf le bias que l'on place dans un vecteur a part
       bias[j] <- fit.out$resultsFit[1]
       
       # Calcul de N et de son erreur type
@@ -162,7 +162,7 @@ closedp.internal <- function(X, dfreq=FALSE, dtype="hist", t=NULL, t0=NULL, neg=
       biasWarn <- getBiasWarn(N = N, bias = bias[j])
       if(!is.null(biasWarn)) glm.warn[[j]] <- c(glm.warn[[j]], biasWarn) 
     
-      # Calcul des probabilités de capture
+      # Calcul des probabilites de capture
       if (smn[j]=="M0") {
         param[[j]][1,] <- c(N,exp(coeff[2])/(1+exp(coeff[2])))
       }
@@ -174,7 +174,7 @@ closedp.internal <- function(X, dfreq=FALSE, dtype="hist", t=NULL, t0=NULL, neg=
   #            param[[j]]<-c(N,sum(na.rm=TRUE,glmo$fitted.values[ifirstcap==1])/N)
         fi<-tapply(Y,list(nbcap),sum)
         param[[j]][1,] <- c(N,sum(fi*1:t.)/(t.*N))
-        ##### À vérifier avec Louis-Paul
+        ##### a verifier avec Louis-Paul
       }
       if (smn[j]%in%c("MthC","MthP","MthD","MthG")) {
         ifirstcap <- rep(1:t,2^(t-1:t))
@@ -202,8 +202,8 @@ closedp.internal <- function(X, dfreq=FALSE, dtype="hist", t=NULL, t0=NULL, neg=
   }    
   
   
-  # Préparation des sorties
-  neg.eta <- neg.eta[htype == "Chao"] # afin de ne conserver que les éléments pertinents
+  # Preparation des sorties
+  neg.eta <- neg.eta[htype == "Chao"] # afin de ne conserver que les elements pertinents
   ans <- list(n=n, t=t, t0=t0, results=tableau, bias = bias, glm=glm., glm.err=glm.err, 
               glm.warn=glm.warn, parameters=param, neg.eta=neg.eta, X=X, dfreq=dfreq)
   if (typet) ans$t0 <- NULL
@@ -213,7 +213,7 @@ closedp.internal <- function(X, dfreq=FALSE, dtype="hist", t=NULL, t0=NULL, neg=
 
 
 #--------------------------------------------------------------------------------------------------#
-#### Méthodes pour objets de type closedp ####
+#### Methodes pour objets de type closedp ####
 
 print.closedp <- function(x, ...) {
   cat("\nNumber of captured units:",x$n,"\n\n")
@@ -223,8 +223,8 @@ print.closedp <- function(x, ...) {
     tabprint(tab = x$results, digits = c(1,1,3,0,3,3,NA), warn = x$glm.warn, ...)
     
     ###################################################
-    ### 22 mai 2012 : On a décidé de ne plus imprimer ces notes car l'utilisateur ne comprend pas quel
-    ### impact des parametres eta fixés à zéro ont sur ses résultats. Ça l'embête plus qu'autre chose.
+    ### 22 mai 2012 : On a decide de ne plus imprimer ces notes car l'utilisateur ne comprend pas quel
+    ### impact des parametres eta fixes a zero ont sur ses resultats. ca l'embete plus qu'autre chose.
     #if (length(x$neg.eta$MhC)==1) cat("\nNote:",length(x$neg.eta$MhC),"eta parameter has been set to zero in the Mh Chao model")
     #if (length(x$neg.eta$MhC)>1) cat("\nNote:",length(x$neg.eta$MhC),"eta parameters have been set to zero in the Mh Chao model")
     #if (length(x$neg.eta$MthC)==1) cat("\nNote:",length(x$neg.eta$MthC),"eta parameter has been set to zero in the Mth Chao model")
@@ -256,7 +256,7 @@ boxplot.closedp <- function(x,main="Boxplots of Pearson Residuals", ...){
 }
 
 plot.closedp <- function(x,main="Residual plots for some heterogeneity models", ...){
-  typet <- if(any(class(x)=="closedp.t")) TRUE else FALSE
+  typet <- inherits(x, "closedp.t")
   t <- if(typet) x$t else x$t0
   converge <- x$results[c("Mh Poisson2","Mh Darroch","Mh Gamma3.5"), "infoFit"] %in% c(0,2,3)
   if (sum(converge)==0) stop("models did not converge, there is no data to plot")  

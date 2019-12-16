@@ -5,7 +5,7 @@
 \description{
   This data set contains robust design capture history data for red-back voles. 
 }
-\usage{data(rbvole)}
+\usage{rbvole}
 \format{
 66 by 19 numeric matrix, with the following columns:
   \describe{
@@ -33,7 +33,6 @@
   # for this data set is formed of an Mth Chao model for each period.
   # This model can be fitted as follows.
   
-### data(rbvole)
 ### memory.limit(size = 2000)
 ### rd <- robustd.t(rbvole, dfreq = TRUE, vt = rep(3, 6), vm = "Mth", vh = "Chao")
 

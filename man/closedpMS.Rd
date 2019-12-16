@@ -96,7 +96,6 @@ with the following elements:
     \describe{
     \item{\code{abundance}}{  the estimated population size,}
     \item{\code{stderr}}{  the standard error of the estimated population size,}
-    \item{\code{bias}}{  the asymptotic bias of the estimated population size,}
     \item{\code{deviance}}{  the model's deviance,}
     \item{\code{df}}{  the number of degrees of freedom,}
     \item{\code{AIC}}{  the Akaike's information criterion,}
@@ -104,6 +103,7 @@ with the following elements:
     \item{\code{infoFit}}{  a numerical code giving information about error or warnings 
           encountered when fitting the model (see \code{\link{Rcapture-package}} for details).}
     }}
+\item{bias}{ A vector, the asymptotic bias of the estimated population size for every fitted model.}
 \item{fit.err}{ A list of character string vectors. If an error occurs
                 while fitting a model (with \code{\link{glm}} or \code{\link{optim}}), a copy of the 
                 error message is stored in \code{fit.err$mname} where \code{mname} is the 
@@ -136,11 +136,7 @@ Rivest, L.P. and Baillargeon, S. (2007) Applications and extensions of Chao's mo
 
 \seealso{\code{\link{closedp}},  \code{\link{closedp.Mtb}}}
 \examples{
-# Here is an example on the lesbian data set.
-
-data(lesbian)
-
-# This data set contains 4 capture occasions.
+# The lesbian data set contains 4 capture occasions.
 # By default, closedpMB.t fits the 113 following models:
 
 getAllModels(4)

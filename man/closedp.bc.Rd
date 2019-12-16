@@ -108,12 +108,12 @@ Wittes, J.T. (1972) On the bias and estimated variance of Chapman's two-sample c
 
 \seealso{\code{\link{closedp}} }
 \examples{
-data(mvole)
+# Third primary period of mvole data set
 period3 <- mvole[, 11:15]
 closedp.bc(period3, m = "Mh", h = "Darroch")
 closedp.bc(period3, m = "Mh", h = "Gamma", h.control = list(theta = 3.5))
 
-data(BBS2001)
+# BBS2001 data set
 closedp.bc(BBS2001, dfreq = TRUE, dtype = "nbcap", t = 50, t0 = 20,
            m = "Mh", h = "Gamma", h.control = list(theta = 3.5))
 

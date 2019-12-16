@@ -54,11 +54,11 @@ Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-r
 
 \seealso{ \code{\link{closedp}}, \code{\link{closedpCI.t}}}
 \examples{
-data(hare)
+# hare data set
 closedp.Mtb(hare)
 
 ## Example producing an unstable estimate
-data(mvole)
+# Fourth primary period of mvole data set
 period4 <- mvole[, 16:20]
 closedp.Mtb(period4)
 }

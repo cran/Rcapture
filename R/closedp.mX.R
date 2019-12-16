@@ -5,7 +5,7 @@
         t <- ifelse(dfreq,dim(X)[2]-1,dim(X)[2])
 
     #####################################################################################################################################
-    # Validation des arguments fournis en entrée
+    # Validation des arguments fournis en entree
 
     # Argument dfreq
     if(!is.logical(dfreq)||!isTRUE(all.equal(length(dfreq),1))) stop("'dfreq' must be a logical object of length 1")
@@ -37,7 +37,7 @@
         M <- matrix(c(NM,erreurtypeM,anaM$dev,anaM$df.residual,anaM$aic),nrow=1)
 
          
-        # Préparation des sorties
+        # Preparation des sorties
         dimnames(M) <- list(mname,c("abundance","stderr","deviance","df","AIC"))
         ans <- list(n=sum(Y),results=M,glm=anaM)
         class(ans) <- "closedp.custom"

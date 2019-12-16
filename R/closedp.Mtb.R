@@ -2,7 +2,7 @@ closedp.Mtb <- function(X, dfreq = FALSE, method = "BFGS", ...)
 {
   
   ############################################
-  # Validation des arguments fournis en entrée
+  # Validation des arguments fournis en entree
   valid.one(dfreq,"logical")
   Xvalid<-valid.X(X,dfreq)
     X <- Xvalid$X
@@ -23,26 +23,26 @@ closedp.Mtb <- function(X, dfreq = FALSE, method = "BFGS", ...)
 
   ### Modele Mtb
   
-  # matrices d'indicatices de non capture (wi=0) avant la première capture, i=1,...,t-1
+  # matrices d'indicatices de non capture (wi=0) avant la premiere capture, i=1,...,t-1
   I1 <- matrix(c(0,0,1),ncol=1)  
   for(i in (3:t))
     I1 <- cbind(c(rep(0, 2^(i-1)), rep(1,((2^(i-1))-1))), 
                 rbind(matrix(rep(0,(2^(i-1))*(i-2)),nrow=2^(i-1)),I1))
-  # matrice d'indicatrices de la première capture
+  # matrice d'indicatrices de la premiere capture
   I2 <- matrix(rep(0,(2^t-1)*t),ncol=t)  
   poscapt1<-rep(1,2^(t-1))
   for(i in 2:t) poscapt1 <- c(poscapt1,rep(i,2^(t-i)))
   for(i in 1:(2^t-1)) I2[i,poscapt1[i]] <- 1        
-  # matrice d'indicatrices de capture (wi=1) après la première capture
+  # matrice d'indicatrices de capture (wi=1) apres la premiere capture
   I3 <- histpos.t(t)[,-1]  
   for(i in (2^(t-1)+1):(2^t-1)) 
     I3[i,1:(poscapt1[i]-1)]<-rep(0,length(I3[i,1:(poscapt1[i]-1)]))
-  # matrice d'indicatrices de non-capture (wi=0) après la première capture
+  # matrice d'indicatrices de non-capture (wi=0) apres la premiere capture
   I4 <- 1-histpos.t(t)[,-1]  
   for(i in (2^(t-1)+1):(2^t-1)) 
     I4[i,1:(poscapt1[i]-1)]<-rep(0,length(I4[i,1:(poscapt1[i]-1)]))
   
-  # valeurs initiales des paramètres (N->n, tous les p -> 0.5 et ci=pi)
+  # valeurs initiales des parametres (N->n, tous les p -> 0.5 et ci=pi)
   init_loglinparam.Mtb <- as.vector(c(log(n),rep(0,t+1)))
   
   # Fonction de log-vraisemblance
@@ -56,16 +56,16 @@ closedp.Mtb <- function(X, dfreq = FALSE, method = "BFGS", ...)
           t(Y)%*%logmu - sum(na.rm=TRUE,exp(logmu)) - sum(na.rm=TRUE,log(factorial(Y))) 
   }
   
-  # Optimisation de la fonction de log-vraisemblance en fonction des paramètres loglinéaires
+  # Optimisation de la fonction de log-vraisemblance en fonction des parametres loglineaires
   optim.out <- optim.call(par = init_loglinparam.Mtb, fn = ll_loglinparam.Mtb, method=method,
                           Y = Y, I1 = I1, I2 = I2, I3 = I3, I4 = I4, 
                           control=list(fnscale = -1, maxit = 1000), ...)
   
-  # Si la commande à généré une erreur, on arrête l'exécution de la fonction
+  # Si la commande a genere une erreur, on arrete l'execution de la fonction
   if (!is.null(optim.out$error))
     stop("error when fitting the model: ", optim.out$error)  
   
-  # Statistiques d'ajustement du modèle
+  # Statistiques d'ajustement du modele
   optimo <- optim.out$optimo
   logmu <- optimo$par[1] + I1%*%log(1/(1+exp(optimo$par[2:t]))) + 
     I2%*%log(exp(optimo$par[2:(t+1)])/(1+exp(optimo$par[2:(t+1)]))) + 
@@ -77,18 +77,18 @@ closedp.Mtb <- function(X, dfreq = FALSE, method = "BFGS", ...)
   AIC <- -2*optimo$value + 2*(t+2)
   BIC <- -2*optimo$value + log(n)*(t+2)
   
-  # Préparation des sorties
+  # Preparation des sorties
   infoFit <- getInfo(err = optim.out$error, warn = optim.out$warnings)
   tableau <- matrix(c(exp(optimo$par[1]),se,dev,df,AIC,BIC,infoFit),nrow=1)
   
-  # Autres paramètres
+  # Autres parametres
   parMtb <- matrix(c(exp(optimo$par[1]), exp(optimo$par[2:(t+1)])/(1+exp(optimo$par[2:(t+1)])),
                      exp(optimo$par[3:(t+1)]+optimo$par[t+2])/
                        (1+exp(optimo$par[3:(t+1)]+optimo$par[t+2]))),nrow=1)
   colnames(parMtb) <- c("N",pnames,cnames)
 
 
-  # Préparation des sorties
+  # Preparation des sorties
   dimnames(tableau) <- list("Mtb",c("abundance","stderr","deviance","df","AIC","BIC","infoFit"))
   ans <- list(n=n, t=t, results=tableau, optim = optimo, optim.warn = optim.out$warnings, 
               parMtb=parMtb)

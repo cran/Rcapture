@@ -16,19 +16,19 @@ valid.dtype <- function(dtype)
 valid.t <- function(t, tmin=2, pInf=FALSE) 
 {
   # Validation de l'argument t
-  # t : argument t donné en entrée
-  # tmin : valeur minimale que peux prendre t (les cas particuliers sont traités ailleurs) 
-  # pInf : Est-ce que la valeur inf est acceptée? (TRUE pour closedp.0, closedpCI.0 et descriptive seulement)
+  # t : argument t donne en entree
+  # tmin : valeur minimale que peux prendre t (les cas particuliers sont traites ailleurs) 
+  # pInf : Est-ce que la valeur inf est acceptee? (TRUE pour closedp.0, closedpCI.0 et descriptive seulement)
   
-  ### tmin n'est pas vraiment nécessaire pour l'instant. Il prend toujours sa valeur par défaut de 2.
-  ### C'est dans valid.vm que je produis des erreurs si t est trop petit pour un modèle en particulier.
+  ### tmin n'est pas vraiment necessaire pour l'instant. Il prend toujours sa valeur par defaut de 2.
+  ### C'est dans valid.vm que je produis des erreurs si t est trop petit pour un modele en particulier.
   
   if (!is.null(t)) {
     isInf <- is.infinite(t)
     if (isInf) {
       if (!pInf) stop("'t' can take the value 'Inf' only with the functions 'closedp.0', 'closedpCI.0' and 'descriptive'", call. = FALSE)
     } else {
-      # un entier supérieur ou égal à tmin
+      # un entier superieur ou egal a tmin
       if (!(is.numeric(t) && (t %% 1) == 0 && t >= tmin && length(t) == 1))
         stop("if not Null, 't' must be an integer greater or equal to ", tmin, 
              ngettext(pInf, " or take the value 'Inf'", ""), call. = FALSE)
@@ -38,13 +38,13 @@ valid.t <- function(t, tmin=2, pInf=FALSE)
 
 valid.X <- function(X, dfreq, dtype="hist", t=NULL, vt=t, warn=FALSE)
 {
-  ### Utilité : validation de l'argument X
+  ### Utilite : validation de l'argument X
   # Liste des fonctions appellant valid.X
-  # openp et closedp.Mtb : seulement X et dfreq sont donnés
-  # robustd.t, robustd.0 et periodhist : seulement X, dfreq et vt sont donnés
-  #           (pour l'instant le format dtype="nbcap" n'est pas accepté par ces fonctions)  
-  # closedp.bc et descriptive : seuls vt et warn ne sont pas donnés
-  # closedp.internal et closedpCI.internal : seul vt n'est pas donné
+  # openp et closedp.Mtb : seulement X et dfreq sont donnes
+  # robustd.t, robustd.0 et periodhist : seulement X, dfreq et vt sont donnes
+  #           (pour l'instant le format dtype="nbcap" n'est pas accepte par ces fonctions)  
+  # closedp.bc et descriptive : seuls vt et warn ne sont pas donnes
+  # closedp.internal et closedpCI.internal : seul vt n'est pas donne
   
   X <- as.matrix(X)
   
@@ -83,15 +83,15 @@ valid.X <- function(X, dfreq, dtype="hist", t=NULL, vt=t, warn=FALSE)
            "'X' must contain only integers between 1 and ", t, call. = FALSE)
   }
   
-  # Pour omettre les lignes avec uniquement des zéros s'il y en a
+  # Pour omettre les lignes avec uniquement des zeros s'il y en a
   zeros <- if(dfreq) apply(X[,-ncol(X),drop=FALSE],1,sum)==0 else apply(X,1,sum)==0
   X <- X[!zeros, , drop=FALSE]
-  ### Message d'avis omis car en fait le modèle est ajusté avec les fréquences nulles
+  ### Message d'avis omis car en fait le modele est ajuste avec les frequences nulles
   ### C'est pour le bon fonctionnement du code (histfreq) que ces lignes sont omises.
   # if (sum(zeros)>0) warning("the data matrix 'X' contains cases with no capture; these are ignored", call. = FALSE)
   ###
   
-  # Avertissement données problématiques    
+  # Avertissement donnees problematiques    
   if (warn) {
     if (t>20) warning("There is more than 20 capture occasions. This function migth fail.\n  We suggest using the 'periodhist' function to reduce the size of your data set.", immediate.=TRUE, call. = FALSE)   
     ### Message d'avis omis je ne sais plus pourquoi...
@@ -100,7 +100,7 @@ valid.X <- function(X, dfreq, dtype="hist", t=NULL, vt=t, warn=FALSE)
     ###
   }
   
-  # Sortie des résultats
+  # Sortie des resultats
   return(list(X=X,t=t))
 }
 
@@ -119,8 +119,8 @@ valid.t0 <- function(t0, typet, t, tmin=2, tinf=FALSE) {
     }
   } else {
     if (!is.null(t0)) {  
-      ## Cette condition peut seulement être rencontrée avec la fonction closedp.bc 
-      ## pour un modèle qui n'utilise pas l'Argument t0.
+      ## Cette condition peut seulement etre rencontree avec la fonction closedp.bc 
+      ## pour un modele qui n'utilise pas l'Argument t0.
       if (t0 != t) warning("the input argument 't0' could not be used with the requested model", call. = FALSE)
       t0 <- NULL
     }
@@ -141,7 +141,7 @@ valid.vt <- function(vt)
 valid.vm <- function(vm,values,vt,typet=TRUE)
 {
   valuesMsg <- if(typet) values else values[-grep("t",values)]
-  # Note length(vt)==1 signifie que valid.vm est appelée d'une fonction closedp ou de openp
+  # Note length(vt)==1 signifie que valid.vm est appelee d'une fonction closedp ou de openp
   error <- gettext(ngettext(length(vt),"'m'","'vm' elements")," can only take one of these values: ",
                    paste(dQuote(valuesMsg), collapse=", "))
   if(is.null(vm)) 
@@ -163,21 +163,21 @@ valid.vm <- function(vm,values,vt,typet=TRUE)
 }
 
 valid.mX <- function(mX, typet, t, t0){
-  #### Description : validation de mX, appelé uniquement par closedpCI.internal
+  #### Description : validation de mX, appele uniquement par closedpCI.internal
   if(!is.null(mX)){
     ## Si mX est une formule :
-    if (class(mX)=="formula"){  
+    if (inherits(mX, "formula")){  
       if(!typet) stop("'mX' cannot be a formula for 'closedpCI.0'", call. = FALSE)
       if(length(mX)==3)
         stop("the formula given as 'mX' argument must not contain a response variable", call. = FALSE)
       if(any(!(all.vars(mX) %in% c(".", paste("c", 1:t, sep="")))))
         stop("the only accepted variable names in the formula given as 'mX' argument are ",
              "c1 to c", t, ", which represent the capture occasions", call. = FALSE)
-      # L'erreur si l'intercept est enlevé sera généré dans getmX car j'ai besoin de histpos
+      # L'erreur si l'intercept est enleve sera genere dans getmX car j'ai besoin de histpos
     
-    ## Si mX est une chaîne de caractères :  
+    ## Si mX est une chaine de caracteres :  
     } else if (is.character(mX)) {
-      mX <- mX[1] # au cas ou un vecteur de noms de modèles aurait été fourni
+      mX <- mX[1] # au cas ou un vecteur de noms de modeles aurait ete fourni
       if (substr(mX, 1, 1) != "[" || substr(mX, nchar(mX), nchar(mX)) != "]")
         stop("if 'mX' is a hierarchical model name, it must start with '[' and end with ']'")
       if (grepl(" ", mX, fixed = TRUE))
@@ -193,12 +193,12 @@ valid.mX <- function(mX, typet, t, t0){
       }
       mX <- getFormulaFromName(mX)[[1]]
       
-    ## Si mX est supposée être une matrice :  
+    ## Si mX est supposee etre une matrice :  
     } else {  
       if (!is.numeric(mX))
         stop("if 'mX' is not a formula or a hierarchical model name, it must be numeric", call. = FALSE) 
       testmX <- try(as.matrix(mX), silent=TRUE)
-      if (class(testmX) == "try-error"){
+      if (inherits(testmX, "try-error")){
         stop("cannot turn the given 'mX' argument into a matrix", call. = FALSE)  
       } else { mX <- testmX }
       nrows <- if(typet) 2^t-1 else t0
@@ -216,12 +216,12 @@ valid.h <- function(h, values, m, call)
   if(length(h)!=1) h <- h[1]
   msg2 <- gettext("a function or a character string taking one of these values: ", 
                   paste(dQuote(values), collapse=", "))
-  if(is.null(m)) {  ## m est NULL uniquement si mX est utilisé
+  if(is.null(m)) {  ## m est NULL uniquement si mX est utilise
     if(!(is.function(h) || h %in% values || is.null(h)))
       stop("'h' must be NULL, ", msg2, call. = FALSE) 
   } else if(m %in% c("Mh", "Mth")) {
     if (is.null(h)) {
-      h <- "Chao"  ## valeur par défaut  
+      h <- "Chao"  ## valeur par defaut  
     } else if(!(is.function(h) || h %in% values)) {
       stop("'h' must be ", msg2, call. = FALSE)
     }
@@ -233,9 +233,9 @@ valid.h <- function(h, values, m, call)
     }
   }
   
-  # Création d'un indicateur du type de h
+  # Creation d'un indicateur du type de h
   htype <- if(is.null(h)) "none" else if (is.function(h)) "function" else h
-  if (htype == "LB") htype <- "Chao" # on regrouper les modalité "LB" et "Chao" 
+  if (htype == "LB") htype <- "Chao" # on regrouper les modalite "LB" et "Chao" 
   
   # Sortie
   return(list(h=h, htype=htype))
@@ -244,7 +244,7 @@ valid.h <- function(h, values, m, call)
 valid.theta <- function(theta, htype){
   if (htype %in% c("Poisson", "Gamma")) {
     if (is.null(theta)) {
-      # valeur par défaut qui varie selon le modèle
+      # valeur par defaut qui varie selon le modele
       theta <- if (htype=="Poisson") 2 else 3.5 # cas (htype=="Gamma")
     } else {
       valid.one(theta,"numeric")
@@ -259,7 +259,7 @@ valid.theta <- function(theta, htype){
 valid.neg <- function(neg, htype){
   if (htype == "Chao") {
     if (is.null(neg)) {
-      neg <- TRUE # valeur par défaut
+      neg <- TRUE # valeur par defaut
     } else {
       valid.one(neg,"logical")
     }
@@ -272,7 +272,7 @@ valid.neg <- function(neg, htype){
 valid.initsig <- function(initsig, htype){
   if (htype == "Normal") {
     if (is.null(initsig)) {
-      initsig <- 0.2  # valeur par défaut
+      initsig <- 0.2  # valeur par defaut
     } else {
       valid.one(initsig,"numeric")
       if (initsig<=0) 
@@ -287,9 +287,9 @@ valid.initsig <- function(initsig, htype){
 valid.method <- function(method, htype){
   if (htype == "Normal") {
     if (is.null(method)) {
-      method <- "BFGS"  # valeur par défaut
+      method <- "BFGS"  # valeur par defaut
     }
-    # pas de validation ici si argument donné car optim va le valider
+    # pas de validation ici si argument donne car optim va le valider
   } else {
     method <- NULL
   }
@@ -300,22 +300,22 @@ valid.vh <- function(vh,values,vm)
 {
   pos <- which(vm %in% c("Mh", "Mth"))
   nh <- length(pos)
-  if(!is.list(vh)) vh <- if(length(vh)==1) list(vh) else as.list(vh) # transforme vh en liste si ça n'en est pas une
+  if(!is.list(vh)) vh <- if(length(vh)==1) list(vh) else as.list(vh) # transforme vh en liste si ca n'en est pas une
   if (nh>0) { 
     if(!(length(vh)==nh||length(vh)==1))
       stop("'vh' must be of length 1 or of length equals to the number of heterogeneous models specified in 'vm'", call. = FALSE)
     for (i in 1:length(vh)){
       if (is.null(vh[[i]])) {
-        vh[[i]] <- "Chao"  ## valeur par défaut
+        vh[[i]] <- "Chao"  ## valeur par defaut
       } else {
         if(!(is.function(vh[[i]]) || vh[[i]] %in% values))
           stop("'vh' elements must be a function or a character string taking one of these values:", paste(dQuote(values), collapse=", "), call. = FALSE)
       }
     }
-    if(length(vh) == 1) vh <- rep(vh,nh)  ## Si vh est de longueur 1, appliquer ce h à toutes les périodes avec hétérogénéité
+    if(length(vh) == 1) vh <- rep(vh,nh)  ## Si vh est de longueur 1, appliquer ce h a toutes les periodes avec heterogeneite
   }
   vht<-vector("list",length=length(vm))
-  vht[pos]<-vh  ## fixe à NULL la valeur de h pour les périodes sans modèle hétérogène
+  vht[pos]<-vh  ## fixe a NULL la valeur de h pour les periodes sans modele heterogene
   return(vht)
 }
 
@@ -336,28 +336,28 @@ valid.vtheta <- function(vtheta,vh)
 }
 
 valid.mname <- function(mname, typet=FALSE, m, htype, theta, call){
-  if (is.null(mname)) { # Si aucun mname n'a été donné, on le crée
-    # partie pour décrire le modèle d'hétérogénéité
+  if (is.null(mname)) { # Si aucun mname n'a ete donne, on le cree
+    # partie pour decrire le modele d'heterogeneite
     ph <- if (htype == "none") { NULL
     } else if (htype == "function") { deparse(call$h)
     } else if (htype %in% c("Poisson","Gamma")) { paste0(htype, theta)  
     } else if (is.null(call$h) || call$h == "Chao") { 
-      "Chao (LB)" # valeur par défaut de h ou h = "Chao" a été fourni         
+      "Chao (LB)" # valeur par defaut de h ou h = "Chao" a ete fourni         
     } else if (call$h == "LB") { 
-      "LB" # h = "LB" a été fourni         
+      "LB" # h = "LB" a ete fourni         
     } else { htype }
-    # création du mname  
+    # creation du mname  
     if(!is.null(call[["mX"]])) {
       mname <-  if (length(call[["mX"]]) == 1) {
         if (is.character(call[["mX"]])) call[["mX"]] else deparse(call[["mX"]]) 
       } else { "mX" }
       if (!is.null(ph)) mname <- gsub("\\s","", paste(mname,"+h=", ph, sep=""))
-      # Je ne veux aucun espace ici, gsub sert à enlever toutes les white spaces 
+      # Je ne veux aucun espace ici, gsub sert a enlever toutes les white spaces 
     } else { 
       mname <- if(is.null(ph)) m else paste(m, ph, sep=" ")
     }
     
-  } else { # Si un mname a été donné en entrée, on le valide
+  } else { # Si un mname a ete donne en entree, on le valide
     valid.one(mname,"character")
   }  
   return(mname)

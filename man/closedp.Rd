@@ -179,16 +179,16 @@ Seber, G.A.F. (1982) The Estimation of Animal Abundance and Related Parameters, 
 
 \seealso{\code{\link{closedpCI.t}}, \code{\link{closedpCI.0}}, \code{\link{closedp.bc}}, \code{\link{closedp.Mtb}}, \code{\link{closedpMS.t}}, \code{\link{uifit}}. }
 \examples{
-data(hare)
+# hare data set
 hare.closedp <- closedp.t(hare)
 hare.closedp
 boxplot(hare.closedp)
 
-data(mvole)
+# Third primary period of mvole data set
 period3 <- mvole[, 11:15]
 closedp.t(period3)
 
-data(BBS2001)
+# BBS2001 data set
 BBS.closedp <- closedp.0(BBS2001, dfreq = TRUE, dtype = "nbcap", t = 50, t0 = 20)
 BBS.closedp
 plot(BBS.closedp)
@@ -199,8 +199,7 @@ X <- matrix(c(1,1,167,1,0,781,0,1,254), byrow = TRUE, ncol = 3)
 closedp.t(X, dfreq = TRUE)
 
 ### Example of captures in continuous time
-### Illegal immigrants data
-data(ill)
+# Illegal immigrants data set
 closedp.0(ill, dtype = "nbcap", dfreq = TRUE, t = Inf)
 }
 \keyword{models}

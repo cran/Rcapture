@@ -5,7 +5,7 @@
 \description{
   This data set contains capture-recapture data for snowshoe hares. 
 }
-\usage{data(hare)}
+\usage{hare}
 \format{
 68 by 6 numeric matrix, with the following columns:
   \describe{
@@ -25,7 +25,6 @@ Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-r
 Cormack, R. M. (1989) Loglinear models for capture-recapture. \emph{Biometrics}, \bold{45}, 395--413.
 }
 \examples{
-data(hare)
 desc <- descriptive(hare)
 plot(desc)
   # The fi plot shows that the two animals caught on all occasions create 

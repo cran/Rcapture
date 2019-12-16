@@ -8,7 +8,7 @@ Species Richness Data from the North American Breeding Bird Survey (BBS) in 2001
 This data set contains species richness data from the North American Breeding Bird Survey (BBS) in 2001. 
 The number of capture occasions \eqn{t} is 50.
 }
-\usage{data(BBS2001)}
+\usage{BBS2001}
 \format{
 36 by 2 numeric matrix, with the following columns:
   \describe{
@@ -29,7 +29,6 @@ on that route. The frequencies for \eqn{i=37,\ldots,50} are null and do not appe
 Dorazio, R. M. and Royle, A. J. (2003) Mixture models for estimating the size of a closed population when capture rates vary among individuals. \emph{Biometrics}, \bold{59}, 351--364
 }
 \examples{
-data(BBS2001)
 desc <- descriptive(BBS2001, dfreq = TRUE, dtype = "nbcap", t = 50)
 plot(desc)
    # Note in this plot the convex shape typical of model Mh.

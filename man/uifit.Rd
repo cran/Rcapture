@@ -27,7 +27,7 @@ Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-r
 
 \seealso{\code{\link{closedp}} }
 \examples{
-data(mvole)
+# Third primary period of mvole data set
 period3 <- mvole[, 11:15]
 cp <- closedp(period3)
 uifit(cp)
