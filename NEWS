@@ -1,3 +1,9 @@
+Changes in Version 1.4-4 (2022-05-03)
+=====================================
+
+  o R CMD check note fixed in Rd files.
+
+
 Changes in Version 1.4-3 (2019-12-16)
 =====================================
 
@@ -21,7 +27,7 @@ Changes in Version 1.4-2 (2014-08-28)
 
   o Documentation updated.
 
-  o A data set has been added to the package : the lesbian data set.
+  o A data set has been added to the package: the lesbian data set.
 
 
 
@@ -87,7 +93,7 @@ Changes in Version 1.3-3 (2014-06-20)
     (BIC) for the fitted models.
 
   o The way Rcapture treats warnings and errors produced while fitting a closed 
-    population model has been revised :
+    population model has been revised:
       o If an error occurs while executing a function fitting only one model 
         (closedpCI functions, closedp.bc(), closedp.Mtb()), the execution is 
         stopped and the error message is printed (usual behavior in R, no change 

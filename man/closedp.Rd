@@ -124,13 +124,13 @@ PLOT METHODS AND FUNCTIONS
 \item{t0}{ For \code{closedp.0} only: the value of the argument \code{t0} used in the computations.}
 \item{results}{ A table containing, for every fitted model:
     \describe{
-    \item{\code{abundance}}{:  the estimated population size,}
-    \item{\code{stderr}}{:  the standard error of the estimated population size,}
-    \item{\code{deviance}}{:  the model's deviance,}
-    \item{\code{df}}{:  the number of degrees of freedom,}
-    \item{\code{AIC}}{:  the Akaike's information criterion,}
-    \item{\code{BIC}}{:  the bayesian information criterion,}
-    \item{\code{infoFit}}{:  a numerical code giving information about error or warnings 
+    \item{\code{abundance}:}{  the estimated population size,}
+    \item{\code{stderr}:}{  the standard error of the estimated population size,}
+    \item{\code{deviance}:}{  the model's deviance,}
+    \item{\code{df}:}{  the number of degrees of freedom,}
+    \item{\code{AIC}:}{  the Akaike's information criterion,}
+    \item{\code{BIC}:}{  the bayesian information criterion,}
+    \item{\code{infoFit}:}{  a numerical code giving information about error or warnings 
           encountered when fitting the model (see \code{\link{Rcapture-package}} for details).}
     }}
 \item{bias}{ A vector, the asymptotic bias of the estimated population size for every fitted model.}
@@ -147,11 +147,11 @@ PLOT METHODS AND FUNCTIONS
 \item{parameters}{ Capture-recapture parameters estimates. It contains N, the estimated population size, 
                    and p or \eqn{p_1}{p1} to \eqn{p_t}{pt} defined as follows for the different models :
     \describe{
-    \item{}{M0: the capture probability at any capture occasion,}
-    \item{}{Mt: the capture probabilities for each capture occasion,}
-    \item{}{Mh models: the average probability of capture,} 
-    \item{}{Mth models: the average probabilities of capture for each occasion,}
-    \item{}{Mb and Mbh: the probability of first capture at any capture occasion.} 
+    \item{M0:}{ the capture probability at any capture occasion,}
+    \item{Mt:}{ the capture probabilities for each capture occasion,}
+    \item{Mh models:}{ the average probability of capture,} 
+    \item{Mth models:}{ the average probabilities of capture for each occasion,}
+    \item{Mb and Mbh:}{ the probability of first capture at any capture occasion.} 
     }
     For models Mb and Mbh, it also contains c, the recapture probability at any capture occasion.}
 \item{neg.eta}{ The position of the eta parameters set to zero in the loglinear parameter 
@@ -163,7 +163,7 @@ PLOT METHODS AND FUNCTIONS
 \references{ 
 Agresti, A. (1994) Simple capture-recapture models permitting unequal catchability and variable sampling effort. \emph{Biometrics}, \bold{50}, 494--500.
 
-Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \doi{10.18637/jss.v019.i05}.
 
 Chao, A. (1987) Estimating the population size for capture-recapture data with unequal catchabililty.  \emph{ Biometrics}, \bold{45}, 427--438.
 

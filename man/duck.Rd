@@ -23,7 +23,7 @@
 Coulson, J. C. (1984) The population dynamics of the Eider Duck \emph{Somateria mollissima} and evidence of extensive non breeding by adults ducks. \emph{Ibis}, \bold{126}, 525--543.
 }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \doi{10.18637/jss.v019.i05}.
 
 Cormack, R. M. (1989) Loglinear models for capture-recapture. \emph{Biometrics}, \bold{45}, 395--413.
 }

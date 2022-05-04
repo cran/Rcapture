@@ -55,7 +55,7 @@ descriptive(X, dfreq=FALSE, dtype=c("hist","nbcap"), t=NULL)
    \item{call }{ The function call (object of class "call").}
 }
 \references{ 
-Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \doi{10.18637/jss.v019.i05}.
 
 Choquet, R., Reboulet, A.M., Pradel, R., Gimenez, O. and Lebreton, J.D. (2004). M-Surge: New Software Specifically Designed for Multistate Capture-Recapture Models. \emph{Animal Biodiversity and Conservation}, \bold{27.1}, 207--215.
 

@@ -20,7 +20,7 @@
   Each row of this data set represents an observed capture history followed by its frequency. 
 }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \doi{10.18637/jss.v019.i05}.
 
 Burnham, K.P., Anderson, D.R., White, G.C., Brownie, C. and Pollock, K.H. (1987) Design and analysis methods for fish survival experiments based on release-recapture. \emph{American Fisheries Society Monographs 5}. Bethesda, Maryland.
 

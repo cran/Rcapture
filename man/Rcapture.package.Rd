@@ -12,8 +12,8 @@
 \tabular{ll}{
 Package: \tab \pkg{Rcapture}\cr
 Type: \tab Package\cr
-Version: \tab 1.4-3\cr
-Date: \tab 2019-12-16\cr
+Version: \tab 1.4-4\cr
+Date: \tab 2022-05-03\cr
 License: \tab GPL-2\cr
 }
 
@@ -141,7 +141,7 @@ The elements in the column \code{infoFit} can contain more than one number since
 \author{ Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} and Sophie Baillargeon }
 
 \references{
-Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \doi{10.18637/jss.v019.i05}.
 
 Bohning, D. and Schon, D. (2005) Nonparametric Maximum Likelihood Estimation of Population Size Based on the Counting Distribution. \emph{Journal of the Royal Statistical Society: Series C (Applied Statistics)}, \bold{54}(4), 721-737.
 

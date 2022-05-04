@@ -77,9 +77,9 @@ is accepted.
 \item{t0}{ For models M0 and Mh only: the value of the argument \code{t0} used in the computations.}
 \item{results}{ A table containing, for the fitted model:
     \describe{
-    \item{\code{abundance}}{:  the estimated population size,}
-    \item{\code{stderr}}{:  the standard error of the estimated population size,}
-    \item{\code{infoFit}}{:  a numerical code giving information about error or warnings 
+    \item{\code{abundance}:}{  the estimated population size,}
+    \item{\code{stderr}:}{  the standard error of the estimated population size,}
+    \item{\code{infoFit}:}{  a numerical code giving information about error or warnings 
           encountered when fitting the model (see \code{\link{Rcapture-package}} for details).}
     }}
 \item{glm.warn}{ Only if the corrected population size estimation was obtained with \code{\link{glm}}:
@@ -92,7 +92,7 @@ is accepted.
 }
 \note{ This function uses the \code{\link{glm}} function of the \pkg{stats} package, except for models Mt and Mh Chao's lower bound for which exact calculation is performed. }
 \references{ 
-Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \doi{10.18637/jss.v019.i05}.
 
 Chapman, D. G. (1951) Some properties of the hypergeometric distribution with applications to zoological sample censuses. \emph{University of California Publications in Statistics}, \bold{1}(7), 131-160.
 

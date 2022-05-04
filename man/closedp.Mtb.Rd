@@ -29,13 +29,13 @@ closedp.Mtb(X, dfreq=FALSE, method = "BFGS", \dots)
 \item{t}{ The total number of capture occasions in the data matrix \code{X}.}
 \item{results}{ A table containing, for the fitted model:
     \describe{
-    \item{\code{abundance}}{:  the estimated population size,}
-    \item{\code{stderr}}{:  the standard error of the estimated population size,}
-    \item{\code{deviance}}{:  the model's deviance,}
-    \item{\code{df}}{:  the number of degrees of freedom,}
-    \item{\code{AIC}}{:  the Akaike's information criterion,}
-    \item{\code{BIC}}{:  the bayesian information criterion,}
-    \item{\code{infoFit}}{:  a numerical code giving information about error or warnings 
+    \item{\code{abundance}:}{  the estimated population size,}
+    \item{\code{stderr}:}{  the standard error of the estimated population size,}
+    \item{\code{deviance}:}{  the model's deviance,}
+    \item{\code{df}:}{  the number of degrees of freedom,}
+    \item{\code{AIC}:}{  the Akaike's information criterion,}
+    \item{\code{BIC}:}{  the bayesian information criterion,}
+    \item{\code{infoFit}:}{  a numerical code giving information about error or warnings 
           encountered when fitting the model (see \code{\link{Rcapture-package}} for details).}
     }}
 \item{optim}{The output produced by \code{\link{optim}} from fitting the model.}
@@ -48,7 +48,7 @@ closedp.Mtb(X, dfreq=FALSE, method = "BFGS", \dots)
                the recapture probabilities for each capture occasion.} 
 }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \doi{10.18637/jss.v019.i05}.
 }
 \author{ Louis-Paul Rivest \email{Louis-Paul.Rivest@mat.ulaval.ca} and Sophie Baillargeon }
 

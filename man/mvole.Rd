@@ -30,7 +30,7 @@
 Williams, B.K., Nichols, J.D., and Conroy, M.J. (2002) \emph{Analysis and Management of Animal Populations}, San Diego: Academic Press.
 }
 \references{
-Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \url{http://www.jstatsoft.org/v19/i05}.
+Baillargeon, S. and Rivest, L.P. (2007) Rcapture: Loglinear models for capture-recapture in R.  \emph{Journal of Statistical Software}, \bold{19}(5), \doi{10.18637/jss.v019.i05}.
 }
 \examples{
   # This example deals only with the first four primary periods of the data set.
